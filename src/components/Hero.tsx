@@ -82,7 +82,7 @@ export const Hero = () => {
         transition={{ duration: 0.8 }}
         className="text-center max-w-4xl mx-auto relative z-10"
       >
-        <span className="inline-block px-3 py-1 text-sm font-medium bg-white/10 backdrop-blur-sm rounded-full mb-4">
+        <span className="inline-block px-3 py-1 text-base md:text-lg font-medium bg-white/10 backdrop-blur-sm rounded-full mb-4 text-white">
           Welcome to mc3digital
         </span>
         <h1 className="text-4xl md:text-6xl font-bold mb-6 text-gradient">
