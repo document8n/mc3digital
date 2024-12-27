@@ -27,7 +27,7 @@ const AdminMenu = () => {
               to={item.path}
               className={cn(
                 "flex items-center space-x-3 px-3 py-2 rounded-md transition-colors text-white",
-                "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                "hover:bg-sidebar-accent hover:text-orange-400",
                 isActive ? "bg-blue-600 text-white font-medium" : "text-white"
               )}
             >
