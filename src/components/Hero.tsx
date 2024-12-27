@@ -1,9 +1,75 @@
 import { motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
+import { useEffect } from "react";
+
+declare const particlesJS: any; // TypeScript declaration
 
 export const Hero = () => {
+  useEffect(() => {
+    particlesJS('particles-js', {
+      particles: {
+        number: {
+          value: 80,
+          density: {
+            enable: true,
+            value_area: 800
+          }
+        },
+        color: {
+          value: "#ffffff"
+        },
+        shape: {
+          type: "circle",
+        },
+        opacity: {
+          value: 0.5,
+          random: false,
+        },
+        size: {
+          value: 3,
+          random: true,
+        },
+        line_linked: {
+          enable: true,
+          distance: 150,
+          color: "#ffffff",
+          opacity: 0.4,
+          width: 1
+        },
+        move: {
+          enable: true,
+          speed: 6,
+          direction: "none",
+          random: false,
+          straight: false,
+          out_mode: "out",
+          bounce: false,
+        }
+      },
+      interactivity: {
+        detect_on: "canvas",
+        events: {
+          onhover: {
+            enable: true,
+            mode: "repulse"
+          },
+          resize: true
+        },
+        modes: {
+          repulse: {
+            distance: 100,
+            duration: 0.4
+          }
+        }
+      },
+      retina_detect: true
+    });
+  }, []);
+
   return (
     <section className="min-h-screen flex flex-col justify-center items-center relative section-padding overflow-hidden bg-gradient-to-br from-[#1A1F2C] via-[#2C1F3D] to-[#1E293B]">
+      <div id="particles-js" className="absolute inset-0 z-0" />
+      
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
