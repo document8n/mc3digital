@@ -8,11 +8,20 @@ export const Header = () => {
   const navigate = useNavigate();
 
   const scrollToContact = () => {
+    console.log("Attempting to scroll to contact section");
     setIsMenuOpen(false);
-    const contactSection = document.querySelector('#contact');
-    if (contactSection) {
-      contactSection.scrollIntoView({ behavior: 'smooth' });
-    }
+    
+    // Add a small delay to ensure the DOM is ready
+    setTimeout(() => {
+      const contactSection = document.querySelector('#contact');
+      console.log("Contact section found:", contactSection);
+      
+      if (contactSection) {
+        contactSection.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        console.log("Contact section not found in the DOM");
+      }
+    }, 100);
   };
 
   const handlePortalClick = () => {
