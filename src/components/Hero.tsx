@@ -3,11 +3,7 @@ import { ChevronDown } from "lucide-react";
 
 export const Hero = () => {
   return (
-    <section className="min-h-screen flex flex-col justify-center items-center relative section-padding overflow-hidden bg-[#1A1F2C]">
-      <div className="absolute inset-0 -z-10">
-        <spline-viewer url="https://prod.spline.design/thDEF6-zr9WiHgdi/scene.splinecode" />
-      </div>
-      
+    <section className="min-h-screen flex flex-col justify-center items-center relative section-padding overflow-hidden bg-gradient-to-br from-[#1A1F2C] via-[#2C1F3D] to-[#1E293B]">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
