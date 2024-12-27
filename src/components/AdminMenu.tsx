@@ -28,8 +28,7 @@ const AdminMenu = () => {
               className={cn(
                 "flex items-center space-x-3 px-3 py-2 rounded-md transition-colors text-white",
                 "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-                isActive && "bg-sidebar-accent text-sidebar-accent-foreground",
-                !isActive && "text-white"
+                isActive ? "bg-blue-600 text-white font-medium" : "text-white"
               )}
             >
               <Icon className="h-5 w-5" />
