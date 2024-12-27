@@ -59,7 +59,7 @@ export const Portfolio = () => {
                     <item.icon className="w-12 h-12 text-white opacity-75" />
                   </div>
                 </div>
-                <CardContent className="p-6 flex-grow flex flex-col justify-between">
+                <CardContent className="p-6 flex flex-col">
                   <h3 className="text-xl font-semibold text-white mb-2">{item.title}</h3>
                   <p className="text-gray-300">{item.description}</p>
                 </CardContent>
