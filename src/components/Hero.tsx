@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 declare global {
   interface Window {
@@ -9,6 +10,8 @@ declare global {
 }
 
 export const Hero = () => {
+  const navigate = useNavigate();
+
   useEffect(() => {
     if (typeof window.particlesJS !== 'undefined') {
       window.particlesJS('particles-js', {
@@ -125,7 +128,7 @@ export const Hero = () => {
           We build, launch, and support web and mobile apps with a proven track record of success.
         </motion.p>
         
-        <motion.div variants={item}>
+        <motion.div variants={item} className="flex gap-4 justify-center">
           <motion.a
             href="#contact"
             whileHover={{ scale: 1.05 }}
@@ -134,6 +137,14 @@ export const Hero = () => {
           >
             Get Started
           </motion.a>
+          <motion.button
+            onClick={() => navigate('/login')}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="inline-block px-8 py-3 bg-white/10 backdrop-blur-sm text-white rounded-lg font-medium hover-lift border border-white/20"
+          >
+            Client Portal
+          </motion.button>
         </motion.div>
       </motion.div>
       
