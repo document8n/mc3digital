@@ -6,6 +6,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Admin from "./pages/Admin";
+import Projects from "./pages/Projects";
+import Clients from "./pages/Clients";
+import Services from "./pages/Services";
 
 const queryClient = new QueryClient();
 
@@ -19,6 +22,9 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<Login />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/projects" element={<Projects />} />
+          <Route path="/clients" element={<Clients />} />
+          <Route path="/services" element={<Services />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
