@@ -1,10 +1,24 @@
 import { Menu, X, Code2 } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const scrollToContact = () => {
+    setIsMenuOpen(false);
+    const contactSection = document.querySelector('#contact');
+    if (contactSection) {
+      contactSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const handlePortalClick = () => {
+    setIsMenuOpen(false);
+    navigate('/login');
+  };
 
   return (
     <header className="fixed w-full top-0 z-50 bg-[#1A1F2C]/95 backdrop-blur-sm border-b border-gray-800">
@@ -41,21 +55,18 @@ export const Header = () => {
               className="overflow-hidden"
             >
               <nav className="py-4 space-y-4">
-                <a
-                  href="#contact"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="block text-white hover:text-gray-300 transition-colors"
+                <button
+                  onClick={scrollToContact}
+                  className="block w-full text-left text-white hover:text-gray-300 transition-colors"
                 >
                   Contact Us
-                </a>
-                <a
-                  href="https://portal.mc3digital.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block text-white hover:text-gray-300 transition-colors"
+                </button>
+                <button
+                  onClick={handlePortalClick}
+                  className="block w-full text-left text-white hover:text-gray-300 transition-colors"
                 >
                   Customer Portal
-                </a>
+                </button>
               </nav>
             </motion.div>
           )}

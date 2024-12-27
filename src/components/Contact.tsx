@@ -3,7 +3,7 @@ import { Send } from "lucide-react";
 
 export const Contact = () => {
   return (
-    <section className="section-padding">
+    <section id="contact" className="section-padding">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-16">
           <span className="inline-block px-3 py-1 text-sm font-medium bg-gray-100 rounded-full mb-4">
