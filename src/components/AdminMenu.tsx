@@ -26,10 +26,10 @@ const AdminMenu = () => {
               key={item.path}
               to={item.path}
               className={cn(
-                "flex items-center space-x-3 px-3 py-2 rounded-md transition-colors",
+                "flex items-center space-x-3 px-3 py-2 rounded-md transition-colors text-white",
                 "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                 isActive && "bg-sidebar-accent text-sidebar-accent-foreground",
-                !isActive && "text-sidebar-foreground"
+                !isActive && "text-white"
               )}
             >
               <Icon className="h-5 w-5" />
