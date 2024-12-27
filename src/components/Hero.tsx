@@ -91,13 +91,14 @@ export const Hero = () => {
         <p className="text-lg md:text-xl text-gray-200 mb-8">
           We build, launch, and support web and mobile apps with a proven track record of success.
         </p>
-        <motion.button
+        <motion.a
+          href="#contact"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="px-8 py-3 bg-white/10 backdrop-blur-sm text-white rounded-lg font-medium hover-lift border border-white/20"
+          className="inline-block px-8 py-3 bg-white/10 backdrop-blur-sm text-white rounded-lg font-medium hover-lift border border-white/20"
         >
           Get Started
-        </motion.button>
+        </motion.a>
       </motion.div>
       
       <motion.div
