@@ -1,13 +1,13 @@
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
-import { Gallery, Award, Trophy } from "lucide-react";
+import { Award, Trophy, Code } from "lucide-react";
 
 const portfolioItems = [
   {
     title: "Web Development",
     description: "Custom web applications built with modern technologies",
     image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
-    icon: Gallery
+    icon: Code
   },
   {
     title: "Enterprise Solutions",
