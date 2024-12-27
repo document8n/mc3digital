@@ -13,66 +13,92 @@ export const Hero = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (typeof window.particlesJS !== 'undefined') {
-      window.particlesJS('particles-js', {
-        particles: {
-          number: {
-            value: 80,
-            density: {
-              enable: true,
-              value_area: 800
-            }
-          },
-          color: {
-            value: "#ffffff"
-          },
-          shape: {
-            type: "circle",
-          },
-          opacity: {
-            value: 0.5,
-            random: false,
-          },
-          size: {
-            value: 3,
-            random: true,
-          },
-          line_linked: {
-            enable: true,
-            distance: 150,
-            color: "#ffffff",
-            opacity: 0.4,
-            width: 1
-          },
-          move: {
-            enable: true,
-            speed: 6,
-            direction: "none",
-            random: false,
-            straight: false,
-            out_mode: "out",
-            bounce: false,
-          }
-        },
-        interactivity: {
-          detect_on: "canvas",
-          events: {
-            onhover: {
-              enable: true,
-              mode: "repulse"
+    // Dynamically load particles.js
+    const loadParticles = async () => {
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js';
+      script.async = true;
+      
+      script.onload = () => {
+        if (typeof window.particlesJS !== 'undefined') {
+          window.particlesJS('particles-js', {
+            particles: {
+              number: {
+                value: 80,
+                density: {
+                  enable: true,
+                  value_area: 800
+                }
+              },
+              color: {
+                value: "#ffffff"
+              },
+              shape: {
+                type: "circle",
+              },
+              opacity: {
+                value: 0.5,
+                random: false,
+              },
+              size: {
+                value: 3,
+                random: true,
+              },
+              line_linked: {
+                enable: true,
+                distance: 150,
+                color: "#ffffff",
+                opacity: 0.4,
+                width: 1
+              },
+              move: {
+                enable: true,
+                speed: 6,
+                direction: "none",
+                random: false,
+                straight: false,
+                out_mode: "out",
+                bounce: false,
+              }
             },
-            resize: true
-          },
-          modes: {
-            repulse: {
-              distance: 100,
-              duration: 0.4
-            }
-          }
-        },
-        retina_detect: true
-      });
-    }
+            interactivity: {
+              detect_on: "canvas",
+              events: {
+                onhover: {
+                  enable: true,
+                  mode: "repulse"
+                },
+                resize: true
+              },
+              modes: {
+                repulse: {
+                  distance: 100,
+                  duration: 0.4
+                }
+              }
+            },
+            retina_detect: true
+          });
+        }
+      };
+
+      document.body.appendChild(script);
+
+      // Cleanup function
+      return () => {
+        const existingScript = document.querySelector(`script[src="${script.src}"]`);
+        if (existingScript) {
+          document.body.removeChild(existingScript);
+        }
+        // Clean up particles container
+        const particlesContainer = document.getElementById('particles-js');
+        if (particlesContainer) {
+          particlesContainer.innerHTML = '';
+        }
+      };
+    };
+
+    loadParticles();
   }, []);
 
   const container = {
