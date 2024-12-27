@@ -72,33 +72,69 @@ export const Hero = () => {
     }
   }, []);
 
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.3,
+        delayChildren: 0.3
+      }
+    }
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { 
+      opacity: 1, 
+      y: 0,
+      transition: {
+        duration: 0.8
+      }
+    }
+  };
+
   return (
     <section className="min-h-screen flex flex-col justify-center items-center relative section-padding overflow-hidden bg-gradient-to-br from-[#1A1F2C] via-[#2C1F3D] to-[#1E293B]">
       <div id="particles-js" className="absolute inset-0 z-0" />
       
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
+        variants={container}
+        initial="hidden"
+        animate="show"
         className="text-center max-w-4xl mx-auto relative z-10"
       >
-        <span className="inline-block px-3 py-1 text-base md:text-lg font-medium bg-white/10 backdrop-blur-sm rounded-full mb-4 text-white">
-          Welcome to mc3digital
-        </span>
-        <h1 className="text-4xl md:text-6xl font-bold mb-6 text-gradient leading-tight md:leading-normal">
-          Seamless Technology Integration
-        </h1>
-        <p className="text-lg md:text-xl text-gray-200 mb-8">
-          We build, launch, and support web and mobile apps with a proven track record of success.
-        </p>
-        <motion.a
-          href="#contact"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="inline-block px-8 py-3 bg-white/10 backdrop-blur-sm text-white rounded-lg font-medium hover-lift border border-white/20"
+        <motion.span
+          variants={item}
+          className="inline-block px-3 py-1 text-base md:text-lg font-medium bg-white/10 backdrop-blur-sm rounded-full mb-4 text-white"
         >
-          Get Started
-        </motion.a>
+          Welcome to mc3digital
+        </motion.span>
+        
+        <motion.h1
+          variants={item}
+          className="text-4xl md:text-6xl font-bold mb-6 text-gradient leading-tight md:leading-normal"
+        >
+          Seamless Technology Integration
+        </motion.h1>
+        
+        <motion.p
+          variants={item}
+          className="text-lg md:text-xl text-gray-200 mb-8"
+        >
+          We build, launch, and support web and mobile apps with a proven track record of success.
+        </motion.p>
+        
+        <motion.div variants={item}>
+          <motion.a
+            href="#contact"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="inline-block px-8 py-3 bg-white/10 backdrop-blur-sm text-white rounded-lg font-medium hover-lift border border-white/20"
+          >
+            Get Started
+          </motion.a>
+        </motion.div>
       </motion.div>
       
       <motion.div
