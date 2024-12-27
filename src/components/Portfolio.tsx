@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
-import { Award, Trophy, Code } from "lucide-react";
+import { Code, Award, Trophy } from "lucide-react";
 
 const portfolioItems = [
   {
@@ -46,8 +46,9 @@ export const Portfolio = () => {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
+              className="h-full"
             >
-              <Card className="glass-card overflow-hidden group hover:scale-105 transition-transform duration-300">
+              <Card className="glass-card overflow-hidden group hover:scale-105 transition-transform duration-300 h-full flex flex-col">
                 <div className="relative h-48 overflow-hidden">
                   <img
                     src={item.image}
@@ -58,7 +59,7 @@ export const Portfolio = () => {
                     <item.icon className="w-12 h-12 text-white opacity-75" />
                   </div>
                 </div>
-                <CardContent className="p-6">
+                <CardContent className="p-6 flex-grow flex flex-col justify-between">
                   <h3 className="text-xl font-semibold text-white mb-2">{item.title}</h3>
                   <p className="text-gray-300">{item.description}</p>
                 </CardContent>
