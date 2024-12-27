@@ -85,7 +85,7 @@ export const Hero = () => {
         <span className="inline-block px-3 py-1 text-base md:text-lg font-medium bg-white/10 backdrop-blur-sm rounded-full mb-4 text-white">
           Welcome to mc3digital
         </span>
-        <h1 className="text-4xl md:text-6xl font-bold mb-6 text-gradient">
+        <h1 className="text-4xl md:text-6xl font-bold mb-6 text-gradient leading-tight md:leading-normal">
           Seamless Technology Integration
         </h1>
         <p className="text-lg md:text-xl text-gray-200 mb-8">
