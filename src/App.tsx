@@ -1,5 +1,6 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ToastProvider } from "@/components/ui/toast";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Projects from "@/pages/Projects";
 import ProjectDetails from "@/pages/ProjectDetails";
 import AddProject from "./pages/AddProject";
@@ -10,6 +11,9 @@ import Login from "./pages/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Clients from "./pages/Clients";
 import Services from "./pages/Services";
+
+// Create a client
+const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
   {
@@ -80,9 +84,11 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    <ToastProvider>
-      <RouterProvider router={router} />
-    </ToastProvider>
+    <QueryClientProvider client={queryClient}>
+      <ToastProvider>
+        <RouterProvider router={router} />
+      </ToastProvider>
+    </QueryClientProvider>
   );
 }
 
