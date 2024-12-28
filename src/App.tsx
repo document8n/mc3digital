@@ -6,6 +6,7 @@ import ProjectDetails from "@/pages/ProjectDetails";
 import AddProject from "./pages/AddProject";
 import EditProject from "./pages/EditProject";
 import Admin from "./pages/Admin";
+import AdminHome from "./pages/AdminHome";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -27,6 +28,14 @@ const router = createBrowserRouter([
   },
   {
     path: "/admin",
+    element: (
+      <ProtectedRoute>
+        <AdminHome />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/admin/settings",
     element: (
       <ProtectedRoute>
         <Admin />

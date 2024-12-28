@@ -1,12 +1,13 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { Grid, FileText, User, Settings, Code2, ArrowLeft, LogOut, Menu, X } from "lucide-react";
+import { Grid, FileText, User, Settings, Code2, ArrowLeft, LogOut, Menu, X, Home } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 const menuItems = [
+  { icon: Home, label: "Home", path: "/admin" },
   { icon: Grid, label: "Projects", path: "/projects" },
   { icon: FileText, label: "Invoices", path: "/invoice" },
   { icon: User, label: "Clients", path: "/clients" },
