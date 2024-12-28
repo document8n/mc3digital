@@ -71,9 +71,14 @@ export type Database = {
           due_date: string
           id: string
           invoice_number: string
+          is_recurring: boolean | null
+          last_generated_date: string | null
           line_items: Json | null
           notes: string | null
           paid_date: string | null
+          recurring_end_date: string | null
+          recurring_interval: string | null
+          recurring_start_date: string | null
           status: string
           updated_at: string | null
           user_id: string
@@ -85,9 +90,14 @@ export type Database = {
           due_date: string
           id?: string
           invoice_number: string
+          is_recurring?: boolean | null
+          last_generated_date?: string | null
           line_items?: Json | null
           notes?: string | null
           paid_date?: string | null
+          recurring_end_date?: string | null
+          recurring_interval?: string | null
+          recurring_start_date?: string | null
           status?: string
           updated_at?: string | null
           user_id: string
@@ -99,9 +109,14 @@ export type Database = {
           due_date?: string
           id?: string
           invoice_number?: string
+          is_recurring?: boolean | null
+          last_generated_date?: string | null
           line_items?: Json | null
           notes?: string | null
           paid_date?: string | null
+          recurring_end_date?: string | null
+          recurring_interval?: string | null
+          recurring_start_date?: string | null
           status?: string
           updated_at?: string | null
           user_id?: string

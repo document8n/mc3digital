@@ -6,6 +6,8 @@ import { InvoiceClientField } from "./InvoiceClientField";
 import { InvoiceDateField } from "./InvoiceDateField";
 import { InvoiceStatusField } from "./InvoiceStatusField";
 import { InvoiceFormLineItems } from "./InvoiceFormLineItems";
+import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface InvoiceFormFieldsProps {
   form: UseFormReturn<any>;
@@ -13,6 +15,8 @@ interface InvoiceFormFieldsProps {
 }
 
 export function InvoiceFormFields({ form, clients }: InvoiceFormFieldsProps) {
+  const isRecurring = form.watch("is_recurring");
+
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
@@ -58,6 +62,91 @@ export function InvoiceFormFields({ form, clients }: InvoiceFormFieldsProps) {
       </div>
 
       <InvoiceDateField form={form} />
+
+      <FormField
+        control={form.control}
+        name="is_recurring"
+        render={({ field }) => (
+          <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+            <div className="space-y-0.5">
+              <FormLabel className="text-base">Recurring Invoice</FormLabel>
+              <FormMessage />
+            </div>
+            <FormControl>
+              <Switch
+                checked={field.value}
+                onCheckedChange={field.onChange}
+              />
+            </FormControl>
+          </FormItem>
+        )}
+      />
+
+      {isRecurring && (
+        <div className="space-y-4 border rounded-lg p-4">
+          <FormField
+            control={form.control}
+            name="recurring_interval"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Recurring Interval</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select interval" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="weekly">Weekly</SelectItem>
+                    <SelectItem value="monthly">Monthly</SelectItem>
+                    <SelectItem value="quarterly">Quarterly</SelectItem>
+                    <SelectItem value="yearly">Yearly</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <div className="grid grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="recurring_start_date"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Start Date</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="date"
+                      {...field}
+                      value={field.value ? new Date(field.value).toISOString().split('T')[0] : ''}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="recurring_end_date"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>End Date</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="date"
+                      {...field}
+                      value={field.value ? new Date(field.value).toISOString().split('T')[0] : ''}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
+      )}
 
       <FormField
         control={form.control}

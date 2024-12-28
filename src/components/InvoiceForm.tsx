@@ -21,6 +21,10 @@ interface InvoiceFormValues {
   status: string;
   due_date: Date;
   notes?: string;
+  is_recurring: boolean;
+  recurring_interval?: string;
+  recurring_start_date?: Date;
+  recurring_end_date?: Date;
   line_items: Array<{
     description: string;
     quantity: number;
@@ -45,6 +49,10 @@ export function InvoiceForm({ initialData, clientId, onSuccess }: InvoiceFormPro
       status: initialData?.status || "pending",
       due_date: initialData?.due_date ? new Date(initialData.due_date) : addDays(new Date(), 30),
       notes: initialData?.notes || "",
+      is_recurring: initialData?.is_recurring || false,
+      recurring_interval: initialData?.recurring_interval || "",
+      recurring_start_date: initialData?.recurring_start_date ? new Date(initialData.recurring_start_date) : undefined,
+      recurring_end_date: initialData?.recurring_end_date ? new Date(initialData.recurring_end_date) : undefined,
       line_items: initialData?.line_items || [],
     },
   });
@@ -84,6 +92,10 @@ export function InvoiceForm({ initialData, clientId, onSuccess }: InvoiceFormPro
         notes: values.notes,
         user_id: userData.user.id,
         line_items: values.line_items,
+        is_recurring: values.is_recurring,
+        recurring_interval: values.recurring_interval,
+        recurring_start_date: values.recurring_start_date ? format(values.recurring_start_date, 'yyyy-MM-dd') : null,
+        recurring_end_date: values.recurring_end_date ? format(values.recurring_end_date, 'yyyy-MM-dd') : null,
       };
 
       console.log("Prepared invoice data:", invoiceData);
