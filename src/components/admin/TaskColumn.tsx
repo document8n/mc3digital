@@ -26,13 +26,7 @@ export function TaskColumn({ id, title, icon: Icon, tasks, onUpdate }: TaskColum
   }[id];
 
   return (
-    <div 
-      ref={setNodeRef} 
-      className={cn(
-        "space-y-4 transition-all duration-200",
-        isOver && "ring-2 ring-primary ring-dashed ring-offset-2"
-      )}
-    >
+    <div ref={setNodeRef} className="space-y-4 transition-all duration-200">
       <div className="rounded-t-lg p-3 bg-gradient-to-r from-gray-800 to-gray-700">
         <div className="flex items-center gap-2 text-white">
           <Icon className={`h-4 w-4 ${iconColor}`} />
@@ -40,7 +34,7 @@ export function TaskColumn({ id, title, icon: Icon, tasks, onUpdate }: TaskColum
           <span className="text-white/70 text-sm">({tasks.length})</span>
         </div>
       </div>
-      <div className="space-y-4 px-2">
+      <div className="space-y-4 px-2 relative">
         <SortableContext
           items={tasks.map(task => task.id)}
           strategy={verticalListSortingStrategy}
@@ -59,6 +53,15 @@ export function TaskColumn({ id, title, icon: Icon, tasks, onUpdate }: TaskColum
           <p className="text-sm text-muted-foreground text-center py-8">
             No {title.toLowerCase()} tasks
           </p>
+        )}
+        {isOver && (
+          <div 
+            className="absolute left-0 right-0 h-[104px] border-2 border-primary border-dashed rounded-lg pointer-events-none"
+            style={{
+              top: tasks.length * 104 + (tasks.length * 16), // height of card (88px) + margin (16px)
+              transition: 'transform 200ms ease'
+            }}
+          />
         )}
       </div>
     </div>
