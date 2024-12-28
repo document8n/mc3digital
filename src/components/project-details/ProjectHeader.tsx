@@ -113,14 +113,16 @@ export function ProjectHeader({ project }: ProjectHeaderProps) {
       </div>
 
       <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Edit Project</DialogTitle>
           </DialogHeader>
-          <ProjectForm 
-            initialData={project} 
-            onSuccess={handleEditSuccess}
-          />
+          <div className="py-2">
+            <ProjectForm 
+              initialData={project} 
+              onSuccess={handleEditSuccess}
+            />
+          </div>
         </DialogContent>
       </Dialog>
     </div>

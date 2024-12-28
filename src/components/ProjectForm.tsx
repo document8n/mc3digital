@@ -98,16 +98,20 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <div className="space-y-6">
-          <BasicInfoFields form={form} />
-          <ClientField form={form} />
-          <DateStatusFields form={form} />
-          <MetricsFields form={form} />
-          <SettingsFields form={form} />
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-4">
+            <BasicInfoFields form={form} />
+            <ClientField form={form} />
+            <DateStatusFields form={form} />
+          </div>
+          <div className="space-y-4">
+            <MetricsFields form={form} />
+            <SettingsFields form={form} />
+          </div>
         </div>
 
-        <div className="flex gap-4">
+        <div className="flex gap-4 pt-4">
           <Button type="submit" disabled={isLoading}>
             {isLoading ? "Saving..." : initialData ? "Update Project" : "Create Project"}
           </Button>
