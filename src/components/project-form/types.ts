@@ -9,6 +9,7 @@ export interface ProjectFormValues {
   notes?: string;
   url?: string;
   image?: string;
+  client_id?: string;
 }
 
 export interface ProjectFormProps {
@@ -24,6 +25,7 @@ export interface ProjectFormProps {
     notes?: string;
     url?: string;
     image?: string;
+    client_id?: string;
   };
   onSuccess?: () => void;
 }

@@ -9,6 +9,7 @@ import { BasicInfoFields } from "./project-form/BasicInfoFields";
 import { DateStatusFields } from "./project-form/DateStatusFields";
 import { MetricsFields } from "./project-form/MetricsFields";
 import { SettingsFields } from "./project-form/SettingsFields";
+import { ClientField } from "./project-form/ClientField";
 import { ProjectFormProps, ProjectFormValues } from "./project-form/types";
 import { format } from "date-fns";
 
@@ -29,6 +30,7 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
       notes: initialData?.notes || "",
       url: initialData?.url || "",
       image: initialData?.image || "",
+      client_id: initialData?.client_id || "",
     },
   });
 
@@ -50,6 +52,7 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
         notes: values.notes,
         url: values.url,
         image: values.image,
+        client_id: values.client_id || null,
         user_id: userData.user.id,
       };
 
@@ -98,6 +101,7 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="space-y-6">
           <BasicInfoFields form={form} />
+          <ClientField form={form} />
           <DateStatusFields form={form} />
           <MetricsFields form={form} />
           <SettingsFields form={form} />

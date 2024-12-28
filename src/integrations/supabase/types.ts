@@ -140,6 +140,7 @@ export type Database = {
       projects: {
         Row: {
           budget: number
+          client_id: string | null
           created_at: string
           id: string
           image: string | null
@@ -156,6 +157,7 @@ export type Database = {
         }
         Insert: {
           budget?: number
+          client_id?: string | null
           created_at?: string
           id?: string
           image?: string | null
@@ -172,6 +174,7 @@ export type Database = {
         }
         Update: {
           budget?: number
+          client_id?: string | null
           created_at?: string
           id?: string
           image?: string | null
@@ -186,7 +189,15 @@ export type Database = {
           url?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "projects_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       tasks: {
         Row: {
