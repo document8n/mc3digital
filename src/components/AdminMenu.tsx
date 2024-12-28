@@ -14,7 +14,7 @@ const AdminMenu = () => {
     <>
       {/* Mobile Header */}
       {isMobile && (
-        <div className="fixed top-0 left-0 right-0 h-16 bg-sidebar z-40 px-4 flex items-center justify-between">
+        <div className="fixed top-0 left-0 right-0 h-16 bg-[#1A1F2C] shadow-lg z-40 px-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Code2 className="h-6 w-6 text-white" />
             <span className="text-xl font-bold text-white">mc3digital</span>
@@ -63,9 +63,9 @@ const AdminMenu = () => {
 
             {/* Menu Content */}
             <motion.nav
-              initial={isMobile ? { x: "-100%" } : false}
+              initial={isMobile ? { x: "-100%" } : { x: 0 }}
               animate={{ x: 0 }}
-              exit={isMobile ? { x: "-100%" } : false}
+              exit={isMobile ? { x: "-100%" } : { x: 0 }}
               transition={{ type: "tween", duration: 0.2 }}
               className={cn(
                 "sidebar-gradient border-r border-sidebar-border fixed left-0 h-screen p-4 flex flex-col z-40",
