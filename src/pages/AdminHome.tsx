@@ -10,17 +10,7 @@ import { TaskForm } from "@/components/TaskForm";
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { TaskStats } from "@/components/admin/TaskStats";
 import { TaskBoard } from "@/components/admin/TaskBoard";
-
-interface Task {
-  id: string;
-  title: string;
-  description: string | null;
-  status: string;
-  due_date: string | null;
-  project: {
-    name: string;
-  } | null;
-}
+import { Task } from "@/types/task";
 
 const AdminHome = () => {
   const isMobile = useIsMobile();

@@ -7,18 +7,7 @@ import { useState } from "react";
 import { createPortal } from "react-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-
-interface Task {
-  id: string;
-  title: string;
-  description: string | null;
-  status: string;
-  due_date: string | null;
-  display_order: number;
-  project?: {
-    name: string;
-  } | null;
-}
+import { Task } from "@/types/task";
 
 interface TaskBoardProps {
   tasks: Task[];
