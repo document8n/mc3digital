@@ -24,10 +24,12 @@ export const Portfolio = () => {
   const [portfolioProjects, setPortfolioProjects] = useState<PortfolioProject[]>([]);
   const { toast } = useToast();
   
-  // Configure autoplay plugin
+  // Configure autoplay plugin with direction
   const autoplayPlugin = Autoplay({
-    delay: 4000, // 4 seconds between slides
-    stopOnInteraction: false, // Continue autoplay after user interaction
+    delay: 4000,
+    stopOnInteraction: false,
+    jump: false, // Prevents jumping when looping
+    playOnInit: true,
   });
 
   useEffect(() => {
@@ -73,6 +75,8 @@ export const Portfolio = () => {
           opts={{
             align: "start",
             loop: true,
+            direction: "ltr",
+            dragFree: true,
             slidesToScroll: 1,
             skipSnaps: false,
           }}
