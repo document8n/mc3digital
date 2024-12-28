@@ -24,12 +24,13 @@ export const Portfolio = () => {
   const [portfolioProjects, setPortfolioProjects] = useState<PortfolioProject[]>([]);
   const { toast } = useToast();
   
-  // Configure autoplay plugin with direction
+  // Configure autoplay plugin with right-to-left direction
   const autoplayPlugin = Autoplay({
     delay: 4000,
     stopOnInteraction: false,
     jump: false, // Prevents jumping when looping
     playOnInit: true,
+    direction: 'backward', // This makes it go right to left
   });
 
   useEffect(() => {
@@ -75,7 +76,7 @@ export const Portfolio = () => {
           opts={{
             align: "start",
             loop: true,
-            direction: "ltr",
+            direction: "rtl", // Right to left direction
             dragFree: true,
             slidesToScroll: 1,
             skipSnaps: false,
