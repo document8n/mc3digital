@@ -5,14 +5,7 @@ import { Button } from "@/components/ui/button";
 import { TaskForm } from "@/components/TaskForm";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { TaskCard } from "@/components/tasks/TaskCard";
-
-interface Task {
-  id: string;
-  title: string;
-  description: string | null;
-  status: string;
-  due_date: string | null;
-}
+import { Task } from "@/types/task";
 
 interface ProjectTasksProps {
   projectId: string;
