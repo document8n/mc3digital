@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Pencil, Check } from "lucide-react";
+import { Plus, Pencil, Check, Calendar } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { TaskForm } from "@/components/TaskForm";
