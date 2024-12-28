@@ -1,13 +1,11 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TaskCard } from "@/components/tasks/TaskCard";
 import { XSquare, PlusSquare, CheckSquare } from "lucide-react";
-import { DndContext, DragEndEvent, DragOverlay, closestCenter } from "@dnd-kit/core";
-import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { DndContext, DragEndEvent, closestCenter } from "@dnd-kit/core";
 import { useState } from "react";
-import { createPortal } from "react-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Task } from "@/types/task";
+import { TaskColumn } from "./TaskColumn";
+import { TaskDragOverlay } from "./TaskDragOverlay";
 
 interface TaskBoardProps {
   tasks: Task[];
@@ -100,6 +98,27 @@ export function TaskBoard({ tasks, onUpdate }: TaskBoardProps) {
     setActiveTask(null);
   };
 
+  const columns = [
+    {
+      id: "todo",
+      title: "Todo",
+      icon: XSquare,
+      tasks: tasksByStatus.todo
+    },
+    {
+      id: "inProgress",
+      title: "In Progress",
+      icon: PlusSquare,
+      tasks: tasksByStatus.inProgress
+    },
+    {
+      id: "completed",
+      title: "Completed",
+      icon: CheckSquare,
+      tasks: tasksByStatus.completed
+    }
+  ];
+
   return (
     <DndContext
       collisionDetection={closestCenter}
@@ -108,69 +127,18 @@ export function TaskBoard({ tasks, onUpdate }: TaskBoardProps) {
       onDragCancel={handleDragCancel}
     >
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {Object.entries({
-          todo: {
-            title: "Todo",
-            icon: <XSquare className="h-4 w-4 text-yellow-500" />,
-            tasks: tasksByStatus.todo
-          },
-          inProgress: {
-            title: "In Progress",
-            icon: <PlusSquare className="h-4 w-4 text-blue-500" />,
-            tasks: tasksByStatus.inProgress
-          },
-          completed: {
-            title: "Completed",
-            icon: <CheckSquare className="h-4 w-4 text-green-500" />,
-            tasks: tasksByStatus.completed
-          }
-        }).map(([key, { title, icon, tasks }]) => (
-          <div key={key} id={key} className="space-y-4">
-            <Card className="bg-background/50">
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium flex items-center gap-2">
-                  {icon}
-                  {title}
-                  <span className="text-muted-foreground">({tasks.length})</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <SortableContext
-                  items={tasks.map(task => task.id)}
-                  strategy={verticalListSortingStrategy}
-                  id={key}
-                >
-                  {tasks.map((task) => (
-                    <TaskCard
-                      key={task.id}
-                      task={task}
-                      onUpdate={onUpdate}
-                      showProject={true}
-                    />
-                  ))}
-                </SortableContext>
-                {tasks.length === 0 && (
-                  <p className="text-sm text-muted-foreground text-center py-8">
-                    No {title.toLowerCase()} tasks
-                  </p>
-                )}
-              </CardContent>
-            </Card>
-          </div>
+        {columns.map((column) => (
+          <TaskColumn
+            key={column.id}
+            id={column.id}
+            title={column.title}
+            icon={column.icon}
+            tasks={column.tasks}
+            onUpdate={onUpdate}
+          />
         ))}
       </div>
-      {createPortal(
-        <DragOverlay>
-          {activeTask ? (
-            <TaskCard
-              task={activeTask}
-              onUpdate={onUpdate}
-              showProject={true}
-            />
-          ) : null}
-        </DragOverlay>,
-        document.body
-      )}
+      <TaskDragOverlay activeTask={activeTask} onUpdate={onUpdate} />
     </DndContext>
   );
 }

@@ -6,17 +6,7 @@ import { TaskCardContent } from "./TaskCardContent";
 import { TaskCardEdit } from "./TaskCardEdit";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-
-interface Task {
-  id: string;
-  title: string;
-  description: string | null;
-  status: string;
-  due_date: string | null;
-  project?: {
-    name: string;
-  } | null;
-}
+import { Task } from "@/types/task";
 
 interface TaskCardProps {
   task: Task;
