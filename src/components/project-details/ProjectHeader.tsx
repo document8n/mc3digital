@@ -70,36 +70,45 @@ export function ProjectHeader({ project }: ProjectHeaderProps) {
         <Button onClick={() => setIsEditModalOpen(true)}>Edit Project</Button>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 mt-4">
-        <div>
-          <p className="text-sm text-gray-600">Team Size</p>
-          <p className="font-medium">{project.team_size} members</p>
-        </div>
-        <div>
-          <p className="text-sm text-gray-600">Budget</p>
-          <p className="font-medium">${project.budget.toLocaleString()}</p>
-        </div>
-        {project.url && (
-          <div className="col-span-2">
-            <p className="text-sm text-gray-600">Project URL</p>
-            <a 
-              href={project.url} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-blue-600 hover:underline"
-            >
-              {project.url}
-            </a>
+      <div className="grid grid-cols-3 gap-4 mt-4">
+        {/* Column 1 */}
+        <div className="space-y-4">
+          <div>
+            <p className="text-sm text-gray-600">Team Size</p>
+            <p className="font-medium">{project.team_size} members</p>
           </div>
-        )}
-        {project.notes && (
-          <div className="col-span-2">
-            <p className="text-sm text-gray-600">Notes</p>
-            <p className="whitespace-pre-wrap">{project.notes}</p>
+          {project.url && (
+            <div>
+              <p className="text-sm text-gray-600">Project URL</p>
+              <a 
+                href={project.url} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:underline"
+              >
+                {project.url}
+              </a>
+            </div>
+          )}
+        </div>
+
+        {/* Column 2 */}
+        <div className="space-y-4">
+          <div>
+            <p className="text-sm text-gray-600">Budget</p>
+            <p className="font-medium">${project.budget.toLocaleString()}</p>
           </div>
-        )}
+          {project.notes && (
+            <div>
+              <p className="text-sm text-gray-600">Notes</p>
+              <p className="whitespace-pre-wrap">{project.notes}</p>
+            </div>
+          )}
+        </div>
+
+        {/* Column 3 - Project Image */}
         {project.image && (
-          <div className="col-span-2 max-w-[33%]">
+          <div>
             <p className="text-sm text-gray-600 mb-2">Project Image</p>
             <div className="relative w-full aspect-video rounded-lg overflow-hidden">
               <img
