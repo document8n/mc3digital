@@ -1,10 +1,13 @@
+import { useState } from "react";
 import { useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import AdminMenu from "@/components/AdminMenu";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar, Users, DollarSign } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Calendar, Users, DollarSign, Plus, Pencil, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { TaskForm } from "@/components/TaskForm";
 
 interface Task {
   id: string;
@@ -29,11 +32,14 @@ interface Project {
 const ProjectDetails = () => {
   const { id } = useParams();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [showTaskForm, setShowTaskForm] = useState(false);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
 
+  console.log("Fetching project details for ID:", id);
   const { data: project } = useQuery({
     queryKey: ["project", id],
     queryFn: async () => {
-      console.log("Fetching project details for ID:", id);
       const { data, error } = await supabase
         .from("projects")
         .select("*")
@@ -54,10 +60,10 @@ const ProjectDetails = () => {
     },
   });
 
+  console.log("Fetching tasks for project ID:", id);
   const { data: tasks } = useQuery({
     queryKey: ["tasks", id],
     queryFn: async () => {
-      console.log("Fetching tasks for project ID:", id);
       const { data, error } = await supabase
         .from("tasks")
         .select("*")
@@ -77,6 +83,37 @@ const ProjectDetails = () => {
       return data as Task[];
     },
   });
+
+  const handleTaskSuccess = () => {
+    setShowTaskForm(false);
+    setEditingTask(null);
+    queryClient.invalidateQueries({ queryKey: ["tasks", id] });
+  };
+
+  const handleMarkComplete = async (taskId: string) => {
+    try {
+      const { error } = await supabase
+        .from('tasks')
+        .update({ status: 'Completed' })
+        .eq('id', taskId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Task marked as complete",
+      });
+      
+      queryClient.invalidateQueries({ queryKey: ["tasks", id] });
+    } catch (error: any) {
+      console.error('Error:', error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update task",
+        variant: "destructive",
+      });
+    }
+  };
 
   if (!project) {
     return <div>Loading...</div>;
@@ -127,7 +164,29 @@ const ProjectDetails = () => {
           </Card>
 
           <div className="space-y-6">
-            <h2 className="text-xl font-semibold text-white">Project Tasks</h2>
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-semibold text-white">Project Tasks</h2>
+              <Button onClick={() => setShowTaskForm(true)} className="flex items-center gap-2">
+                <Plus className="h-4 w-4" /> Add Task
+              </Button>
+            </div>
+
+            {showTaskForm && (
+              <Card>
+                <CardContent className="p-6">
+                  <TaskForm
+                    projectId={id!}
+                    initialData={editingTask || undefined}
+                    onSuccess={handleTaskSuccess}
+                    onCancel={() => {
+                      setShowTaskForm(false);
+                      setEditingTask(null);
+                    }}
+                  />
+                </CardContent>
+              </Card>
+            )}
+
             {tasks?.length === 0 ? (
               <Card>
                 <CardContent className="p-6">
@@ -140,10 +199,37 @@ const ProjectDetails = () => {
                   <CardContent className="p-6">
                     <div className="space-y-2">
                       <div className="flex justify-between items-start">
-                        <h3 className="font-medium">{task.title}</h3>
-                        <span className="px-2 py-1 text-xs rounded-full bg-muted">
-                          {task.status}
-                        </span>
+                        <div>
+                          <h3 className="font-medium">{task.title}</h3>
+                          <span className={`px-2 py-1 text-xs rounded-full ${
+                            task.status === 'Completed' ? 'bg-green-500/20 text-green-400' :
+                            task.status === 'In Progress' ? 'bg-blue-500/20 text-blue-400' :
+                            'bg-muted text-muted-foreground'
+                          }`}>
+                            {task.status}
+                          </span>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              setEditingTask(task);
+                              setShowTaskForm(true);
+                            }}
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          {task.status !== 'Completed' && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleMarkComplete(task.id)}
+                            >
+                              <Check className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
                       </div>
                       {task.description && (
                         <p className="text-sm text-muted-foreground">{task.description}</p>
