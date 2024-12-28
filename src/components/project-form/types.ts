@@ -1,6 +1,5 @@
 export interface ProjectFormValues {
   name: string;
-  client: string;
   start_date: Date;
   status: string;
   team_size: number;
@@ -16,7 +15,6 @@ export interface ProjectFormProps {
   initialData?: {
     id: string;
     name: string;
-    client: string;
     start_date: string;
     status: string;
     team_size: number;

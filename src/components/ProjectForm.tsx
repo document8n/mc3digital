@@ -20,7 +20,6 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
   const form = useForm<ProjectFormValues>({
     defaultValues: {
       name: initialData?.name || "",
-      client: initialData?.client || "",
       start_date: initialData?.start_date ? new Date(initialData.start_date) : new Date(),
       status: initialData?.status || "Planning",
       team_size: initialData?.team_size || 1,
@@ -42,7 +41,6 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
 
       const projectData = {
         name: values.name,
-        client: values.client,
         start_date: format(values.start_date, 'yyyy-MM-dd'),
         status: values.status,
         team_size: values.team_size,

@@ -9,34 +9,18 @@ interface BasicInfoFieldsProps {
 
 export function BasicInfoFields({ form }: BasicInfoFieldsProps) {
   return (
-    <>
-      <FormField
-        control={form.control}
-        name="name"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Project Name</FormLabel>
-            <FormControl>
-              <Input placeholder="Enter project name" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name="client"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Client</FormLabel>
-            <FormControl>
-              <Input placeholder="Enter client name" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-    </>
+    <FormField
+      control={form.control}
+      name="name"
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>Project Name</FormLabel>
+          <FormControl>
+            <Input placeholder="Enter project name" {...field} />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
   );
 }

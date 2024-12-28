@@ -10,7 +10,6 @@ import { useToast } from "@/hooks/use-toast";
 interface Project {
   id: string;
   name: string;
-  client: string;
   start_date: string;
   status: string;
   team_size: number;
@@ -135,7 +134,6 @@ const Projects = () => {
                 <CardContent>
                   <div className="space-y-4">
                     <div className="text-sm space-y-2">
-                      <p className="font-medium text-foreground">{project.client}</p>
                       <div className="flex items-center text-muted-foreground">
                         <Calendar className="h-4 w-4 mr-2 text-blue-400" />
                         <span>Started: {new Date(project.start_date).toLocaleDateString()}</span>

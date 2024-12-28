@@ -145,6 +145,7 @@ export type Database = {
           image: string | null
           is_active: boolean
           is_portfolio: boolean
+          name: string | null
           notes: string | null
           start_date: string
           status: string
@@ -160,6 +161,7 @@ export type Database = {
           image?: string | null
           is_active?: boolean
           is_portfolio?: boolean
+          name?: string | null
           notes?: string | null
           start_date: string
           status: string
@@ -175,6 +177,7 @@ export type Database = {
           image?: string | null
           is_active?: boolean
           is_portfolio?: boolean
+          name?: string | null
           notes?: string | null
           start_date?: string
           status?: string
