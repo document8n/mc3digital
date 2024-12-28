@@ -1,11 +1,7 @@
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
-import { cn } from "@/lib/utils";
+import { Input } from "@/components/ui/input";
 import { UseFormReturn } from "react-hook-form";
+import { format } from "date-fns";
 
 interface InvoiceDateFieldProps {
   form: UseFormReturn<any>;
@@ -20,39 +16,24 @@ export function InvoiceDateField({ form }: InvoiceDateFieldProps) {
       name="due_date"
       render={({ field }) => {
         console.log("Field value in render:", field.value);
-        const date = field.value ? new Date(field.value) : null;
+        // Ensure we have a valid date object
+        const date = field.value ? new Date(field.value) : new Date();
+        const formattedDate = format(date, "yyyy-MM-dd");
         
         return (
           <FormItem className="flex flex-col">
             <FormLabel>Due Date</FormLabel>
-            <Popover>
-              <PopoverTrigger asChild>
-                <FormControl>
-                  <Button
-                    variant={"outline"}
-                    className={cn(
-                      "w-[240px] pl-3 text-left font-normal",
-                      !date && "text-muted-foreground"
-                    )}
-                  >
-                    {date ? (
-                      format(date, "PPP")
-                    ) : (
-                      <span>Pick a date</span>
-                    )}
-                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                  </Button>
-                </FormControl>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={date}
-                  onSelect={field.onChange}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
+            <FormControl>
+              <Input
+                type="date"
+                value={formattedDate}
+                onChange={(e) => {
+                  console.log("Date changed to:", e.target.value);
+                  const newDate = new Date(e.target.value);
+                  field.onChange(newDate);
+                }}
+              />
+            </FormControl>
             <FormMessage />
           </FormItem>
         );
