@@ -4,15 +4,13 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { format } from "date-fns";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
-import { CalendarIcon } from "lucide-react";
+import { format, addDays } from "date-fns";
+import { InvoiceClientField } from "./invoice/InvoiceClientField";
+import { InvoiceDateField } from "./invoice/InvoiceDateField";
+import { InvoiceStatusField } from "./invoice/InvoiceStatusField";
 
 interface InvoiceFormProps {
   initialData?: any;
@@ -41,7 +39,7 @@ export function InvoiceForm({ initialData, clientId, onSuccess }: InvoiceFormPro
       client_id: initialData?.client_id || clientId || "",
       amount: initialData?.amount || 0,
       status: initialData?.status || "pending",
-      due_date: initialData?.due_date ? new Date(initialData.due_date) : new Date(),
+      due_date: initialData?.due_date ? new Date(initialData.due_date) : addDays(new Date(), 30),
       notes: initialData?.notes || "",
     },
   });
@@ -138,30 +136,7 @@ export function InvoiceForm({ initialData, clientId, onSuccess }: InvoiceFormPro
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="client_id"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Client</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a client" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {clients.map((client) => (
-                    <SelectItem key={client.id} value={client.id}>
-                      {client.business_name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <InvoiceClientField form={form} clients={clients} />
 
         <FormField
           control={form.control}
@@ -177,70 +152,8 @@ export function InvoiceForm({ initialData, clientId, onSuccess }: InvoiceFormPro
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="status"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Status</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select status" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="pending">Pending</SelectItem>
-                  <SelectItem value="paid">Paid</SelectItem>
-                  <SelectItem value="overdue">Overdue</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="due_date"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel>Due Date</FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "w-[240px] pl-3 text-left font-normal",
-                        !field.value && "text-muted-foreground"
-                      )}
-                    >
-                      {field.value ? (
-                        format(field.value, "PPP")
-                      ) : (
-                        <span>Pick a date</span>
-                      )}
-                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={field.value}
-                    onSelect={field.onChange}
-                    disabled={(date) =>
-                      date < new Date()
-                    }
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <InvoiceStatusField form={form} />
+        <InvoiceDateField form={form} />
 
         <FormField
           control={form.control}
