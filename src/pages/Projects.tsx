@@ -124,7 +124,11 @@ const Projects = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {projects.map((project) => (
-              <Card key={project.id} className="hover:scale-105 transition-transform duration-200">
+              <Card 
+                key={project.id} 
+                className="hover:scale-105 transition-transform duration-200 cursor-pointer"
+                onClick={() => navigate(`/projects/${project.id}`)}
+              >
                 <CardHeader>
                   <CardTitle className="text-lg">{project.name}</CardTitle>
                 </CardHeader>
@@ -149,7 +153,10 @@ const Projects = () => {
                       <Button 
                         variant="outline" 
                         size="sm"
-                        onClick={() => navigate(`/projects/${project.id}/edit`)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/projects/${project.id}/edit`);
+                        }}
                       >
                         Edit Project
                       </Button>

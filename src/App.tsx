@@ -1,6 +1,7 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ToastProvider } from "@/components/ui/toast";
 import Projects from "@/pages/Projects";
+import ProjectDetails from "@/pages/ProjectDetails";
 import AddProject from "./pages/AddProject";
 import EditProject from "./pages/EditProject";
 import Admin from "./pages/Admin";
@@ -32,6 +33,14 @@ const router = createBrowserRouter([
     element: (
       <ProtectedRoute>
         <Projects />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/projects/:id",
+    element: (
+      <ProtectedRoute>
+        <ProjectDetails />
       </ProtectedRoute>
     ),
   },
