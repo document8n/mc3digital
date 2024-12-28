@@ -1,26 +1,16 @@
 import { useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { 
-  Home, 
-  CheckSquare, 
-  XSquare, 
-  PlusSquare, 
-  Calendar,
-  Plus,
-  Pencil,
-  Check,
-  AlertCircle
-} from "lucide-react";
+import { Plus } from "lucide-react";
 import AdminMenu from "@/components/AdminMenu";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { TaskForm } from "@/components/TaskForm";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { useToast } from "@/hooks/use-toast";
-import { format } from "date-fns";
+import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { TaskCard } from "@/components/tasks/TaskCard";
+import { TaskStats } from "@/components/admin/TaskStats";
 
 interface Task {
   id: string;
@@ -35,12 +25,10 @@ interface Task {
 
 const AdminHome = () => {
   const isMobile = useIsMobile();
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
   const [isTaskFormOpen, setIsTaskFormOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   
-  const { data: tasks, isLoading } = useQuery({
+  const { data: tasks, isLoading, refetch: refetchTasks } = useQuery({
     queryKey: ["tasks"],
     queryFn: async () => {
       console.log("Fetching tasks...");
@@ -67,57 +55,13 @@ const AdminHome = () => {
   const handleTaskSuccess = () => {
     setIsTaskFormOpen(false);
     setEditingTask(null);
-    queryClient.invalidateQueries({ queryKey: ["tasks"] });
-    toast({
-      title: "Success",
-      description: editingTask ? "Task updated successfully" : "Task created successfully",
-    });
-  };
-
-  const handleStatusUpdate = async (taskId: string, newStatus: string) => {
-    try {
-      const { error } = await supabase
-        .from('tasks')
-        .update({ status: newStatus })
-        .eq('id', taskId);
-
-      if (error) throw error;
-
-      queryClient.invalidateQueries({ queryKey: ["tasks"] });
-      toast({
-        title: "Success",
-        description: `Task marked as ${newStatus.toLowerCase()}`,
-      });
-    } catch (error: any) {
-      console.error('Error updating task status:', error);
-      toast({
-        title: "Error",
-        description: error.message || "Failed to update task status",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case "completed":
-        return "text-green-500";
-      case "in progress":
-        return "text-blue-500";
-      default:
-        return "text-yellow-500";
-    }
+    refetchTasks();
   };
 
   const tasksByStatus = {
     todo: tasks?.filter((task) => task.status.toLowerCase() === "todo") || [],
     inProgress: tasks?.filter((task) => task.status.toLowerCase() === "in progress") || [],
     completed: tasks?.filter((task) => task.status.toLowerCase() === "completed") || [],
-  };
-
-  const isTaskOverdue = (dueDate: string | null) => {
-    if (!dueDate) return false;
-    return new Date(dueDate) < new Date();
   };
 
   return (
@@ -137,6 +81,11 @@ const AdminHome = () => {
                 </Button>
               </DialogTrigger>
               <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>
+                    {editingTask ? "Edit Task" : "Add Task"}
+                  </DialogTitle>
+                </DialogHeader>
                 <TaskForm
                   projectId=""
                   initialData={editingTask || undefined}
@@ -150,35 +99,7 @@ const AdminHome = () => {
             </Dialog>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Pending Tasks</CardTitle>
-                <XSquare className="h-4 w-4 text-yellow-500" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{tasksByStatus.todo.length}</div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">In Progress</CardTitle>
-                <PlusSquare className="h-4 w-4 text-blue-500" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{tasksByStatus.inProgress.length}</div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Completed</CardTitle>
-                <CheckSquare className="h-4 w-4 text-green-500" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{tasksByStatus.completed.length}</div>
-              </CardContent>
-            </Card>
-          </div>
+          <TaskStats tasksByStatus={tasksByStatus} />
 
           <Card>
             <CardHeader>
@@ -192,66 +113,12 @@ const AdminHome = () => {
               ) : (
                 <div className="space-y-4">
                   {tasks?.map((task) => (
-                    <Card key={task.id} className={cn(
-                      "bg-muted hover:bg-accent/50 transition-colors",
-                      isTaskOverdue(task.due_date) && task.status !== "Completed" && "border-red-500/50"
-                    )}>
-                      <CardContent className="p-4">
-                        <div className="flex justify-between items-start">
-                          <div className="space-y-1">
-                            <div className="flex items-center gap-2">
-                              <h3 className="font-medium">{task.title}</h3>
-                              {isTaskOverdue(task.due_date) && task.status !== "Completed" && (
-                                <AlertCircle className="h-4 w-4 text-red-500" />
-                              )}
-                            </div>
-                            {task.project && (
-                              <p className="text-sm text-muted-foreground">
-                                Project: {task.project.name}
-                              </p>
-                            )}
-                            {task.description && (
-                              <p className="text-sm text-muted-foreground">{task.description}</p>
-                            )}
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className={cn(
-                              "text-sm font-medium px-2 py-1 rounded-full",
-                              task.status === "Completed" ? "bg-green-500/20 text-green-400" :
-                              task.status === "In Progress" ? "bg-blue-500/20 text-blue-400" :
-                              "bg-yellow-500/20 text-yellow-400"
-                            )}>
-                              {task.status}
-                            </span>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => {
-                                setEditingTask(task);
-                                setIsTaskFormOpen(true);
-                              }}
-                            >
-                              <Pencil className="h-4 w-4" />
-                            </Button>
-                            {task.status !== "Completed" && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleStatusUpdate(task.id, "Completed")}
-                              >
-                                <Check className="h-4 w-4" />
-                              </Button>
-                            )}
-                          </div>
-                        </div>
-                        {task.due_date && (
-                          <div className="flex items-center mt-2 text-sm text-muted-foreground">
-                            <Calendar className="h-4 w-4 mr-1" />
-                            <span>Due: {format(new Date(task.due_date), 'PPP')}</span>
-                          </div>
-                        )}
-                      </CardContent>
-                    </Card>
+                    <TaskCard
+                      key={task.id}
+                      task={task}
+                      onUpdate={refetchTasks}
+                      showProject={true}
+                    />
                   ))}
                 </div>
               )}
