@@ -1,14 +1,22 @@
 import AdminMenu from "@/components/AdminMenu";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, Mail, Phone, Building, MapPin } from "lucide-react";
+import { PlusCircle, Mail, Phone, Building, MapPin, Pencil } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { ClientForm } from "@/components/ClientForm";
+import { useState } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
 
 const Clients = () => {
   console.log("Rendering Clients page");
+  const [selectedClient, setSelectedClient] = useState<any>(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const isMobile = useIsMobile();
 
-  const { data: clients, isLoading } = useQuery({
+  const { data: clients, isLoading, refetch } = useQuery({
     queryKey: ['clients'],
     queryFn: async () => {
       console.log("Fetching clients");
@@ -26,17 +34,46 @@ const Clients = () => {
     },
   });
 
+  const handleEditClient = (client: any) => {
+    setSelectedClient(client);
+    setIsFormOpen(true);
+  };
+
+  const handleFormSuccess = () => {
+    setIsFormOpen(false);
+    setSelectedClient(null);
+    refetch();
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
       <AdminMenu />
-      <div className="pl-64">
+      <div className={cn(
+        "transition-all duration-300",
+        isMobile ? "pt-16" : "ml-64"
+      )}>
         <div className="p-6 max-w-7xl mx-auto">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-bold text-white">Clients</h1>
-            <Button className="hover:scale-105 transition-transform">
-              <PlusCircle className="mr-2 h-4 w-4" />
-              Add Client
-            </Button>
+            <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+              <DialogTrigger asChild>
+                <Button className="hover:scale-105 transition-transform">
+                  <PlusCircle className="mr-2 h-4 w-4" />
+                  Add Client
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[600px]">
+                <DialogHeader>
+                  <DialogTitle>
+                    {selectedClient ? "Edit Client" : "Add New Client"}
+                  </DialogTitle>
+                </DialogHeader>
+                <ClientForm
+                  initialData={selectedClient}
+                  onSuccess={handleFormSuccess}
+                />
+              </DialogContent>
+            </Dialog>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -82,9 +119,18 @@ const Clients = () => {
               {clients?.map((client) => (
                 <Card key={client.id} className="hover:scale-105 transition-transform duration-200">
                   <CardHeader>
-                    <CardTitle className="text-lg flex items-center space-x-2">
-                      <Building className="h-5 w-5 text-indigo-500" />
-                      <span>{client.business_name}</span>
+                    <CardTitle className="text-lg flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <Building className="h-5 w-5 text-indigo-500" />
+                        <span>{client.business_name}</span>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleEditClient(client)}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -112,11 +158,6 @@ const Clients = () => {
                             </span>
                           </div>
                         )}
-                      </div>
-                      <div className="flex justify-end pt-2 border-t">
-                        <Button variant="outline" size="sm">
-                          View Details
-                        </Button>
                       </div>
                     </div>
                   </CardContent>
