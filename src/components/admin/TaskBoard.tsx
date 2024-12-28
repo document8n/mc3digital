@@ -1,5 +1,13 @@
 import { XSquare, PlusSquare, CheckSquare } from "lucide-react";
-import { DndContext, DragEndEvent, closestCenter } from "@dnd-kit/core";
+import { 
+  DndContext, 
+  DragEndEvent, 
+  MouseSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+  closestCenter 
+} from "@dnd-kit/core";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -16,6 +24,21 @@ export function TaskBoard({ tasks, onUpdate }: TaskBoardProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   const { toast } = useToast();
+
+  // Add proper touch/mouse sensors like in Projects page
+  const sensors = useSensors(
+    useSensor(MouseSensor, {
+      activationConstraint: {
+        distance: 10,
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 250,
+        tolerance: 5,
+      },
+    })
+  );
 
   const tasksByStatus = {
     todo: tasks?.filter((task) => task.status === "Todo").sort((a, b) => a.display_order - b.display_order) || [],
@@ -121,6 +144,7 @@ export function TaskBoard({ tasks, onUpdate }: TaskBoardProps) {
 
   return (
     <DndContext
+      sensors={sensors}
       collisionDetection={closestCenter}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}

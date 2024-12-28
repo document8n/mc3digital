@@ -6,6 +6,7 @@ import { Task } from "@/types/task";
 import { TaskEditModal } from "./TaskEditModal";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { cn } from "@/lib/utils";
 
 interface TaskCardProps {
   task: Task;
@@ -48,9 +49,11 @@ export function TaskCard({ task, onUpdate, showProject = false }: TaskCardProps)
         style={style}
         {...attributes}
         {...listeners}
-        className={`hover:bg-accent/50 transition-colors cursor-pointer ${
-          isDragging ? "opacity-50" : ""
-        } ${isTaskOverdue(task.due_date) && task.status !== "Completed" && "border-red-500/50"}`}
+        className={cn(
+          "hover:bg-accent/50 transition-colors cursor-move",
+          isDragging ? "opacity-50" : "",
+          isTaskOverdue(task.due_date) && task.status !== "Completed" && "border-red-500/50"
+        )}
         onClick={() => setIsEditModalOpen(true)}
       >
         <CardContent className="p-4 space-y-2">
