@@ -10,6 +10,12 @@ const AdminMenu = () => {
   const isMobile = useIsMobile();
   const [isOpen, setIsOpen] = useState(!isMobile);
 
+  const handleClose = () => {
+    if (isMobile) {
+      setIsOpen(false);
+    }
+  };
+
   return (
     <>
       {/* Mobile Header */}
@@ -57,7 +63,7 @@ const AdminMenu = () => {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 className="fixed inset-0 bg-black bg-opacity-50 z-40"
-                onClick={() => setIsOpen(false)}
+                onClick={handleClose}
               />
             )}
 
@@ -71,8 +77,8 @@ const AdminMenu = () => {
                 className="fixed top-16 left-0 right-0 bg-[#1A1F2C]/95 backdrop-blur-sm overflow-hidden z-40 border-b border-gray-800"
               >
                 <div className="p-4">
-                  <MenuItems onItemClick={() => setIsOpen(false)} />
-                  <UserActions onActionClick={() => setIsOpen(false)} />
+                  <MenuItems onItemClick={handleClose} />
+                  <UserActions onActionClick={handleClose} />
                 </div>
               </motion.nav>
             ) : (
@@ -86,8 +92,8 @@ const AdminMenu = () => {
                   <Code2 className="h-6 w-6 text-white" />
                   <span className="text-xl font-bold text-white">mc3digital</span>
                 </div>
-                <MenuItems onItemClick={() => isMobile && setIsOpen(false)} />
-                <UserActions onActionClick={() => isMobile && setIsOpen(false)} />
+                <MenuItems onItemClick={handleClose} />
+                <UserActions onActionClick={handleClose} />
               </motion.nav>
             )}
           </>
