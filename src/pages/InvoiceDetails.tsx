@@ -2,7 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Printer, Code2 } from "lucide-react";
+import { ArrowLeft, Printer, Code2, PenLine } from "lucide-react";
 import { format } from "date-fns";
 import AdminMenu from "@/components/AdminMenu";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -77,13 +77,22 @@ const InvoiceDetails = () => {
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Invoices
             </Button>
-            <Button
-              onClick={handlePrint}
-              className="print:hidden"
-            >
-              <Printer className="h-4 w-4 mr-2" />
-              Print Invoice
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                onClick={() => navigate(`/invoice/edit/${id}`)}
+                className="bg-blue-500 hover:bg-blue-600"
+              >
+                <PenLine className="h-4 w-4 mr-2" />
+                Edit Invoice
+              </Button>
+              <Button
+                onClick={handlePrint}
+                className="print:hidden"
+              >
+                <Printer className="h-4 w-4 mr-2" />
+                Print Invoice
+              </Button>
+            </div>
           </div>
 
           {/* Invoice Preview */}
