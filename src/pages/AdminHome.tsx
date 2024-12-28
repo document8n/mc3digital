@@ -8,7 +8,6 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { TaskForm } from "@/components/TaskForm";
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { TaskStats } from "@/components/admin/TaskStats";
 import { TaskBoard } from "@/components/admin/TaskBoard";
 import { Task } from "@/types/task";
 
@@ -47,12 +46,6 @@ const AdminHome = () => {
     refetchTasks();
   };
 
-  const tasksByStatus = {
-    todo: tasks?.filter((task) => task.status === "Todo") || [],
-    inProgress: tasks?.filter((task) => task.status === "In Progress") || [],
-    completed: tasks?.filter((task) => task.status === "Completed") || [],
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
       <AdminMenu />
@@ -87,8 +80,6 @@ const AdminHome = () => {
               </DialogContent>
             </Dialog>
           </div>
-
-          <TaskStats tasksByStatus={tasksByStatus} />
 
           {isLoading ? (
             <div className="text-center py-4 text-white">Loading tasks...</div>
