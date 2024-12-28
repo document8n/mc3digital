@@ -24,7 +24,6 @@ export const Portfolio = () => {
   const [portfolioProjects, setPortfolioProjects] = useState<PortfolioProject[]>([]);
   const { toast } = useToast();
   
-  // Configure autoplay plugin
   const autoplayPlugin = Autoplay({
     delay: 4000,
     stopOnInteraction: false,
@@ -92,22 +91,22 @@ export const Portfolio = () => {
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   className="h-full"
                 >
-                  <Card className="glass-card overflow-hidden group hover:scale-105 transition-transform duration-300 h-full flex flex-col">
-                    <div className="relative h-48 flex items-center justify-center bg-white/10 p-4">
+                  <Card className="overflow-hidden group hover:scale-105 transition-transform duration-300 h-full flex flex-col bg-white bg-opacity-95 shadow-xl">
+                    <div className="relative h-48 flex items-center justify-center bg-white p-6">
                       <img
                         src={project.image || '/placeholder.svg'}
                         alt={project.name}
                         className="w-full h-full object-contain max-h-40"
                       />
                     </div>
-                    <CardContent className="p-6 flex flex-col">
-                      <h3 className="text-xl font-semibold text-white mb-2">{project.name}</h3>
+                    <CardContent className="p-6 flex flex-col bg-gradient-to-b from-white via-white to-gray-50">
+                      <h3 className="text-xl font-semibold text-gray-800 mb-2">{project.name}</h3>
                       {project.url && (
                         <Link 
                           to={project.url} 
                           target="_blank" 
                           rel="noopener noreferrer"
-                          className="text-blue-400 hover:text-blue-300 transition-colors mt-auto"
+                          className="text-blue-600 hover:text-blue-700 transition-colors mt-auto font-medium"
                         >
                           View Project →
                         </Link>
