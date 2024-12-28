@@ -99,7 +99,7 @@ export function ProjectHeader({ project }: ProjectHeaderProps) {
           </div>
         )}
         {project.image && (
-          <div className="col-span-2">
+          <div className="col-span-2 max-w-[33%]">
             <p className="text-sm text-gray-600 mb-2">Project Image</p>
             <div className="relative w-full aspect-video rounded-lg overflow-hidden">
               <img
