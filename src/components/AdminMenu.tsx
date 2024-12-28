@@ -59,7 +59,7 @@ const AdminMenu = () => {
       )}
 
       {/* Sidebar/Mobile Menu */}
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {isOpen && (
           <>
             {/* Overlay for mobile */}
@@ -68,6 +68,7 @@ const AdminMenu = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
                 className="fixed inset-0 bg-black bg-opacity-50 z-40"
                 onClick={handleClose}
               />
@@ -76,11 +77,11 @@ const AdminMenu = () => {
             {/* Menu Content */}
             {isMobile ? (
               <motion.nav
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: "auto", opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
+                initial={{ y: -50, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -50, opacity: 0 }}
                 transition={{ duration: 0.2 }}
-                className="fixed top-16 left-0 right-0 bg-[#1A1F2C]/95 backdrop-blur-sm overflow-hidden z-40 border-b border-gray-800"
+                className="fixed top-16 left-0 right-0 bg-[#1A1F2C]/95 backdrop-blur-sm z-40 border-b border-gray-800"
               >
                 <div className="p-4">
                   <MenuItems onItemClick={handleClose} />
@@ -92,6 +93,7 @@ const AdminMenu = () => {
                 initial={{ x: -320 }}
                 animate={{ x: 0 }}
                 exit={{ x: -320 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
                 className="sidebar-gradient border-r border-sidebar-border fixed left-0 top-0 h-screen w-64 p-4 flex flex-col z-40"
               >
                 <div className="flex items-center space-x-2 mb-8">
