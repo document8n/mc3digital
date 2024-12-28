@@ -7,6 +7,8 @@ import Admin from "./pages/Admin";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Clients from "./pages/Clients";
+import Services from "./pages/Services";
 
 const router = createBrowserRouter([
   {
@@ -46,6 +48,22 @@ const router = createBrowserRouter([
     element: (
       <ProtectedRoute>
         <EditProject />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/clients",
+    element: (
+      <ProtectedRoute>
+        <Clients />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/services",
+    element: (
+      <ProtectedRoute>
+        <Services />
       </ProtectedRoute>
     ),
   },

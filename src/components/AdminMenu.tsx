@@ -2,6 +2,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Grid, FileText, User, Settings, Code2, ArrowLeft, LogOut } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const menuItems = [
   { icon: Grid, label: "Projects", path: "/projects" },
@@ -15,8 +16,18 @@ const AdminMenu = () => {
   const navigate = useNavigate();
   console.log("Current location:", location.pathname);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     console.log("Logging out...");
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error("Error logging out:", error);
+      toast({
+        title: "Error",
+        description: "There was a problem logging out",
+        variant: "destructive",
+      });
+      return;
+    }
     navigate('/');
     toast({
       title: "Logged out successfully",
