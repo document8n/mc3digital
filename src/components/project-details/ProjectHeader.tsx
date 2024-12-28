@@ -1,99 +1,128 @@
-import { useNavigate } from "react-router-dom";
-import { Calendar, Users, DollarSign, Link as LinkIcon, Pencil } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { format } from "date-fns";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { ProjectForm } from "@/components/ProjectForm";
+import { useQueryClient } from "@tanstack/react-query";
+
+interface Project {
+  id: string;
+  name: string;
+  start_date: string;
+  status: string;
+  team_size: number;
+  budget: number;
+  notes: string | null;
+  url: string | null;
+  image: string | null;
+  is_active: boolean;
+  is_portfolio: boolean;
+  client_id: string | null;
+}
 
 interface ProjectHeaderProps {
-  project: {
-    id: string;
-    name: string;
-    start_date: string;
-    status: string;
-    team_size: number;
-    budget: number;
-    notes?: string | null;
-    url?: string | null;
-    image?: string | null;
-    is_active: boolean;
-    is_portfolio: boolean;
-  };
+  project: Project;
 }
 
 export function ProjectHeader({ project }: ProjectHeaderProps) {
-  const navigate = useNavigate();
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const queryClient = useQueryClient();
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "Planning":
+        return "bg-yellow-500";
+      case "In Progress":
+        return "bg-blue-500";
+      case "Completed":
+        return "bg-green-500";
+      case "On Hold":
+        return "bg-red-500";
+      default:
+        return "bg-gray-500";
+    }
+  };
+
+  const handleEditSuccess = () => {
+    setIsEditModalOpen(false);
+    queryClient.invalidateQueries({ queryKey: ["project", project.id] });
+  };
 
   return (
-    <Card className="mb-8">
-      <CardHeader className="flex flex-row items-center justify-between">
-        <div className="space-y-2">
-          <CardTitle className="text-2xl">{project.name}</CardTitle>
-          <div className="flex gap-2">
-            <Badge variant={project.is_active ? "default" : "secondary"}>
-              {project.is_active ? "Active" : "Inactive"}
+    <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+      <div className="flex justify-between items-start mb-4">
+        <div>
+          <h1 className="text-2xl font-bold mb-2">{project.name}</h1>
+          <div className="flex gap-2 items-center mb-2">
+            <Badge variant="secondary">
+              Start Date: {format(new Date(project.start_date), "PPP")}
             </Badge>
-            <Badge variant={project.status === "Completed" ? "default" : "secondary"}>
-              {project.status}
-            </Badge>
+            <Badge className={getStatusColor(project.status)}>{project.status}</Badge>
             {project.is_portfolio && (
               <Badge variant="outline">Portfolio Project</Badge>
             )}
+            {!project.is_active && (
+              <Badge variant="destructive">Inactive</Badge>
+            )}
           </div>
         </div>
-        <Button
-          onClick={() => navigate(`/projects/edit/${project.id}`)}
-          variant="outline"
-          size="icon"
-        >
-          <Pencil className="h-4 w-4" />
-        </Button>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <div className="flex items-center space-x-2 text-muted-foreground">
-            <Calendar className="h-4 w-4 text-blue-400" />
-            <span>Started: {new Date(project.start_date).toLocaleDateString()}</span>
-          </div>
-          <div className="flex items-center space-x-2 text-muted-foreground">
-            <Users className="h-4 w-4 text-green-400" />
-            <span>Team Size: {project.team_size}</span>
-          </div>
-          <div className="flex items-center space-x-2 text-muted-foreground">
-            <DollarSign className="h-4 w-4 text-amber-400" />
-            <span>Budget: ${Number(project.budget).toLocaleString()}</span>
-          </div>
+        <Button onClick={() => setIsEditModalOpen(true)}>Edit Project</Button>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4 mt-4">
+        <div>
+          <p className="text-sm text-gray-600">Team Size</p>
+          <p className="font-medium">{project.team_size} members</p>
         </div>
-        
-        {project.notes && (
-          <div className="mt-4 p-4 bg-muted rounded-lg">
-            <p className="text-sm">{project.notes}</p>
-          </div>
-        )}
-        
+        <div>
+          <p className="text-sm text-gray-600">Budget</p>
+          <p className="font-medium">${project.budget.toLocaleString()}</p>
+        </div>
         {project.url && (
-          <div className="mt-4 flex items-center gap-2">
-            <LinkIcon className="h-4 w-4 text-blue-400" />
+          <div className="col-span-2">
+            <p className="text-sm text-gray-600">Project URL</p>
             <a 
               href={project.url} 
               target="_blank" 
               rel="noopener noreferrer"
-              className="text-blue-400 hover:text-blue-300 text-sm"
+              className="text-blue-600 hover:underline"
             >
-              Project URL
+              {project.url}
             </a>
           </div>
         )}
-        
-        {project.image && (
-          <div className="mt-4">
-            <img 
-              src={project.image} 
-              alt={project.name}
-              className="rounded-lg max-h-48 object-cover w-full"
-            />
+        {project.notes && (
+          <div className="col-span-2">
+            <p className="text-sm text-gray-600">Notes</p>
+            <p className="whitespace-pre-wrap">{project.notes}</p>
           </div>
         )}
-      </CardContent>
-    </Card>
+        {project.image && (
+          <div className="col-span-2">
+            <p className="text-sm text-gray-600 mb-2">Project Image</p>
+            <div className="relative w-full aspect-video rounded-lg overflow-hidden">
+              <img
+                src={project.image}
+                alt="Project preview"
+                className="object-cover w-full h-full"
+              />
+            </div>
+          </div>
+        )}
+      </div>
+
+      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Edit Project</DialogTitle>
+          </DialogHeader>
+          <ProjectForm 
+            initialData={project} 
+            onSuccess={handleEditSuccess}
+          />
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 }
