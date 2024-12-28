@@ -7,13 +7,17 @@ import { format } from "date-fns";
 import AdminMenu from "@/components/AdminMenu";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { InvoiceForm } from "@/components/InvoiceForm";
+import { useState } from "react";
 
 const InvoiceDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const [isFormOpen, setIsFormOpen] = useState(false);
 
-  const { data: invoice, isLoading } = useQuery({
+  const { data: invoice, isLoading, refetch } = useQuery({
     queryKey: ['invoice', id],
     queryFn: async () => {
       console.log("Fetching invoice details for id:", id);
@@ -44,6 +48,11 @@ const InvoiceDetails = () => {
 
   const handlePrint = () => {
     window.print();
+  };
+
+  const handleFormSuccess = () => {
+    setIsFormOpen(false);
+    refetch();
   };
 
   if (isLoading) {
@@ -78,13 +87,23 @@ const InvoiceDetails = () => {
               Back to Invoices
             </Button>
             <div className="flex gap-2">
-              <Button
-                onClick={() => navigate(`/invoice/edit/${id}`)}
-                className="bg-blue-500 hover:bg-blue-600"
-              >
-                <PenLine className="h-4 w-4 mr-2" />
-                Edit Invoice
-              </Button>
+              <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+                <DialogTrigger asChild>
+                  <Button className="bg-blue-500 hover:bg-blue-600">
+                    <PenLine className="h-4 w-4 mr-2" />
+                    Edit Invoice
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[600px]">
+                  <DialogHeader>
+                    <DialogTitle>Edit Invoice</DialogTitle>
+                  </DialogHeader>
+                  <InvoiceForm 
+                    initialData={invoice} 
+                    onSuccess={handleFormSuccess}
+                  />
+                </DialogContent>
+              </Dialog>
               <Button
                 onClick={handlePrint}
                 className="print:hidden"
