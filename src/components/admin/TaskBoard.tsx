@@ -6,6 +6,7 @@ import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable"
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface Task {
   id: string;
@@ -26,6 +27,7 @@ interface TaskBoardProps {
 export function TaskBoard({ tasks, onUpdate }: TaskBoardProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
+  const { toast } = useToast();
 
   const tasksByStatus = {
     todo: tasks?.filter((task) => task.status === "Todo") || [],
@@ -35,8 +37,9 @@ export function TaskBoard({ tasks, onUpdate }: TaskBoardProps) {
 
   const handleDragStart = (event: any) => {
     const { active } = event;
+    const activeTask = tasks.find(task => task.id === active.id);
     setActiveId(active.id);
-    setActiveTask(active.data.current?.task);
+    setActiveTask(activeTask || null);
   };
 
   const handleDragEnd = async (event: DragEndEvent) => {
@@ -69,9 +72,20 @@ export function TaskBoard({ tasks, onUpdate }: TaskBoardProps) {
         .eq('id', taskId);
 
       if (error) throw error;
+      
+      toast({
+        title: "Success",
+        description: `Task moved to ${newStatus}`,
+      });
+      
       onUpdate();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating task status:', error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update task status",
+        variant: "destructive",
+      });
     }
 
     setActiveId(null);
@@ -108,7 +122,7 @@ export function TaskBoard({ tasks, onUpdate }: TaskBoardProps) {
             tasks: tasksByStatus.completed
           }
         }).map(([key, { title, icon, tasks }]) => (
-          <div key={key} className="space-y-4">
+          <div key={key} id={key} className="space-y-4">
             <Card className="bg-background/50">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium flex items-center gap-2">
