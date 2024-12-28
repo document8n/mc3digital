@@ -11,6 +11,7 @@ import { format, addDays } from "date-fns";
 import { InvoiceClientField } from "./invoice/InvoiceClientField";
 import { InvoiceDateField } from "./invoice/InvoiceDateField";
 import { InvoiceStatusField } from "./invoice/InvoiceStatusField";
+import { InvoiceLineItems } from "./invoice/InvoiceLineItems";
 
 interface InvoiceFormProps {
   initialData?: any;
@@ -25,6 +26,12 @@ interface InvoiceFormValues {
   status: string;
   due_date: Date;
   notes?: string;
+  line_items: Array<{
+    description: string;
+    quantity: number;
+    price: number;
+    amount: number;
+  }>;
 }
 
 export function InvoiceForm({ initialData, clientId, onSuccess }: InvoiceFormProps) {
@@ -33,7 +40,7 @@ export function InvoiceForm({ initialData, clientId, onSuccess }: InvoiceFormPro
   const [isLoading, setIsLoading] = useState(false);
   const [clients, setClients] = useState<any[]>([]);
 
-  console.log("Initial due_date:", initialData?.due_date);
+  console.log("Initial form data:", initialData);
 
   const form = useForm<InvoiceFormValues>({
     defaultValues: {
@@ -43,6 +50,7 @@ export function InvoiceForm({ initialData, clientId, onSuccess }: InvoiceFormPro
       status: initialData?.status || "pending",
       due_date: initialData?.due_date ? new Date(initialData.due_date) : addDays(new Date(), 30),
       notes: initialData?.notes || "",
+      line_items: initialData?.line_items || [],
     },
   });
 
@@ -80,6 +88,7 @@ export function InvoiceForm({ initialData, clientId, onSuccess }: InvoiceFormPro
         due_date: format(values.due_date, 'yyyy-MM-dd'),
         notes: values.notes,
         user_id: userData.user.id,
+        line_items: values.line_items,
       };
 
       console.log("Prepared invoice data:", invoiceData);
@@ -142,15 +151,22 @@ export function InvoiceForm({ initialData, clientId, onSuccess }: InvoiceFormPro
         />
 
         <InvoiceClientField form={form} clients={clients} />
+        <InvoiceLineItems form={form} />
 
         <FormField
           control={form.control}
           name="amount"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Amount</FormLabel>
+              <FormLabel>Total Amount</FormLabel>
               <FormControl>
-                <Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} />
+                <Input
+                  type="number"
+                  {...field}
+                  onChange={e => field.onChange(parseFloat(e.target.value))}
+                  disabled
+                  className="bg-gray-50"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
