@@ -8,6 +8,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import Clients from "@/pages/Clients";
 import Services from "@/pages/Services";
 import Invoices from "@/pages/Invoices";
+import InvoiceDetails from "@/pages/InvoiceDetails";
 
 export const router = createBrowserRouter([
   {
@@ -63,6 +64,14 @@ export const router = createBrowserRouter([
     element: (
       <ProtectedRoute>
         <Invoices />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/invoice/:id",
+    element: (
+      <ProtectedRoute>
+        <InvoiceDetails />
       </ProtectedRoute>
     ),
   },

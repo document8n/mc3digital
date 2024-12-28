@@ -10,12 +10,13 @@ import { InvoiceForm } from "@/components/InvoiceForm";
 import { useState } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
 
 const Invoices = () => {
   console.log("Rendering Invoices page");
-  const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
 
   const { data: invoices, isLoading, refetch } = useQuery({
     queryKey: ['invoices'],
@@ -41,14 +42,8 @@ const Invoices = () => {
     },
   });
 
-  const handleEditInvoice = (invoice: any) => {
-    setSelectedInvoice(invoice);
-    setIsFormOpen(true);
-  };
-
   const handleFormSuccess = () => {
     setIsFormOpen(false);
-    setSelectedInvoice(null);
     refetch();
   };
 
@@ -84,14 +79,9 @@ const Invoices = () => {
               </DialogTrigger>
               <DialogContent className="sm:max-w-[600px]">
                 <DialogHeader>
-                  <DialogTitle>
-                    {selectedInvoice ? "Edit Invoice" : "Create New Invoice"}
-                  </DialogTitle>
+                  <DialogTitle>Create New Invoice</DialogTitle>
                 </DialogHeader>
-                <InvoiceForm
-                  initialData={selectedInvoice}
-                  onSuccess={handleFormSuccess}
-                />
+                <InvoiceForm onSuccess={handleFormSuccess} />
               </DialogContent>
             </Dialog>
           </div>
@@ -137,7 +127,7 @@ const Invoices = () => {
                 <Card 
                   key={invoice.id} 
                   className="hover:scale-105 transition-transform duration-200 cursor-pointer"
-                  onClick={() => handleEditInvoice(invoice)}
+                  onClick={() => navigate(`/invoice/${invoice.id}`)}
                 >
                   <CardHeader>
                     <CardTitle className="text-lg flex items-center justify-between">
