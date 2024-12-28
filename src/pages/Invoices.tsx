@@ -5,11 +5,16 @@ import { PlusCircle, Calendar, DollarSign, CheckCircle2, Clock } from "lucide-re
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { InvoiceForm } from "@/components/InvoiceForm";
+import { useState } from "react";
 
 const Invoices = () => {
   console.log("Rendering Invoices page");
+  const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
 
-  const { data: invoices, isLoading } = useQuery({
+  const { data: invoices, isLoading, refetch } = useQuery({
     queryKey: ['invoices'],
     queryFn: async () => {
       console.log("Fetching invoices");
@@ -33,6 +38,17 @@ const Invoices = () => {
     },
   });
 
+  const handleEditInvoice = (invoice: any) => {
+    setSelectedInvoice(invoice);
+    setIsFormOpen(true);
+  };
+
+  const handleFormSuccess = () => {
+    setIsFormOpen(false);
+    setSelectedInvoice(null);
+    refetch();
+  };
+
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case 'paid':
@@ -49,14 +65,29 @@ const Invoices = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
       <AdminMenu />
-      <div className="pl-64">
+      <div className="pl-64 sm:pl-0 sm:pt-16">
         <div className="p-6 max-w-7xl mx-auto">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-bold text-white">Invoices</h1>
-            <Button className="hover:scale-105 transition-transform">
-              <PlusCircle className="mr-2 h-4 w-4" />
-              Create Invoice
-            </Button>
+            <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+              <DialogTrigger asChild>
+                <Button className="hover:scale-105 transition-transform">
+                  <PlusCircle className="mr-2 h-4 w-4" />
+                  Create Invoice
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[600px]">
+                <DialogHeader>
+                  <DialogTitle>
+                    {selectedInvoice ? "Edit Invoice" : "Create New Invoice"}
+                  </DialogTitle>
+                </DialogHeader>
+                <InvoiceForm
+                  initialData={selectedInvoice}
+                  onSuccess={handleFormSuccess}
+                />
+              </DialogContent>
+            </Dialog>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -97,7 +128,11 @@ const Invoices = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {invoices?.map((invoice) => (
-                <Card key={invoice.id} className="hover:scale-105 transition-transform duration-200">
+                <Card 
+                  key={invoice.id} 
+                  className="hover:scale-105 transition-transform duration-200 cursor-pointer"
+                  onClick={() => handleEditInvoice(invoice)}
+                >
                   <CardHeader>
                     <CardTitle className="text-lg flex items-center justify-between">
                       <span>#{invoice.invoice_number}</span>
@@ -121,18 +156,13 @@ const Invoices = () => {
                           <span>${Number(invoice.amount).toLocaleString()}</span>
                         </div>
                       </div>
-                      <div className="flex justify-between items-center pt-2 border-t">
-                        <div className="flex items-center text-sm">
-                          {invoice.status === 'paid' ? (
-                            <CheckCircle2 className="h-4 w-4 mr-1 text-green-500" />
-                          ) : (
-                            <Clock className="h-4 w-4 mr-1 text-yellow-500" />
-                          )}
-                          <span>{invoice.status === 'paid' ? 'Paid' : 'Pending'}</span>
-                        </div>
-                        <Button variant="outline" size="sm">
-                          View Details
-                        </Button>
+                      <div className="flex items-center text-sm pt-2 border-t">
+                        {invoice.status === 'paid' ? (
+                          <CheckCircle2 className="h-4 w-4 mr-1 text-green-500" />
+                        ) : (
+                          <Clock className="h-4 w-4 mr-1 text-yellow-500" />
+                        )}
+                        <span>{invoice.status === 'paid' ? 'Paid' : 'Pending'}</span>
                       </div>
                     </div>
                   </CardContent>
