@@ -1,29 +1,45 @@
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
-import { Code, Award, Trophy } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
-const portfolioItems = [
-  {
-    title: "Web Development",
-    description: "Custom web applications built with modern technologies",
-    image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
-    icon: Code
-  },
-  {
-    title: "Enterprise Solutions",
-    description: "Scalable solutions for growing businesses",
-    image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
-    icon: Award
-  },
-  {
-    title: "Mobile Applications",
-    description: "Cross-platform mobile apps for iOS and Android",
-    image: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7",
-    icon: Trophy
-  }
-];
+interface PortfolioProject {
+  id: string;
+  name: string;
+  image: string;
+  url: string;
+}
 
 export const Portfolio = () => {
+  const [portfolioProjects, setPortfolioProjects] = useState<PortfolioProject[]>([]);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchPortfolioProjects = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('projects')
+          .select('id, name, image, url')
+          .eq('is_portfolio', true)
+          .eq('is_active', true);
+
+        if (error) throw error;
+        setPortfolioProjects(data || []);
+      } catch (error: any) {
+        console.error('Error fetching portfolio projects:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load portfolio projects",
+          variant: "destructive",
+        });
+      }
+    };
+
+    fetchPortfolioProjects();
+  }, [toast]);
+
   return (
     <section className="section-padding bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       <div className="container mx-auto">
@@ -40,9 +56,9 @@ export const Portfolio = () => {
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {portfolioItems.map((item, index) => (
+          {portfolioProjects.map((project, index) => (
             <motion.div
-              key={index}
+              key={project.id}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
@@ -51,17 +67,23 @@ export const Portfolio = () => {
               <Card className="glass-card overflow-hidden group hover:scale-105 transition-transform duration-300 h-full flex flex-col">
                 <div className="relative h-48 overflow-hidden">
                   <img
-                    src={item.image}
-                    alt={item.title}
+                    src={project.image || '/placeholder.svg'}
+                    alt={project.name}
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                   />
-                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                    <item.icon className="w-12 h-12 text-white opacity-75" />
-                  </div>
                 </div>
                 <CardContent className="p-6 flex flex-col">
-                  <h3 className="text-xl font-semibold text-white mb-2">{item.title}</h3>
-                  <p className="text-gray-300">{item.description}</p>
+                  <h3 className="text-xl font-semibold text-white mb-2">{project.name}</h3>
+                  {project.url && (
+                    <Link 
+                      to={project.url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-blue-400 hover:text-blue-300 transition-colors mt-auto"
+                    >
+                      View Project →
+                    </Link>
+                  )}
                 </CardContent>
               </Card>
             </motion.div>
