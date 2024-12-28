@@ -1,6 +1,9 @@
 import AdminMenu from "@/components/AdminMenu";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Code2, Database, Globe2, Layout, Server, Smartphone, Briefcase, Wrench, Shield, Gauge, Boxes, Clock } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useState } from "react";
+import { InvoiceForm } from "@/components/InvoiceForm";
 
 const serviceCategories = [
   {
@@ -101,6 +104,19 @@ const serviceCategories = [
 ];
 
 const Services = () => {
+  const [isInvoiceDialogOpen, setIsInvoiceDialogOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState<any>(null);
+
+  const handleServiceClick = (service: any) => {
+    setSelectedService(service);
+    setIsInvoiceDialogOpen(true);
+  };
+
+  const handleDialogClose = () => {
+    setIsInvoiceDialogOpen(false);
+    setSelectedService(null);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
       <AdminMenu />
@@ -122,10 +138,17 @@ const Services = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {category.items.map((service, serviceIndex) => {
                     const Icon = service.icon;
+                    const price = service.name === "Outsourced CTO" ? 2500 :
+                                service.name === "Tech Stack Administration" ? 1500 :
+                                service.name === "Software Development" ? 2000 :
+                                service.name === "UI/UX Design" ? 1500 :
+                                service.name === "Application QA" ? 1000 : 2000;
+                    
                     return (
                       <Card 
                         key={serviceIndex}
-                        className="hover:scale-105 transition-transform duration-200 bg-gradient-to-br from-gray-800 to-gray-900 border-gray-700"
+                        className="hover:scale-105 transition-transform duration-200 bg-gradient-to-br from-gray-800 to-gray-900 border-gray-700 cursor-pointer"
+                        onClick={() => handleServiceClick({ ...service, price })}
                       >
                         <CardHeader>
                           <div className="flex items-center gap-3">
@@ -147,15 +170,27 @@ const Services = () => {
               </div>
             ))}
           </div>
-
-          <div className="mt-12 p-6 rounded-lg bg-gray-800/50 border border-gray-700">
-            <h3 className="text-lg font-semibold text-white mb-3">Note:</h3>
-            <p className="text-gray-300">
-              Our services are customizable to meet your specific requirements. Contact us for detailed pricing and scope information.
-            </p>
-          </div>
         </div>
       </div>
+
+      <Dialog open={isInvoiceDialogOpen} onOpenChange={handleDialogClose}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>Create New Invoice</DialogTitle>
+          </DialogHeader>
+          <InvoiceForm 
+            onSuccess={handleDialogClose}
+            initialData={{
+              line_items: selectedService ? [{
+                description: selectedService.name,
+                quantity: 1,
+                price: selectedService.price,
+                amount: selectedService.price
+              }] : []
+            }}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
