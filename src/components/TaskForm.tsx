@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Form, FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
@@ -31,6 +31,26 @@ interface TaskFormValues {
 export function TaskForm({ projectId, initialData, onSuccess, onCancel }: TaskFormProps) {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [projectName, setProjectName] = useState<string>("");
+
+  useEffect(() => {
+    const fetchProjectName = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('projects')
+          .select('name')
+          .eq('id', projectId)
+          .single();
+
+        if (error) throw error;
+        setProjectName(data.name || 'Unnamed Project');
+      } catch (error) {
+        console.error('Error fetching project name:', error);
+      }
+    };
+
+    fetchProjectName();
+  }, [projectId]);
 
   const form = useForm<TaskFormValues>({
     defaultValues: {
@@ -92,6 +112,12 @@ export function TaskForm({ projectId, initialData, onSuccess, onCancel }: TaskFo
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <div className="mb-4">
+          <h3 className="text-sm font-medium text-muted-foreground">
+            Project: {projectName}
+          </h3>
+        </div>
+
         <FormField
           control={form.control}
           name="title"
