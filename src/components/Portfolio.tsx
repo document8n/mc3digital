@@ -4,6 +4,14 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
 
 interface PortfolioProject {
   id: string;
@@ -15,6 +23,12 @@ interface PortfolioProject {
 export const Portfolio = () => {
   const [portfolioProjects, setPortfolioProjects] = useState<PortfolioProject[]>([]);
   const { toast } = useToast();
+  
+  // Configure autoplay plugin
+  const autoplayPlugin = Autoplay({
+    delay: 4000, // 4 seconds between slides
+    stopOnInteraction: false, // Continue autoplay after user interaction
+  });
 
   useEffect(() => {
     const fetchPortfolioProjects = async () => {
@@ -55,40 +69,54 @@ export const Portfolio = () => {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {portfolioProjects.map((project, index) => (
-            <motion.div
-              key={project.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="h-full"
-            >
-              <Card className="glass-card overflow-hidden group hover:scale-105 transition-transform duration-300 h-full flex flex-col">
-                <div className="relative h-48 overflow-hidden">
-                  <img
-                    src={project.image || '/placeholder.svg'}
-                    alt={project.name}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                  />
-                </div>
-                <CardContent className="p-6 flex flex-col">
-                  <h3 className="text-xl font-semibold text-white mb-2">{project.name}</h3>
-                  {project.url && (
-                    <Link 
-                      to={project.url} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-blue-400 hover:text-blue-300 transition-colors mt-auto"
-                    >
-                      View Project →
-                    </Link>
-                  )}
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
+        <Carousel
+          opts={{
+            align: "start",
+            loop: true,
+            slidesToScroll: 1,
+            skipSnaps: false,
+          }}
+          plugins={[autoplayPlugin]}
+          className="w-full"
+        >
+          <CarouselContent className="-ml-2 md:-ml-4">
+            {portfolioProjects.map((project, index) => (
+              <CarouselItem key={project.id} className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="h-full"
+                >
+                  <Card className="glass-card overflow-hidden group hover:scale-105 transition-transform duration-300 h-full flex flex-col">
+                    <div className="relative h-48 overflow-hidden">
+                      <img
+                        src={project.image || '/placeholder.svg'}
+                        alt={project.name}
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                      />
+                    </div>
+                    <CardContent className="p-6 flex flex-col">
+                      <h3 className="text-xl font-semibold text-white mb-2">{project.name}</h3>
+                      {project.url && (
+                        <Link 
+                          to={project.url} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-blue-400 hover:text-blue-300 transition-colors mt-auto"
+                        >
+                          View Project →
+                        </Link>
+                      )}
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious />
+          <CarouselNext />
+        </Carousel>
       </div>
     </section>
   );
