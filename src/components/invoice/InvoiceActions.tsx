@@ -33,7 +33,7 @@ export function InvoiceActions({ invoice, onUpdate, onPrint }: InvoiceActionsPro
       <div className="flex gap-2">
         <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-blue-500 hover:bg-blue-600">
+            <Button className="bg-blue-500 hover:bg-blue-600 text-white">
               <PenLine className="h-4 w-4 mr-2" />
               Edit Invoice
             </Button>
