@@ -3,6 +3,7 @@ import { UseFormReturn } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus, Trash2 } from "lucide-react";
+import { Label } from "@/components/ui/label";
 
 interface LineItem {
   description: string;
@@ -75,6 +76,24 @@ export function InvoiceLineItems({ form }: InvoiceLineItemsProps) {
         </Button>
       </div>
 
+      {/* Labels row */}
+      {lineItems.length > 0 && (
+        <div className="grid grid-cols-12 gap-4 px-4">
+          <div className="col-span-4">
+            <Label>Description</Label>
+          </div>
+          <div className="col-span-2">
+            <Label>Quantity</Label>
+          </div>
+          <div className="col-span-2">
+            <Label>Price</Label>
+          </div>
+          <div className="col-span-3">
+            <Label>Amount</Label>
+          </div>
+        </div>
+      )}
+
       {lineItems.map((item, index) => (
         <div
           key={index}
@@ -82,7 +101,7 @@ export function InvoiceLineItems({ form }: InvoiceLineItemsProps) {
         >
           <div className="col-span-4">
             <Input
-              placeholder="Description"
+              placeholder="Enter description"
               value={item.description}
               onChange={(e) =>
                 updateLineItem(index, "description", e.target.value)
@@ -92,7 +111,7 @@ export function InvoiceLineItems({ form }: InvoiceLineItemsProps) {
           <div className="col-span-2">
             <Input
               type="number"
-              placeholder="Quantity"
+              placeholder="0"
               value={item.quantity}
               onChange={(e) =>
                 updateLineItem(index, "quantity", parseFloat(e.target.value))
@@ -102,7 +121,7 @@ export function InvoiceLineItems({ form }: InvoiceLineItemsProps) {
           <div className="col-span-2">
             <Input
               type="number"
-              placeholder="Price"
+              placeholder="0.00"
               value={item.price}
               onChange={(e) =>
                 updateLineItem(index, "price", parseFloat(e.target.value))
