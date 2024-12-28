@@ -93,11 +93,11 @@ export const Portfolio = () => {
                   className="h-full"
                 >
                   <Card className="glass-card overflow-hidden group hover:scale-105 transition-transform duration-300 h-full flex flex-col">
-                    <div className="relative h-48 overflow-hidden">
+                    <div className="relative h-48 flex items-center justify-center bg-white/10 p-4">
                       <img
                         src={project.image || '/placeholder.svg'}
                         alt={project.name}
-                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                        className="w-full h-full object-contain max-h-40"
                       />
                     </div>
                     <CardContent className="p-6 flex flex-col">
