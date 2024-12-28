@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Calendar, Check, Pencil, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { format } from "date-fns";
+import { TaskCardContent } from "./TaskCardContent";
+import { TaskCardEdit } from "./TaskCardEdit";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 interface Task {
   id: string;
@@ -32,6 +31,26 @@ export function TaskCard({ task, onUpdate, showProject = false }: TaskCardProps)
   const [description, setDescription] = useState(task.description || "");
   const [dueDate, setDueDate] = useState(task.due_date);
   const [isSaving, setIsSaving] = useState(false);
+
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
+    id: task.id,
+    data: {
+      type: "Task",
+      task,
+    },
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
 
   useEffect(() => {
     setTitle(task.title);
@@ -101,101 +120,39 @@ export function TaskCard({ task, onUpdate, showProject = false }: TaskCardProps)
   };
 
   return (
-    <Card className={`hover:bg-accent/50 transition-colors ${
-      isTaskOverdue(dueDate) && task.status !== "Completed" && "border-red-500/50"
-    }`}>
+    <Card 
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      className={`hover:bg-accent/50 transition-colors cursor-move ${
+        isDragging ? "opacity-50" : ""
+      } ${isTaskOverdue(dueDate) && task.status !== "Completed" && "border-red-500/50"}`}
+    >
       <CardContent className="p-4">
         {isEditing ? (
-          <div className="space-y-4">
-            <Input
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Task title"
-            />
-            <Textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Task description"
-            />
-            <div className="flex items-center gap-2">
-              <Input
-                type="date"
-                value={dueDate || ""}
-                onChange={(e) => setDueDate(e.target.value || null)}
-              />
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setDueDate(null)}
-                disabled={!dueDate}
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-            <div className="flex gap-2">
-              <Button 
-                onClick={handleSave} 
-                disabled={isSaving}
-                size="sm"
-              >
-                {isSaving ? "Saving..." : "Save"}
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsEditing(false)}
-              >
-                Cancel
-              </Button>
-            </div>
-          </div>
+          <TaskCardEdit
+            title={title}
+            description={description}
+            dueDate={dueDate}
+            onTitleChange={setTitle}
+            onDescriptionChange={setDescription}
+            onDueDateChange={setDueDate}
+            onSave={handleSave}
+            onCancel={() => setIsEditing(false)}
+            isSaving={isSaving}
+          />
         ) : (
-          <div className="space-y-2">
-            <div className="flex justify-between items-start">
-              <div className="space-y-1">
-                <h3 className="font-medium">{title}</h3>
-                {showProject && task.project && (
-                  <p className="text-sm text-muted-foreground">
-                    Project: {task.project.name}
-                  </p>
-                )}
-                {description && (
-                  <p className="text-sm text-muted-foreground">{description}</p>
-                )}
-              </div>
-              <div className="flex items-center gap-2">
-                <span className={`text-sm font-medium px-2 py-1 rounded-full ${
-                  task.status === "Completed" ? "bg-green-500/20 text-green-400" :
-                  task.status === "In Progress" ? "bg-blue-500/20 text-blue-400" :
-                  "bg-yellow-500/20 text-yellow-400"
-                }`}>
-                  {task.status}
-                </span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setIsEditing(true)}
-                >
-                  <Pencil className="h-4 w-4" />
-                </Button>
-                {task.status !== "Completed" && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleStatusUpdate("Completed")}
-                  >
-                    <Check className="h-4 w-4" />
-                  </Button>
-                )}
-              </div>
-            </div>
-            {dueDate && (
-              <div className="flex items-center text-sm text-muted-foreground">
-                <Calendar className="h-4 w-4 mr-2" />
-                <span>Due: {format(new Date(dueDate), 'PPP')}</span>
-              </div>
-            )}
-          </div>
+          <TaskCardContent
+            title={title}
+            description={task.description}
+            dueDate={dueDate}
+            projectName={task.project?.name}
+            showProject={showProject}
+            isCompleted={task.status === "Completed"}
+            onEdit={() => setIsEditing(true)}
+            onComplete={() => handleStatusUpdate("Completed")}
+          />
         )}
       </CardContent>
     </Card>
