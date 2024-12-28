@@ -30,7 +30,7 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
       notes: initialData?.notes || "",
       url: initialData?.url || "",
       image: initialData?.image || "",
-      client_id: initialData?.client_id || "",
+      client_id: initialData?.client_id || "null",
     },
   });
 
@@ -52,7 +52,7 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
         notes: values.notes,
         url: values.url,
         image: values.image,
-        client_id: values.client_id || null,
+        client_id: values.client_id === "null" ? null : values.client_id,
         user_id: userData.user.id,
       };
 
