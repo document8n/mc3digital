@@ -82,7 +82,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/invoices",
+    path: "/invoice",
     element: (
       <ProtectedRoute>
         <Invoices />

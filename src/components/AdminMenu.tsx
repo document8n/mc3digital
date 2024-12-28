@@ -1,12 +1,14 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { Grid, FileText, User, Settings, Code2, ArrowLeft, LogOut } from "lucide-react";
+import { Grid, FileText, User, Settings, Code2, ArrowLeft, LogOut, Menu, X } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const menuItems = [
   { icon: Grid, label: "Projects", path: "/projects" },
-  { icon: FileText, label: "Invoices", path: "/admin" },
+  { icon: FileText, label: "Invoices", path: "/invoice" },
   { icon: User, label: "Clients", path: "/clients" },
   { icon: Settings, label: "Services", path: "/services" },
 ];
@@ -14,6 +16,9 @@ const menuItems = [
 const AdminMenu = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
+  const [isOpen, setIsOpen] = useState(!isMobile);
+  
   console.log("Current location:", location.pathname);
 
   const handleLogout = async () => {
@@ -35,56 +40,90 @@ const AdminMenu = () => {
     });
   };
 
+  const toggleMenu = () => {
+    setIsOpen(!isOpen);
+  };
+
   return (
-    <nav className="bg-sidebar border-r border-sidebar-border h-screen w-64 fixed left-0 top-0 p-4 flex flex-col">
-      {/* Logo and Site Name */}
-      <div className="flex items-center space-x-2 mb-8">
-        <Code2 className="h-6 w-6 text-white" />
-        <span className="text-xl font-bold text-white">mc3digital</span>
-      </div>
+    <>
+      {/* Mobile Menu Toggle */}
+      {isMobile && (
+        <button
+          onClick={toggleMenu}
+          className="fixed top-4 left-4 z-50 p-2 bg-sidebar rounded-md"
+        >
+          {isOpen ? (
+            <X className="h-6 w-6 text-white" />
+          ) : (
+            <Menu className="h-6 w-6 text-white" />
+          )}
+        </button>
+      )}
 
-      {/* Menu Items */}
-      <div className="space-y-2 flex-grow">
-        {menuItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = location.pathname === item.path;
-          console.log(`Menu item ${item.label} active:`, isActive);
-          
-          return (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={cn(
-                "flex items-center space-x-3 px-3 py-2 rounded-md transition-colors text-white",
-                "hover:bg-sidebar-accent hover:text-orange-400",
-                isActive ? "bg-blue-600 text-white font-medium" : "text-white"
-              )}
-            >
-              <Icon className="h-5 w-5" />
-              <span>{item.label}</span>
-            </Link>
-          );
-        })}
-      </div>
+      {/* Sidebar */}
+      <nav className={cn(
+        "bg-sidebar border-r border-sidebar-border h-screen fixed left-0 top-0 p-4 flex flex-col transition-transform duration-300 ease-in-out z-40",
+        isMobile ? (isOpen ? "translate-x-0" : "-translate-x-full") : "translate-x-0",
+        isMobile ? "w-[80%] max-w-[300px]" : "w-64"
+      )}>
+        {/* Logo and Site Name */}
+        <div className="flex items-center space-x-2 mb-8">
+          <Code2 className="h-6 w-6 text-white" />
+          <span className="text-xl font-bold text-white">mc3digital</span>
+        </div>
 
-      {/* Logout Button */}
-      <button
-        onClick={handleLogout}
-        className="flex items-center space-x-2 px-3 py-2 mb-2 text-white hover:text-orange-400 transition-colors rounded-md hover:bg-sidebar-accent"
-      >
-        <LogOut className="h-5 w-5" />
-        <span>Logout</span>
-      </button>
+        {/* Menu Items */}
+        <div className="space-y-2 flex-grow">
+          {menuItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = location.pathname === item.path;
+            console.log(`Menu item ${item.label} active:`, isActive);
+            
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                onClick={() => isMobile && setIsOpen(false)}
+                className={cn(
+                  "flex items-center space-x-3 px-3 py-2 rounded-md transition-colors text-white",
+                  "hover:bg-sidebar-accent hover:text-orange-400",
+                  isActive ? "bg-blue-600 text-white font-medium" : "text-white"
+                )}
+              >
+                <Icon className="h-5 w-5" />
+                <span>{item.label}</span>
+              </Link>
+            );
+          })}
+        </div>
 
-      {/* Back to Site Link */}
-      <Link
-        to="/"
-        className="flex items-center space-x-2 px-3 py-2 text-white hover:text-orange-400 transition-colors rounded-md hover:bg-sidebar-accent"
-      >
-        <ArrowLeft className="h-5 w-5" />
-        <span>Back to Site</span>
-      </Link>
-    </nav>
+        {/* Logout Button */}
+        <button
+          onClick={handleLogout}
+          className="flex items-center space-x-2 px-3 py-2 mb-2 text-white hover:text-orange-400 transition-colors rounded-md hover:bg-sidebar-accent"
+        >
+          <LogOut className="h-5 w-5" />
+          <span>Logout</span>
+        </button>
+
+        {/* Back to Site Link */}
+        <Link
+          to="/"
+          className="flex items-center space-x-2 px-3 py-2 text-white hover:text-orange-400 transition-colors rounded-md hover:bg-sidebar-accent"
+        >
+          <ArrowLeft className="h-5 w-5" />
+          <span>Back to Site</span>
+        </Link>
+      </nav>
+
+      {/* Overlay for mobile */}
+      {isMobile && isOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-30"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+    </>
   );
 };
 
