@@ -140,13 +140,11 @@ export type Database = {
       projects: {
         Row: {
           budget: number
-          client: string
           created_at: string
           id: string
           image: string | null
           is_active: boolean
           is_portfolio: boolean
-          name: string
           notes: string | null
           start_date: string
           status: string
@@ -157,13 +155,11 @@ export type Database = {
         }
         Insert: {
           budget?: number
-          client: string
           created_at?: string
           id?: string
           image?: string | null
           is_active?: boolean
           is_portfolio?: boolean
-          name: string
           notes?: string | null
           start_date: string
           status: string
@@ -174,13 +170,11 @@ export type Database = {
         }
         Update: {
           budget?: number
-          client?: string
           created_at?: string
           id?: string
           image?: string | null
           is_active?: boolean
           is_portfolio?: boolean
-          name?: string
           notes?: string | null
           start_date?: string
           status?: string
