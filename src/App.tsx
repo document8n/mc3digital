@@ -3,7 +3,10 @@ import { ToastProvider } from "@/components/ui/toast";
 import Projects from "@/pages/Projects";
 import AddProject from "./pages/AddProject";
 import EditProject from "./pages/EditProject";
+import Admin from "./pages/Admin";
 import Index from "./pages/Index";
+import Login from "./pages/Login";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const router = createBrowserRouter([
   {
@@ -11,16 +14,40 @@ const router = createBrowserRouter([
     element: <Index />,
   },
   {
+    path: "/login",
+    element: <Login />,
+  },
+  {
+    path: "/admin",
+    element: (
+      <ProtectedRoute>
+        <Admin />
+      </ProtectedRoute>
+    ),
+  },
+  {
     path: "/projects",
-    element: <Projects />,
+    element: (
+      <ProtectedRoute>
+        <Projects />
+      </ProtectedRoute>
+    ),
   },
   {
     path: "/projects/new",
-    element: <AddProject />,
+    element: (
+      <ProtectedRoute>
+        <AddProject />
+      </ProtectedRoute>
+    ),
   },
   {
     path: "/projects/:id/edit",
-    element: <EditProject />,
+    element: (
+      <ProtectedRoute>
+        <EditProject />
+      </ProtectedRoute>
+    ),
   },
 ]);
 
