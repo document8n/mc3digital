@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import AdminMenu from "@/components/AdminMenu";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils"; // Added missing import
 
 interface Invoice {
   id: string;
