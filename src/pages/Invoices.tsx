@@ -159,7 +159,7 @@ const Invoices = () => {
                         </div>
                         <div className="flex items-center text-muted-foreground">
                           <DollarSign className="h-4 w-4 mr-2" />
-                          <span>${Number(invoice.amount).toLocaleString()}</span>
+                          <span>{Number(invoice.amount).toLocaleString()}</span>
                         </div>
                       </div>
                       <div className="flex items-center text-sm pt-2 border-t">
