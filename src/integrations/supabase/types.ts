@@ -39,7 +39,10 @@ export type Database = {
           client: string
           created_at: string
           id: string
+          is_active: boolean
+          is_public: boolean
           name: string
+          notes: string | null
           start_date: string
           status: string
           team_size: number
@@ -51,7 +54,10 @@ export type Database = {
           client: string
           created_at?: string
           id?: string
+          is_active?: boolean
+          is_public?: boolean
           name: string
+          notes?: string | null
           start_date: string
           status: string
           team_size?: number
@@ -63,7 +69,10 @@ export type Database = {
           client?: string
           created_at?: string
           id?: string
+          is_active?: boolean
+          is_public?: boolean
           name?: string
+          notes?: string | null
           start_date?: string
           status?: string
           team_size?: number
