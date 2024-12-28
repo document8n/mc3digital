@@ -8,11 +8,14 @@ import { format } from "date-fns";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { InvoiceForm } from "@/components/InvoiceForm";
 import { useState } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
 
 const Invoices = () => {
   console.log("Rendering Invoices page");
   const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   const { data: invoices, isLoading, refetch } = useQuery({
     queryKey: ['invoices'],
@@ -65,7 +68,10 @@ const Invoices = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
       <AdminMenu />
-      <div className="pl-64 sm:pl-0 sm:pt-16">
+      <div className={cn(
+        "transition-all duration-300",
+        isMobile ? "pt-16" : "ml-64"
+      )}>
         <div className="p-6 max-w-7xl mx-auto">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-bold text-white">Invoices</h1>
