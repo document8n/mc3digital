@@ -1,6 +1,5 @@
 import AdminMenu from "@/components/AdminMenu";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { PlusCircle, Calendar, DollarSign, CheckCircle2, Clock } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -72,10 +71,10 @@ const Invoices = () => {
             <h1 className="text-2xl font-bold text-white">Invoices</h1>
             <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
               <DialogTrigger asChild>
-                <Button className="hover:scale-105 transition-transform">
-                  <PlusCircle className="mr-2 h-4 w-4" />
+                <button className="admin-action-button">
+                  <PlusCircle className="h-4 w-4" />
                   Create Invoice
-                </Button>
+                </button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-[600px]">
                 <DialogHeader>

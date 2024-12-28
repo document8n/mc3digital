@@ -57,10 +57,10 @@ const Clients = () => {
             <h1 className="text-2xl font-bold text-white">Clients</h1>
             <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
               <DialogTrigger asChild>
-                <Button className="hover:scale-105 transition-transform">
-                  <PlusCircle className="mr-2 h-4 w-4" />
+                <button className="admin-action-button">
+                  <PlusCircle className="h-4 w-4" />
                   Add Client
-                </Button>
+                </button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-[600px]">
                 <DialogHeader>

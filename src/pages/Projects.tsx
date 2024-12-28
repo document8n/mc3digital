@@ -107,13 +107,13 @@ const Projects = () => {
         <div className="p-4 md:p-6 max-w-7xl mx-auto">
           <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
             <h1 className="text-2xl font-bold text-white">Projects</h1>
-            <Button 
-              className="hover:scale-105 transition-transform w-full sm:w-auto"
+            <button 
+              className="admin-action-button"
               onClick={() => setIsFormOpen(true)}
             >
               <PlusCircle className="mr-2 h-4 w-4" />
               Add Project
-            </Button>
+            </button>
           </div>
 
           <ProjectStats

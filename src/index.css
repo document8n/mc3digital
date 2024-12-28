@@ -72,6 +72,15 @@
   background: linear-gradient(90deg, #1A1F2C 0%, hsla(220, 78%, 29%, 1) 100%);
 }
 
+.admin-action-button {
+  @apply bg-gradient-to-r from-indigo-500 to-indigo-600 
+         text-white font-medium px-4 py-2 rounded-lg
+         shadow-md hover:shadow-lg transform hover:-translate-y-0.5
+         transition-all duration-200 flex items-center gap-2
+         hover:from-indigo-600 hover:to-indigo-700
+         focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50;
+}
+
 spline-viewer {
   width: 100%;
   height: 100%;
