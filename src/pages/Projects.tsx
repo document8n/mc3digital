@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import AdminMenu from "@/components/AdminMenu";
-import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -9,6 +8,19 @@ import { ProjectFormModal } from "@/components/project/ProjectFormModal";
 import { ProjectDetailsModal } from "@/components/project/ProjectDetailsModal";
 import { ProjectStats } from "@/components/project/ProjectStats";
 import { ProjectCard } from "@/components/project/ProjectCard";
+import {
+  DndContext,
+  DragEndEvent,
+  MouseSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  arrayMove,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 
 interface Project {
   id: string;
@@ -19,6 +31,7 @@ interface Project {
   budget: number;
   is_active: boolean;
   is_portfolio: boolean;
+  display_order: number;
 }
 
 const Projects = () => {
@@ -28,6 +41,21 @@ const Projects = () => {
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const { toast } = useToast();
   const isMobile = useIsMobile();
+
+  // Configure sensors for both mouse and touch interactions
+  const sensors = useSensors(
+    useSensor(MouseSensor, {
+      activationConstraint: {
+        distance: 10,
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 250,
+        tolerance: 5,
+      },
+    })
+  );
 
   useEffect(() => {
     fetchProjects();
@@ -58,7 +86,7 @@ const Projects = () => {
       const { data, error } = await supabase
         .from('projects')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('display_order', { ascending: true });
 
       if (error) {
         console.error('Error fetching projects:', error);
@@ -76,6 +104,47 @@ const Projects = () => {
       toast({
         title: "Error",
         description: "Failed to load projects",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+    
+    if (!over || active.id === over.id) {
+      return;
+    }
+
+    setProjects((projects) => {
+      const oldIndex = projects.findIndex((p) => p.id === active.id);
+      const newIndex = projects.findIndex((p) => p.id === over.id);
+      
+      return arrayMove(projects, oldIndex, newIndex);
+    });
+
+    // Update the display order in the database
+    try {
+      const updates = projects.map((project, index) => ({
+        id: project.id,
+        display_order: index,
+      }));
+
+      const { error } = await supabase
+        .from('projects')
+        .upsert(updates, { onConflict: 'id' });
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Project order updated successfully",
+      });
+    } catch (error) {
+      console.error('Error updating project order:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update project order",
         variant: "destructive",
       });
     }
@@ -122,15 +191,19 @@ const Projects = () => {
             portfolioProjects={portfolioProjects}
           />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {projects.map((project) => (
-              <ProjectCard
-                key={project.id}
-                project={project}
-                onClick={() => handleProjectClick(project)}
-              />
-            ))}
-          </div>
+          <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+            <SortableContext items={projects.map(p => p.id)} strategy={verticalListSortingStrategy}>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {projects.map((project) => (
+                  <ProjectCard
+                    key={project.id}
+                    project={project}
+                    onClick={() => handleProjectClick(project)}
+                  />
+                ))}
+              </div>
+            </SortableContext>
+          </DndContext>
         </div>
       </div>
 

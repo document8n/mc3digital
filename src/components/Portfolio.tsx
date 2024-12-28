@@ -28,9 +28,9 @@ export const Portfolio = () => {
   const autoplayPlugin = Autoplay({
     delay: 4000,
     stopOnInteraction: false,
-    jump: false, // Prevents jumping when looping
+    jump: false,
     playOnInit: true,
-    direction: 'backward', // This makes it go right to left
+    direction: 'backward',
   });
 
   useEffect(() => {
@@ -40,7 +40,8 @@ export const Portfolio = () => {
           .from('projects')
           .select('id, name, image, url')
           .eq('is_portfolio', true)
-          .eq('is_active', true);
+          .eq('is_active', true)
+          .order('display_order', { ascending: true }); // Order by display_order
 
         if (error) throw error;
         setPortfolioProjects(data || []);

@@ -160,6 +160,7 @@ export type Database = {
           budget: number
           client_id: string | null
           created_at: string
+          display_order: number
           id: string
           image: string | null
           is_active: boolean
@@ -177,6 +178,7 @@ export type Database = {
           budget?: number
           client_id?: string | null
           created_at?: string
+          display_order?: number
           id?: string
           image?: string | null
           is_active?: boolean
@@ -194,6 +196,7 @@ export type Database = {
           budget?: number
           client_id?: string | null
           created_at?: string
+          display_order?: number
           id?: string
           image?: string | null
           is_active?: boolean
