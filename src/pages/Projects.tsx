@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import AdminMenu from "@/components/AdminMenu";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PlusCircle, Calendar, Users, DollarSign } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
 
 interface Project {
   id: string;
@@ -23,10 +23,8 @@ const Projects = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Initial fetch of projects
     fetchProjects();
 
-    // Set up real-time subscription
     const channel = supabase
       .channel('schema-db-changes')
       .on(
@@ -86,7 +84,10 @@ const Projects = () => {
         <div className="p-6 max-w-7xl mx-auto">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-bold text-white">Projects</h1>
-            <Button className="hover:scale-105 transition-transform">
+            <Button 
+              className="hover:scale-105 transition-transform"
+              onClick={() => navigate("/projects/new")}
+            >
               <PlusCircle className="mr-2 h-4 w-4" />
               Add Project
             </Button>
@@ -145,8 +146,12 @@ const Projects = () => {
                         <DollarSign className="h-4 w-4 mr-1 text-amber-400" />
                         <span>${Number(project.budget).toLocaleString()}</span>
                       </div>
-                      <Button variant="outline" size="sm">
-                        View Details
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => navigate(`/projects/${project.id}/edit`)}
+                      >
+                        Edit Project
                       </Button>
                     </div>
                   </div>
