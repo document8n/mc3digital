@@ -41,29 +41,26 @@ const AdminMenu = () => {
     });
   };
 
-  const toggleMenu = () => {
-    setIsOpen(!isOpen);
-  };
-
   return (
     <>
       {/* Mobile Menu Toggle */}
-      {isMobile && (
-        <button
-          onClick={toggleMenu}
-          className="fixed top-4 left-4 z-50 p-2 bg-sidebar rounded-md"
-        >
-          {isOpen ? (
-            <X className="h-6 w-6 text-white" />
-          ) : (
-            <Menu className="h-6 w-6 text-white" />
-          )}
-        </button>
-      )}
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className={cn(
+          "fixed z-50 p-2 transition-all duration-300 rounded-md bg-sidebar",
+          isMobile ? "top-4 left-4" : "hidden"
+        )}
+      >
+        {isOpen ? (
+          <X className="h-6 w-6 text-white" />
+        ) : (
+          <Menu className="h-6 w-6 text-white" />
+        )}
+      </button>
 
       {/* Sidebar */}
       <nav className={cn(
-        "bg-sidebar border-r border-sidebar-border h-screen fixed left-0 top-0 p-4 flex flex-col transition-transform duration-300 ease-in-out z-40",
+        "bg-sidebar border-r border-sidebar-border fixed left-0 top-0 h-screen p-4 flex flex-col transition-all duration-300 ease-in-out z-40",
         isMobile ? (isOpen ? "translate-x-0" : "-translate-x-full") : "translate-x-0",
         isMobile ? "w-[80%] max-w-[300px]" : "w-64"
       )}>
@@ -78,7 +75,6 @@ const AdminMenu = () => {
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
-            console.log(`Menu item ${item.label} active:`, isActive);
             
             return (
               <Link

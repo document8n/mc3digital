@@ -5,6 +5,8 @@ import AdminMenu from "@/components/AdminMenu";
 import { useToast } from "@/hooks/use-toast";
 import { ProjectHeader } from "@/components/project-details/ProjectHeader";
 import { ProjectTasks } from "@/components/project-details/ProjectTasks";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
 
 interface Project {
   id: string;
@@ -32,6 +34,7 @@ interface Task {
 const ProjectDetails = () => {
   const { id } = useParams();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
 
   const { data: project, isLoading: projectLoading } = useQuery({
     queryKey: ["project", id],
@@ -87,8 +90,11 @@ const ProjectDetails = () => {
     return (
       <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
         <AdminMenu />
-        <div className="pl-64">
-          <div className="p-6 max-w-7xl mx-auto">
+        <div className={cn(
+          "transition-all duration-300",
+          isMobile ? "pt-16" : "pl-64"
+        )}>
+          <div className="p-4 md:p-6 max-w-7xl mx-auto">
             <div className="text-white">Loading...</div>
           </div>
         </div>
@@ -100,8 +106,11 @@ const ProjectDetails = () => {
     return (
       <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
         <AdminMenu />
-        <div className="pl-64">
-          <div className="p-6 max-w-7xl mx-auto">
+        <div className={cn(
+          "transition-all duration-300",
+          isMobile ? "pt-16" : "pl-64"
+        )}>
+          <div className="p-4 md:p-6 max-w-7xl mx-auto">
             <div className="text-white">Project not found</div>
           </div>
         </div>
@@ -112,8 +121,11 @@ const ProjectDetails = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
       <AdminMenu />
-      <div className="pl-64">
-        <div className="p-6 max-w-7xl mx-auto">
+      <div className={cn(
+        "transition-all duration-300",
+        isMobile ? "pt-16" : "pl-64"
+      )}>
+        <div className="p-4 md:p-6 max-w-7xl mx-auto">
           <ProjectHeader project={project} />
           <ProjectTasks 
             projectId={id!} 
