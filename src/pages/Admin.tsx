@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useNavigate } from 'react-router-dom';
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -16,7 +15,6 @@ interface Invoice {
 }
 
 const Admin = () => {
-  const navigate = useNavigate();
   const [invoices, setInvoices] = useState<Invoice[]>([
     { id: "INV-001", customer: "John Doe", amount: 1500, date: "2024-03-27", status: "paid" },
     { id: "INV-002", customer: "Jane Smith", amount: 2300, date: "2024-03-26", status: "pending" },
@@ -61,9 +59,6 @@ const Admin = () => {
         <div className="p-6 max-w-7xl mx-auto space-y-6">
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold text-white">Invoices</h1>
-            <Button variant="outline" onClick={() => navigate('/')}>
-              Logout
-            </Button>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
