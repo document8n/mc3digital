@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { cn } from "@/lib/utils";
 
 interface Project {
   id: string;
@@ -19,9 +20,10 @@ interface Project {
 interface ProjectCardProps {
   project: Project;
   onClick: () => void;
+  isDragging?: boolean;
 }
 
-export function ProjectCard({ project, onClick }: ProjectCardProps) {
+export function ProjectCard({ project, onClick, isDragging }: ProjectCardProps) {
   const [activeTasks, setActiveTasks] = useState(0);
   
   const {
@@ -30,6 +32,7 @@ export function ProjectCard({ project, onClick }: ProjectCardProps) {
     setNodeRef,
     transform,
     transition,
+    isDragging: isSortableDragging,
   } = useSortable({ id: project.id });
 
   const style = {
@@ -56,9 +59,23 @@ export function ProjectCard({ project, onClick }: ProjectCardProps) {
   }, [project.id]);
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+    <div 
+      ref={setNodeRef} 
+      style={style} 
+      {...attributes} 
+      {...listeners}
+      className={cn(
+        "transition-all duration-200",
+        isDragging && "opacity-50",
+        isSortableDragging && "z-50 scale-105"
+      )}
+    >
       <Card 
-        className="hover:scale-102 transition-transform duration-200 cursor-move bg-gray-800/50 backdrop-blur-sm border-gray-700"
+        className={cn(
+          "hover:scale-102 transition-transform duration-200 cursor-move bg-gray-800/50 backdrop-blur-sm border-gray-700",
+          isDragging && "ring-2 ring-primary ring-offset-2 ring-offset-background",
+          !isDragging && "hover:ring-1 hover:ring-primary/50"
+        )}
         onClick={onClick}
       >
         <CardHeader className="pb-2">

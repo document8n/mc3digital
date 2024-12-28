@@ -7,39 +7,26 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { ProjectFormModal } from "@/components/project/ProjectFormModal";
 import { ProjectDetailsModal } from "@/components/project/ProjectDetailsModal";
 import { ProjectStats } from "@/components/project/ProjectStats";
-import { ProjectCard } from "@/components/project/ProjectCard";
+import { ProjectGrid } from "@/components/project/ProjectGrid";
 import {
   DndContext,
   DragEndEvent,
+  DragStartEvent,
   MouseSensor,
   TouchSensor,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import {
-  SortableContext,
-  arrayMove,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-
-interface Project {
-  id: string;
-  name: string;
-  start_date: string;
-  status: string;
-  team_size: number;
-  budget: number;
-  is_active: boolean;
-  is_portfolio: boolean;
-  display_order: number;
-  user_id: string;
-}
+import { arrayMove } from "@dnd-kit/sortable";
+import { Project } from "@/types/project";
 
 const Projects = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [activeProject, setActiveProject] = useState<Project | null>(null);
   const { toast } = useToast();
   const isMobile = useIsMobile();
 
@@ -93,8 +80,17 @@ const Projects = () => {
     }
   };
 
+  const handleDragStart = (event: DragStartEvent) => {
+    const { active } = event;
+    setActiveId(active.id as string);
+    setActiveProject(projects.find(p => p.id === active.id) || null);
+  };
+
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
+    
+    setActiveId(null);
+    setActiveProject(null);
     
     if (!over || active.id === over.id) {
       return;
@@ -189,18 +185,17 @@ const Projects = () => {
             portfolioProjects={portfolioProjects}
           />
 
-          <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-            <SortableContext items={projects.map(p => p.id)} strategy={verticalListSortingStrategy}>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {projects.map((project) => (
-                  <ProjectCard
-                    key={project.id}
-                    project={project}
-                    onClick={() => handleProjectClick(project)}
-                  />
-                ))}
-              </div>
-            </SortableContext>
+          <DndContext 
+            sensors={sensors} 
+            onDragEnd={handleDragEnd}
+            onDragStart={handleDragStart}
+          >
+            <ProjectGrid
+              projects={projects}
+              activeId={activeId}
+              activeProject={activeProject}
+              onProjectClick={handleProjectClick}
+            />
           </DndContext>
         </div>
       </div>
