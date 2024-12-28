@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import AdminMenu from "@/components/AdminMenu";
@@ -9,8 +8,8 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { TaskForm } from "@/components/TaskForm";
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { TaskCard } from "@/components/tasks/TaskCard";
 import { TaskStats } from "@/components/admin/TaskStats";
+import { TaskBoard } from "@/components/admin/TaskBoard";
 
 interface Task {
   id: string;
@@ -59,9 +58,9 @@ const AdminHome = () => {
   };
 
   const tasksByStatus = {
-    todo: tasks?.filter((task) => task.status.toLowerCase() === "todo") || [],
-    inProgress: tasks?.filter((task) => task.status.toLowerCase() === "in progress") || [],
-    completed: tasks?.filter((task) => task.status.toLowerCase() === "completed") || [],
+    todo: tasks?.filter((task) => task.status === "Todo") || [],
+    inProgress: tasks?.filter((task) => task.status === "In Progress") || [],
+    completed: tasks?.filter((task) => task.status === "Completed") || [],
   };
 
   return (
@@ -101,29 +100,13 @@ const AdminHome = () => {
 
           <TaskStats tasksByStatus={tasksByStatus} />
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Recent Tasks</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {isLoading ? (
-                <div className="text-center py-4">Loading tasks...</div>
-              ) : tasks?.length === 0 ? (
-                <div className="text-center py-4 text-muted-foreground">No tasks found</div>
-              ) : (
-                <div className="space-y-4">
-                  {tasks?.map((task) => (
-                    <TaskCard
-                      key={task.id}
-                      task={task}
-                      onUpdate={refetchTasks}
-                      showProject={true}
-                    />
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          {isLoading ? (
+            <div className="text-center py-4 text-white">Loading tasks...</div>
+          ) : tasks?.length === 0 ? (
+            <div className="text-center py-4 text-muted-foreground">No tasks found</div>
+          ) : (
+            <TaskBoard tasks={tasks} onUpdate={refetchTasks} />
+          )}
         </div>
       </div>
     </div>
