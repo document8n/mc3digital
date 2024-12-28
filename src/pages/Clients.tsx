@@ -1,38 +1,30 @@
 import AdminMenu from "@/components/AdminMenu";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, Mail, Phone, Building, DollarSign } from "lucide-react";
+import { PlusCircle, Mail, Phone, Building, MapPin } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 const Clients = () => {
-  const clients = [
-    {
-      id: 1,
-      name: "Tech Solutions Inc",
-      contact: "John Smith",
-      email: "john@techsolutions.com",
-      phone: "+1 (555) 123-4567",
-      projects: 3,
-      totalValue: 45000
+  console.log("Rendering Clients page");
+
+  const { data: clients, isLoading } = useQuery({
+    queryKey: ['clients'],
+    queryFn: async () => {
+      console.log("Fetching clients");
+      const { data, error } = await supabase
+        .from('clients')
+        .select('*')
+        .order('business_name');
+
+      if (error) {
+        console.error("Error fetching clients:", error);
+        throw error;
+      }
+      console.log("Fetched clients:", data);
+      return data;
     },
-    {
-      id: 2,
-      name: "Startup Co",
-      contact: "Sarah Johnson",
-      email: "sarah@startupco.com",
-      phone: "+1 (555) 234-5678",
-      projects: 2,
-      totalValue: 28000
-    },
-    {
-      id: 3,
-      name: "Retail Group",
-      contact: "Michael Brown",
-      email: "michael@retailgroup.com",
-      phone: "+1 (555) 345-6789",
-      projects: 4,
-      totalValue: 62000
-    }
-  ];
+  });
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
@@ -53,65 +45,85 @@ const Clients = () => {
                 <CardTitle className="text-lg">Total Clients</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-3xl font-bold">24</p>
+                <p className="text-3xl font-bold">{clients?.length || 0}</p>
               </CardContent>
             </Card>
 
             <Card className="bg-gradient-to-br from-emerald-500 to-emerald-600 text-white">
               <CardHeader>
-                <CardTitle className="text-lg">Active Projects</CardTitle>
+                <CardTitle className="text-lg">Active Clients</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-3xl font-bold">18</p>
+                <p className="text-3xl font-bold">{clients?.length || 0}</p>
               </CardContent>
             </Card>
 
             <Card className="bg-gradient-to-br from-amber-500 to-amber-600 text-white">
               <CardHeader>
-                <CardTitle className="text-lg">Total Revenue</CardTitle>
+                <CardTitle className="text-lg">New This Month</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-3xl font-bold">$135,000</p>
+                <p className="text-3xl font-bold">
+                  {clients?.filter(client => {
+                    const createdDate = new Date(client.created_at);
+                    const now = new Date();
+                    return createdDate.getMonth() === now.getMonth() &&
+                           createdDate.getFullYear() === now.getFullYear();
+                  }).length || 0}
+                </p>
               </CardContent>
             </Card>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {clients.map((client) => (
-              <Card key={client.id} className="hover:scale-105 transition-transform duration-200">
-                <CardHeader>
-                  <CardTitle className="text-lg flex items-center space-x-2">
-                    <Building className="h-5 w-5 text-indigo-500" />
-                    <span>{client.name}</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="text-sm space-y-2">
-                      <p className="font-medium text-foreground">{client.contact}</p>
-                      <div className="flex items-center text-muted-foreground">
-                        <Mail className="h-4 w-4 mr-2 text-indigo-400" />
-                        <span>{client.email}</span>
+          {isLoading ? (
+            <div className="text-center text-white">Loading clients...</div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {clients?.map((client) => (
+                <Card key={client.id} className="hover:scale-105 transition-transform duration-200">
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center space-x-2">
+                      <Building className="h-5 w-5 text-indigo-500" />
+                      <span>{client.business_name}</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="text-sm space-y-2">
+                        <p className="font-medium text-foreground">{client.contact_name}</p>
+                        {client.email && (
+                          <div className="flex items-center text-muted-foreground">
+                            <Mail className="h-4 w-4 mr-2 text-indigo-400" />
+                            <span>{client.email}</span>
+                          </div>
+                        )}
+                        {client.phone && (
+                          <div className="flex items-center text-muted-foreground">
+                            <Phone className="h-4 w-4 mr-2 text-green-400" />
+                            <span>{client.phone}</span>
+                          </div>
+                        )}
+                        {client.city && (
+                          <div className="flex items-center text-muted-foreground">
+                            <MapPin className="h-4 w-4 mr-2 text-amber-400" />
+                            <span>
+                              {client.city}
+                              {client.state ? `, ${client.state}` : ''}
+                            </span>
+                          </div>
+                        )}
                       </div>
-                      <div className="flex items-center text-muted-foreground">
-                        <Phone className="h-4 w-4 mr-2 text-green-400" />
-                        <span>{client.phone}</span>
+                      <div className="flex justify-end pt-2 border-t">
+                        <Button variant="outline" size="sm">
+                          View Details
+                        </Button>
                       </div>
                     </div>
-                    <div className="flex justify-between items-center pt-2 border-t">
-                      <div className="flex items-center text-sm text-muted-foreground">
-                        <DollarSign className="h-4 w-4 mr-1 text-amber-400" />
-                        <span>${client.totalValue.toLocaleString()}</span>
-                      </div>
-                      <Button variant="outline" size="sm">
-                        View Details
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

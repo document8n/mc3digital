@@ -11,6 +11,7 @@ import Login from "./pages/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Clients from "./pages/Clients";
 import Services from "./pages/Services";
+import Invoices from "./pages/Invoices";
 
 // Create a client
 const queryClient = new QueryClient();
@@ -77,6 +78,14 @@ const router = createBrowserRouter([
     element: (
       <ProtectedRoute>
         <Services />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/invoices",
+    element: (
+      <ProtectedRoute>
+        <Invoices />
       </ProtectedRoute>
     ),
   },
