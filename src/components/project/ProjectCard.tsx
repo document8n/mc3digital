@@ -28,7 +28,7 @@ export function ProjectCard({ project, onClick }: ProjectCardProps) {
         .from('tasks')
         .select('id')
         .eq('project_id', project.id)
-        .eq('status', 'active');
+        .neq('status', 'Completed');  // Changed from .eq('status', 'active')
 
       if (!error) {
         setActiveTasks(data?.length || 0);
