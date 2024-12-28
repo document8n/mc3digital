@@ -26,8 +26,10 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
       team_size: initialData?.team_size || 1,
       budget: initialData?.budget || 0,
       is_active: initialData?.is_active ?? true,
-      is_public: initialData?.is_public ?? false,
+      is_portfolio: initialData?.is_portfolio ?? false,
       notes: initialData?.notes || "",
+      url: initialData?.url || "",
+      image: initialData?.image || "",
     },
   });
 
@@ -46,8 +48,10 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
         team_size: values.team_size,
         budget: values.budget,
         is_active: values.is_active,
-        is_public: values.is_public,
+        is_portfolio: values.is_portfolio,
         notes: values.notes,
+        url: values.url,
+        image: values.image,
         user_id: userData.user.id,
       };
 

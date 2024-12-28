@@ -39,14 +39,16 @@ export type Database = {
           client: string
           created_at: string
           id: string
+          image: string | null
           is_active: boolean
-          is_public: boolean
+          is_portfolio: boolean
           name: string
           notes: string | null
           start_date: string
           status: string
           team_size: number
           updated_at: string | null
+          url: string | null
           user_id: string
         }
         Insert: {
@@ -54,14 +56,16 @@ export type Database = {
           client: string
           created_at?: string
           id?: string
+          image?: string | null
           is_active?: boolean
-          is_public?: boolean
+          is_portfolio?: boolean
           name: string
           notes?: string | null
           start_date: string
           status: string
           team_size?: number
           updated_at?: string | null
+          url?: string | null
           user_id: string
         }
         Update: {
@@ -69,14 +73,16 @@ export type Database = {
           client?: string
           created_at?: string
           id?: string
+          image?: string | null
           is_active?: boolean
-          is_public?: boolean
+          is_portfolio?: boolean
           name?: string
           notes?: string | null
           start_date?: string
           status?: string
           team_size?: number
           updated_at?: string | null
+          url?: string | null
           user_id?: string
         }
         Relationships: []

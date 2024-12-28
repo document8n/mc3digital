@@ -6,8 +6,10 @@ export interface ProjectFormValues {
   team_size: number;
   budget: number;
   is_active: boolean;
-  is_public: boolean;
+  is_portfolio: boolean;
   notes?: string;
+  url?: string;
+  image?: string;
 }
 
 export interface ProjectFormProps {
@@ -20,8 +22,10 @@ export interface ProjectFormProps {
     team_size: number;
     budget: number;
     is_active: boolean;
-    is_public: boolean;
+    is_portfolio: boolean;
     notes?: string;
+    url?: string;
+    image?: string;
   };
   onSuccess?: () => void;
 }
