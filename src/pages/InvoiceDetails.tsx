@@ -54,6 +54,11 @@ const InvoiceDetails = () => {
     return <div>Invoice not found</div>;
   }
 
+  // Parse line_items if it's a string
+  const lineItems = typeof invoice.line_items === 'string' 
+    ? JSON.parse(invoice.line_items) 
+    : invoice.line_items;
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
       <AdminMenu />
@@ -67,7 +72,7 @@ const InvoiceDetails = () => {
             <Button
               variant="outline"
               onClick={() => navigate('/invoice')}
-              className="text-white"
+              className="text-gray-900 bg-white hover:bg-gray-100"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Invoices
@@ -83,6 +88,16 @@ const InvoiceDetails = () => {
 
           {/* Invoice Preview */}
           <div className="bg-white text-gray-900 p-8 rounded-lg shadow-lg">
+            {/* Company Branding */}
+            <div className="flex items-center mb-8">
+              <img 
+                src="/mc3digital-logo.png" 
+                alt="mc3digital logo" 
+                className="h-12 w-auto mr-3"
+              />
+              <span className="text-xl font-semibold">mc3digital</span>
+            </div>
+
             {/* Invoice Header */}
             <div className="flex justify-between items-start mb-8">
               <div>
@@ -124,7 +139,7 @@ const InvoiceDetails = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {invoice.line_items.map((item: any, index: number) => (
+                  {lineItems.map((item: any, index: number) => (
                     <tr key={index} className="border-b border-gray-100">
                       <td className="py-3">{item.description}</td>
                       <td className="text-right py-3">{item.quantity}</td>
