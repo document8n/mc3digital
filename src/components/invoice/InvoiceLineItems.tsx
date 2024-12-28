@@ -10,7 +10,7 @@ interface InvoiceLineItemsProps {
   totalAmount: number;
 }
 
-export function InvoiceLineItems({ lineItems, totalAmount }: InvoiceLineItemsProps) {
+export function InvoiceLineItems({ lineItems = [], totalAmount }: InvoiceLineItemsProps) {
   return (
     <div className="mb-8">
       <table className="w-full">

@@ -5,7 +5,7 @@ import { UseFormReturn } from "react-hook-form";
 import { InvoiceClientField } from "./InvoiceClientField";
 import { InvoiceDateField } from "./InvoiceDateField";
 import { InvoiceStatusField } from "./InvoiceStatusField";
-import { InvoiceLineItems } from "./InvoiceLineItems";
+import { InvoiceFormLineItems } from "./InvoiceFormLineItems";
 
 interface InvoiceFormFieldsProps {
   form: UseFormReturn<any>;
@@ -32,7 +32,7 @@ export function InvoiceFormFields({ form, clients }: InvoiceFormFieldsProps) {
         <InvoiceClientField form={form} clients={clients} />
       </div>
 
-      <InvoiceLineItems form={form} />
+      <InvoiceFormLineItems form={form} />
 
       <div className="grid grid-cols-2 gap-4">
         <FormField
