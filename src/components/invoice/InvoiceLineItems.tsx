@@ -1,10 +1,3 @@
-import { useState } from "react";
-import { UseFormReturn } from "react-hook-form";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Plus, Trash2 } from "lucide-react";
-import { Label } from "@/components/ui/label";
-
 interface LineItem {
   description: string;
   quantity: number;
@@ -13,141 +6,41 @@ interface LineItem {
 }
 
 interface InvoiceLineItemsProps {
-  form: UseFormReturn<any>;
+  lineItems: LineItem[];
+  totalAmount: number;
 }
 
-export function InvoiceLineItems({ form }: InvoiceLineItemsProps) {
-  const [lineItems, setLineItems] = useState<LineItem[]>(
-    form.getValues("line_items") || []
-  );
-
-  const addLineItem = () => {
-    const newLineItems = [
-      ...lineItems,
-      { description: "", quantity: 1, price: 0, amount: 0 },
-    ];
-    setLineItems(newLineItems);
-    form.setValue("line_items", newLineItems);
-    updateTotalAmount(newLineItems);
-  };
-
-  const removeLineItem = (index: number) => {
-    const newLineItems = lineItems.filter((_, i) => i !== index);
-    setLineItems(newLineItems);
-    form.setValue("line_items", newLineItems);
-    updateTotalAmount(newLineItems);
-  };
-
-  const updateLineItem = (index: number, field: keyof LineItem, value: string | number) => {
-    const newLineItems = [...lineItems];
-    newLineItems[index] = {
-      ...newLineItems[index],
-      [field]: value,
-    };
-
-    // Calculate amount
-    if (field === "quantity" || field === "price") {
-      newLineItems[index].amount =
-        Number(newLineItems[index].quantity) * Number(newLineItems[index].price);
-    }
-
-    setLineItems(newLineItems);
-    form.setValue("line_items", newLineItems);
-    updateTotalAmount(newLineItems);
-  };
-
-  const updateTotalAmount = (items: LineItem[]) => {
-    const total = items.reduce((sum, item) => sum + Number(item.amount), 0);
-    form.setValue("amount", total);
-  };
-
+export function InvoiceLineItems({ lineItems, totalAmount }: InvoiceLineItemsProps) {
   return (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h3 className="text-lg font-medium">Line Items</h3>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={addLineItem}
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Add Item
-        </Button>
-      </div>
-
-      {/* Labels row */}
-      {lineItems.length > 0 && (
-        <div className="grid grid-cols-12 gap-4 px-4">
-          <div className="col-span-4">
-            <Label>Description</Label>
-          </div>
-          <div className="col-span-2">
-            <Label>Quantity</Label>
-          </div>
-          <div className="col-span-2">
-            <Label>Price</Label>
-          </div>
-          <div className="col-span-3">
-            <Label>Amount</Label>
-          </div>
-        </div>
-      )}
-
-      {lineItems.map((item, index) => (
-        <div
-          key={index}
-          className="grid grid-cols-12 gap-4 items-center border p-4 rounded-lg"
-        >
-          <div className="col-span-4">
-            <Input
-              placeholder="Enter description"
-              value={item.description}
-              onChange={(e) =>
-                updateLineItem(index, "description", e.target.value)
-              }
-            />
-          </div>
-          <div className="col-span-2">
-            <Input
-              type="number"
-              placeholder="0"
-              value={item.quantity}
-              onChange={(e) =>
-                updateLineItem(index, "quantity", parseFloat(e.target.value))
-              }
-            />
-          </div>
-          <div className="col-span-2">
-            <Input
-              type="number"
-              placeholder="0.00"
-              value={item.price}
-              onChange={(e) =>
-                updateLineItem(index, "price", parseFloat(e.target.value))
-              }
-            />
-          </div>
-          <div className="col-span-3">
-            <Input
-              type="number"
-              value={item.amount}
-              disabled
-              className="bg-gray-50"
-            />
-          </div>
-          <div className="col-span-1 flex justify-end">
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={() => removeLineItem(index)}
-            >
-              <Trash2 className="h-4 w-4 text-red-500" />
-            </Button>
-          </div>
-        </div>
-      ))}
+    <div className="mb-8">
+      <table className="w-full">
+        <thead>
+          <tr className="border-b border-gray-200">
+            <th className="text-left py-3">Description</th>
+            <th className="text-right py-3">Quantity</th>
+            <th className="text-right py-3">Price</th>
+            <th className="text-right py-3">Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          {lineItems.map((item, index) => (
+            <tr key={index} className="border-b border-gray-100">
+              <td className="py-3">{item.description}</td>
+              <td className="text-right py-3">{item.quantity}</td>
+              <td className="text-right py-3">${item.price.toFixed(2)}</td>
+              <td className="text-right py-3">${item.amount.toFixed(2)}</td>
+            </tr>
+          ))}
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colSpan={3} className="text-right py-4 font-semibold">Total</td>
+            <td className="text-right py-4 font-semibold">
+              ${Number(totalAmount).toFixed(2)}
+            </td>
+          </tr>
+        </tfoot>
+      </table>
     </div>
   );
 }
