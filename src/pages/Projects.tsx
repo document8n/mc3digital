@@ -5,9 +5,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ProjectFormModal } from "@/components/project/ProjectFormModal";
-import { ProjectDetailsModal } from "@/components/project/ProjectDetailsModal";
 import { ProjectStats } from "@/components/project/ProjectStats";
 import { ProjectGrid } from "@/components/project/ProjectGrid";
+import { useNavigate } from "react-router-dom";
 import {
   DndContext,
   DragEndEvent,
@@ -22,13 +22,12 @@ import { Project } from "@/types/project";
 
 const Projects = () => {
   const [projects, setProjects] = useState<Project[]>([]);
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [activeProject, setActiveProject] = useState<Project | null>(null);
   const { toast } = useToast();
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
 
   const sensors = useSensors(
     useSensor(MouseSensor, {
@@ -145,18 +144,11 @@ const Projects = () => {
   };
 
   const handleProjectClick = (project: Project) => {
-    setSelectedProject(project);
-    setIsDetailsOpen(true);
+    navigate(`/projects/${project.id}`);
   };
 
   const handleFormClose = () => {
-    setSelectedProject(null);
     setIsFormOpen(false);
-  };
-
-  const handleDetailsClose = () => {
-    setSelectedProject(null);
-    setIsDetailsOpen(false);
   };
 
   const totalProjects = projects.length;
@@ -203,17 +195,9 @@ const Projects = () => {
       <ProjectFormModal 
         isOpen={isFormOpen}
         onClose={handleFormClose}
-        project={selectedProject}
+        project={null}
         onSuccess={fetchProjects}
       />
-
-      {selectedProject && (
-        <ProjectDetailsModal
-          isOpen={isDetailsOpen}
-          onClose={handleDetailsClose}
-          project={selectedProject}
-        />
-      )}
     </div>
   );
 };
