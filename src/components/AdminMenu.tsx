@@ -49,7 +49,7 @@ const AdminMenu = () => {
               exit={isMobile ? { x: "-100%" } : { x: 0 }}
               transition={{ type: "tween", duration: 0.2 }}
               className={cn(
-                "bg-sidebar border-r border-sidebar-border fixed left-0 top-0 h-screen p-4 flex flex-col z-40",
+                "sidebar-gradient border-r border-sidebar-border fixed left-0 top-0 h-screen p-4 flex flex-col z-40",
                 isMobile ? "w-[80%] max-w-[300px]" : "w-64"
               )}
             >
