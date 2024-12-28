@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ToastProvider } from "@/components/ui/toast";
 import { useToast } from "@/hooks/use-toast";
 import Projects from "@/pages/Projects";
