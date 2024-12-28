@@ -12,8 +12,14 @@ const AdminMenu = () => {
 
   const handleClose = () => {
     if (isMobile) {
+      console.log("Closing mobile menu");
       setIsOpen(false);
     }
+  };
+
+  const toggleMenu = () => {
+    console.log("Toggling menu, current state:", isOpen);
+    setIsOpen(!isOpen);
   };
 
   return (
@@ -26,7 +32,7 @@ const AdminMenu = () => {
             <span className="text-xl font-bold text-white">mc3digital</span>
           </div>
           <button
-            onClick={() => setIsOpen(!isOpen)}
+            onClick={toggleMenu}
             className="p-2 text-white hover:text-gray-300 transition-colors"
           >
             {isOpen ? (
@@ -41,7 +47,7 @@ const AdminMenu = () => {
       {/* Desktop Menu Toggle */}
       {!isMobile && (
         <button
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={toggleMenu}
           className="fixed z-50 p-2 transition-all duration-300 rounded-md bg-sidebar text-white hidden"
         >
           {isOpen ? (
@@ -83,9 +89,9 @@ const AdminMenu = () => {
               </motion.nav>
             ) : (
               <motion.nav
-                initial={{ x: 0 }}
+                initial={{ x: -320 }}
                 animate={{ x: 0 }}
-                exit={{ x: 0 }}
+                exit={{ x: -320 }}
                 className="sidebar-gradient border-r border-sidebar-border fixed left-0 top-0 h-screen w-64 p-4 flex flex-col z-40"
               >
                 <div className="flex items-center space-x-2 mb-8">
