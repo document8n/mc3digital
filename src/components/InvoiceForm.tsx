@@ -60,16 +60,25 @@ export function InvoiceForm({ initialData, clientId, onSuccess }: InvoiceFormPro
   // Fetch clients when component mounts
   useState(() => {
     const fetchClients = async () => {
-      const { data, error } = await supabase
-        .from("clients")
-        .select("id, business_name");
-      
-      if (error) {
-        console.error("Error fetching clients:", error);
-        return;
+      try {
+        const { data, error } = await supabase
+          .from("clients")
+          .select("id, business_name");
+        
+        if (error) {
+          console.error("Error fetching clients:", error);
+          toast({
+            title: "Error",
+            description: "Failed to fetch clients",
+            variant: "destructive",
+          });
+          return;
+        }
+        
+        setClients(data || []);
+      } catch (error) {
+        console.error("Error in fetchClients:", error);
       }
-      
-      setClients(data || []);
     };
 
     fetchClients();
@@ -79,8 +88,8 @@ export function InvoiceForm({ initialData, clientId, onSuccess }: InvoiceFormPro
     try {
       console.log("Submitting form with values:", values);
       setIsLoading(true);
-      const { data: userData, error: userError } = await supabase.auth.getUser();
       
+      const { data: userData, error: userError } = await supabase.auth.getUser();
       if (userError) throw userError;
 
       const invoiceData = {
@@ -100,28 +109,26 @@ export function InvoiceForm({ initialData, clientId, onSuccess }: InvoiceFormPro
 
       console.log("Prepared invoice data:", invoiceData);
 
-      if (initialData) {
-        const { error } = await supabase
+      let error;
+      if (initialData?.id) {
+        const { error: updateError } = await supabase
           .from('invoices')
           .update(invoiceData)
           .eq('id', initialData.id);
-
-        if (error) throw error;
-        toast({
-          title: "Success",
-          description: "Invoice updated successfully",
-        });
+        error = updateError;
       } else {
-        const { error } = await supabase
+        const { error: insertError } = await supabase
           .from('invoices')
           .insert([invoiceData]);
-
-        if (error) throw error;
-        toast({
-          title: "Success",
-          description: "Invoice created successfully",
-        });
+        error = insertError;
       }
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: initialData ? "Invoice updated successfully" : "Invoice created successfully",
+      });
 
       if (onSuccess) {
         onSuccess();
