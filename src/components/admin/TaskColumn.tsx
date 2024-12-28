@@ -3,6 +3,8 @@ import { TaskCard } from "@/components/tasks/TaskCard";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { Task } from "@/types/task";
 import { LucideIcon } from "lucide-react";
+import { useDroppable } from "@dnd-kit/core";
+import { cn } from "@/lib/utils";
 
 interface TaskColumnProps {
   id: string;
@@ -13,6 +15,10 @@ interface TaskColumnProps {
 }
 
 export function TaskColumn({ id, title, icon: Icon, tasks, onUpdate }: TaskColumnProps) {
+  const { setNodeRef, isOver } = useDroppable({
+    id: id,
+  });
+
   const iconColor = {
     todo: "text-yellow-500",
     inProgress: "text-blue-500",
@@ -20,7 +26,13 @@ export function TaskColumn({ id, title, icon: Icon, tasks, onUpdate }: TaskColum
   }[id];
 
   return (
-    <div id={id} className="space-y-4">
+    <div 
+      ref={setNodeRef} 
+      className={cn(
+        "space-y-4 transition-all duration-200",
+        isOver && "ring-2 ring-primary ring-dashed ring-offset-2"
+      )}
+    >
       <div className="rounded-t-lg p-3 bg-gradient-to-r from-gray-800 to-gray-700">
         <div className="flex items-center gap-2 text-white">
           <Icon className={`h-4 w-4 ${iconColor}`} />
