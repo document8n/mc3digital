@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import AdminMenu from "@/components/AdminMenu";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, Calendar, Users, DollarSign } from "lucide-react";
+import { PlusCircle, FolderOpen, Star, Briefcase } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -15,6 +15,8 @@ interface Project {
   status: string;
   team_size: number;
   budget: number;
+  is_active: boolean;
+  is_portfolio: boolean;
 }
 
 const Projects = () => {
@@ -75,8 +77,9 @@ const Projects = () => {
     }
   };
 
-  const totalBudget = projects.reduce((sum, project) => sum + Number(project.budget), 0);
-  const totalTeamMembers = projects.reduce((sum, project) => sum + project.team_size, 0);
+  const totalProjects = projects.length;
+  const activeProjects = projects.filter(project => project.is_active).length;
+  const portfolioProjects = projects.filter(project => project.is_portfolio).length;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
@@ -97,28 +100,37 @@ const Projects = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white">
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Active Projects</CardTitle>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <FolderOpen className="h-5 w-5" />
+                  Total Projects
+                </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-3xl font-bold">{projects.length}</p>
+                <p className="text-3xl font-bold">{totalProjects}</p>
               </CardContent>
             </Card>
 
             <Card className="bg-gradient-to-br from-green-500 to-green-600 text-white">
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Team Members</CardTitle>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Briefcase className="h-5 w-5" />
+                  Active Projects
+                </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-3xl font-bold">{totalTeamMembers}</p>
+                <p className="text-3xl font-bold">{activeProjects}</p>
               </CardContent>
             </Card>
 
             <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white">
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Total Budget</CardTitle>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Star className="h-5 w-5" />
+                  Portfolio Projects
+                </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-3xl font-bold">${totalBudget.toLocaleString()}</p>
+                <p className="text-3xl font-bold">{portfolioProjects}</p>
               </CardContent>
             </Card>
           </div>
