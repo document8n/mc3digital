@@ -32,6 +32,7 @@ interface Project {
   is_active: boolean;
   is_portfolio: boolean;
   display_order: number;
+  user_id: string;
 }
 
 const Projects = () => {
@@ -42,7 +43,6 @@ const Projects = () => {
   const { toast } = useToast();
   const isMobile = useIsMobile();
 
-  // Configure sensors for both mouse and touch interactions
   const sensors = useSensors(
     useSensor(MouseSensor, {
       activationConstraint: {
@@ -59,33 +59,17 @@ const Projects = () => {
 
   useEffect(() => {
     fetchProjects();
-
-    const channel = supabase
-      .channel('schema-db-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'projects'
-        },
-        (payload) => {
-          console.log('Real-time update received:', payload);
-          fetchProjects();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
   }, []);
 
   const fetchProjects = async () => {
     try {
+      const { data: userData, error: userError } = await supabase.auth.getUser();
+      if (userError) throw userError;
+
       const { data, error } = await supabase
         .from('projects')
         .select('*')
+        .eq('user_id', userData.user.id)
         .order('display_order', { ascending: true });
 
       if (error) {
@@ -99,7 +83,7 @@ const Projects = () => {
       }
 
       setProjects(data || []);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error:', error);
       toast({
         title: "Error",
@@ -116,23 +100,26 @@ const Projects = () => {
       return;
     }
 
-    setProjects((projects) => {
+    try {
       const oldIndex = projects.findIndex((p) => p.id === active.id);
       const newIndex = projects.findIndex((p) => p.id === over.id);
       
-      return arrayMove(projects, oldIndex, newIndex);
-    });
+      const newProjects = arrayMove(projects, oldIndex, newIndex);
+      setProjects(newProjects);
 
-    // Update the display order in the database
-    try {
-      const updates = projects.map((project, index) => ({
+      // Prepare updates with all required fields
+      const updates = newProjects.map((project, index) => ({
         id: project.id,
         display_order: index,
+        // Include required fields from the original project
+        start_date: project.start_date,
+        status: project.status,
+        user_id: project.user_id,
       }));
 
       const { error } = await supabase
         .from('projects')
-        .upsert(updates, { onConflict: 'id' });
+        .upsert(updates);
 
       if (error) throw error;
 
@@ -140,13 +127,15 @@ const Projects = () => {
         title: "Success",
         description: "Project order updated successfully",
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating project order:', error);
       toast({
         title: "Error",
         description: "Failed to update project order",
         variant: "destructive",
       });
+      // Revert the local state on error
+      fetchProjects();
     }
   };
 

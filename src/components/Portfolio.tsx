@@ -24,13 +24,12 @@ export const Portfolio = () => {
   const [portfolioProjects, setPortfolioProjects] = useState<PortfolioProject[]>([]);
   const { toast } = useToast();
   
-  // Configure autoplay plugin with right-to-left direction
+  // Configure autoplay plugin
   const autoplayPlugin = Autoplay({
     delay: 4000,
     stopOnInteraction: false,
     jump: false,
     playOnInit: true,
-    direction: 'backward',
   });
 
   useEffect(() => {
@@ -41,7 +40,7 @@ export const Portfolio = () => {
           .select('id, name, image, url')
           .eq('is_portfolio', true)
           .eq('is_active', true)
-          .order('display_order', { ascending: true }); // Order by display_order
+          .order('display_order', { ascending: true });
 
         if (error) throw error;
         setPortfolioProjects(data || []);
@@ -77,7 +76,6 @@ export const Portfolio = () => {
           opts={{
             align: "start",
             loop: true,
-            direction: "rtl", // Right to left direction
             dragFree: true,
             slidesToScroll: 1,
             skipSnaps: false,
