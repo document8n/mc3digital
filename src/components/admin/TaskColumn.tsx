@@ -34,7 +34,7 @@ export function TaskColumn({ id, title, icon: Icon, tasks, onUpdate }: TaskColum
           <span className="text-white/70 text-sm">({tasks.length})</span>
         </div>
       </div>
-      <div className="space-y-4 px-2 relative">
+      <div className="space-y-4 px-2 relative min-h-[100px]">
         <SortableContext
           items={tasks.map(task => task.id)}
           strategy={verticalListSortingStrategy}
@@ -56,10 +56,11 @@ export function TaskColumn({ id, title, icon: Icon, tasks, onUpdate }: TaskColum
         )}
         {isOver && (
           <div 
-            className="absolute left-0 right-0 h-[104px] border-2 border-primary border-dashed rounded-lg pointer-events-none"
+            className="absolute inset-x-0 border-2 border-primary/50 border-dashed rounded-lg bg-primary/5 pointer-events-none z-10"
             style={{
-              top: tasks.length * 104 + (tasks.length * 16), // height of card (88px) + margin (16px)
-              transition: 'transform 200ms ease'
+              height: '88px', // Match task card height
+              top: tasks.length * (88 + 16), // card height (88px) + gap (16px)
+              transition: 'all 200ms ease'
             }}
           />
         )}
