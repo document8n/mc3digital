@@ -44,9 +44,9 @@ const AdminMenu = () => {
 
             {/* Menu Content */}
             <motion.nav
-              initial={isMobile ? { x: "-100%" } : false}
+              initial={isMobile ? { x: "-100%" } : { x: 0 }}
               animate={{ x: 0 }}
-              exit={isMobile ? { x: "-100%" } : false}
+              exit={isMobile ? { x: "-100%" } : { x: 0 }}
               transition={{ type: "tween", duration: 0.2 }}
               className={cn(
                 "bg-sidebar border-r border-sidebar-border fixed left-0 top-0 h-screen p-4 flex flex-col z-40",
@@ -63,7 +63,7 @@ const AdminMenu = () => {
               <MenuItems onItemClick={() => isMobile && setIsOpen(false)} />
 
               {/* User Actions */}
-              <UserActions onItemClick={() => isMobile && setIsOpen(false)} />
+              <UserActions onActionClick={() => isMobile && setIsOpen(false)} />
             </motion.nav>
           </>
         )}
