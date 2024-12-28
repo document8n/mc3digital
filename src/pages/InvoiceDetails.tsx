@@ -69,15 +69,17 @@ const InvoiceDetails = () => {
     : invoice.line_items;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
-      <AdminMenu />
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 print:bg-white print:min-h-0">
+      <div className="print:hidden">
+        <AdminMenu />
+      </div>
       <div className={cn(
-        "transition-all duration-300",
+        "transition-all duration-300 print:m-0 print:p-0",
         isMobile ? "pt-16" : "ml-64"
       )}>
-        <div className="p-6 max-w-4xl mx-auto">
+        <div className="p-6 max-w-4xl mx-auto print:p-0 print:max-w-none">
           {/* Header Actions */}
-          <div className="flex justify-between items-center mb-8">
+          <div className="flex justify-between items-center mb-8 print:hidden">
             <Button
               variant="outline"
               onClick={() => navigate('/invoice')}
@@ -94,7 +96,7 @@ const InvoiceDetails = () => {
                     Edit Invoice
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-[600px]">
+                <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
                   <DialogHeader>
                     <DialogTitle>Edit Invoice</DialogTitle>
                   </DialogHeader>
@@ -115,7 +117,7 @@ const InvoiceDetails = () => {
           </div>
 
           {/* Invoice Preview */}
-          <div className="bg-white text-gray-900 p-8 rounded-lg shadow-lg">
+          <div className="bg-white text-gray-900 p-8 rounded-lg shadow-lg print:shadow-none print:rounded-none">
             {/* Company Branding */}
             <div className="flex items-center mb-8">
               <Code2 className="h-8 w-8 text-gray-900" />
