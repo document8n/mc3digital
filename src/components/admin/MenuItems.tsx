@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { Grid, FileText, User, Settings, Home } from "lucide-react";
 
 const menuItems = [
-  { icon: Home, label: "Home", path: "/admin" },
+  { icon: Home, label: "Dashboard", path: "/admin" },
   { icon: Grid, label: "Projects", path: "/projects" },
   { icon: FileText, label: "Invoices", path: "/invoice" },
   { icon: User, label: "Clients", path: "/clients" },
