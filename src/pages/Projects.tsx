@@ -104,22 +104,31 @@ const Projects = () => {
       const oldIndex = projects.findIndex((p) => p.id === active.id);
       const newIndex = projects.findIndex((p) => p.id === over.id);
       
+      // Update local state first for immediate UI feedback
       const newProjects = arrayMove(projects, oldIndex, newIndex);
       setProjects(newProjects);
 
-      // Prepare updates with all required fields
+      // Get current user
+      const { data: userData, error: userError } = await supabase.auth.getUser();
+      if (userError) throw userError;
+
+      // Prepare updates with new display orders
       const updates = newProjects.map((project, index) => ({
         id: project.id,
         display_order: index,
         // Include required fields from the original project
         start_date: project.start_date,
         status: project.status,
-        user_id: project.user_id,
+        user_id: userData.user.id,
       }));
 
+      // Update all projects with their new display orders
       const { error } = await supabase
         .from('projects')
-        .upsert(updates);
+        .upsert(updates, {
+          onConflict: 'id',
+          ignoreDuplicates: false,
+        });
 
       if (error) throw error;
 
