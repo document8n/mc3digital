@@ -2,9 +2,6 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ToastProvider } from "@/components/ui/toast";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Projects from "@/pages/Projects";
-import ProjectDetails from "@/pages/ProjectDetails";
-import AddProject from "./pages/AddProject";
-import EditProject from "./pages/EditProject";
 import Admin from "./pages/Admin";
 import AdminHome from "./pages/AdminHome";
 import Index from "./pages/Index";
@@ -47,30 +44,6 @@ const router = createBrowserRouter([
     element: (
       <ProtectedRoute>
         <Projects />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/projects/:id",
-    element: (
-      <ProtectedRoute>
-        <ProjectDetails />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/projects/new",
-    element: (
-      <ProtectedRoute>
-        <AddProject />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/projects/:id/edit",
-    element: (
-      <ProtectedRoute>
-        <EditProject />
       </ProtectedRoute>
     ),
   },

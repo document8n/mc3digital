@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import AdminMenu from "@/components/AdminMenu";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,6 +6,8 @@ import { PlusCircle, FolderOpen, Star, Briefcase, Calendar, Users, DollarSign } 
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { ProjectFormModal } from "@/components/project/ProjectFormModal";
+import { ProjectDetailsModal } from "@/components/project/ProjectDetailsModal";
 
 interface Project {
   id: string;
@@ -21,8 +22,10 @@ interface Project {
 
 const Projects = () => {
   const [projects, setProjects] = useState<Project[]>([]);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const { toast } = useToast();
-  const navigate = useNavigate();
   const isMobile = useIsMobile();
 
   useEffect(() => {
@@ -77,6 +80,27 @@ const Projects = () => {
     }
   };
 
+  const handleProjectClick = (project: Project) => {
+    setSelectedProject(project);
+    setIsDetailsOpen(true);
+  };
+
+  const handleEditClick = (e: React.MouseEvent, project: Project) => {
+    e.stopPropagation();
+    setSelectedProject(project);
+    setIsFormOpen(true);
+  };
+
+  const handleFormClose = () => {
+    setSelectedProject(null);
+    setIsFormOpen(false);
+  };
+
+  const handleDetailsClose = () => {
+    setSelectedProject(null);
+    setIsDetailsOpen(false);
+  };
+
   const totalProjects = projects.length;
   const activeProjects = projects.filter(project => project.is_active).length;
   const portfolioProjects = projects.filter(project => project.is_portfolio).length;
@@ -90,7 +114,7 @@ const Projects = () => {
             <h1 className="text-2xl font-bold text-white">Projects</h1>
             <Button 
               className="hover:scale-105 transition-transform w-full sm:w-auto"
-              onClick={() => navigate("/projects/new")}
+              onClick={() => setIsFormOpen(true)}
             >
               <PlusCircle className="mr-2 h-4 w-4" />
               Add Project
@@ -140,7 +164,7 @@ const Projects = () => {
               <Card 
                 key={project.id} 
                 className="hover:scale-102 transition-transform duration-200 cursor-pointer bg-gray-800/50 backdrop-blur-sm border-gray-700"
-                onClick={() => navigate(`/projects/${project.id}`)}
+                onClick={() => handleProjectClick(project)}
               >
                 <CardHeader className="pb-2">
                   <CardTitle className="text-lg text-white">{project.name}</CardTitle>
@@ -166,10 +190,7 @@ const Projects = () => {
                         variant="outline" 
                         size="sm"
                         className="text-gray-300 border-gray-600 hover:bg-gray-700"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate(`/projects/${project.id}/edit`);
-                        }}
+                        onClick={(e) => handleEditClick(e, project)}
                       >
                         Edit
                       </Button>
@@ -181,6 +202,21 @@ const Projects = () => {
           </div>
         </div>
       </div>
+
+      <ProjectFormModal 
+        isOpen={isFormOpen}
+        onClose={handleFormClose}
+        project={selectedProject}
+        onSuccess={fetchProjects}
+      />
+
+      {selectedProject && (
+        <ProjectDetailsModal
+          isOpen={isDetailsOpen}
+          onClose={handleDetailsClose}
+          project={selectedProject}
+        />
+      )}
     </div>
   );
 };
