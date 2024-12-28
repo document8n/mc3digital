@@ -2,7 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Printer } from "lucide-react";
+import { ArrowLeft, Printer, Code2 } from "lucide-react";
 import { format } from "date-fns";
 import AdminMenu from "@/components/AdminMenu";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -90,12 +90,8 @@ const InvoiceDetails = () => {
           <div className="bg-white text-gray-900 p-8 rounded-lg shadow-lg">
             {/* Company Branding */}
             <div className="flex items-center mb-8">
-              <img 
-                src="/mc3digital-logo.png" 
-                alt="mc3digital logo" 
-                className="h-12 w-auto mr-3"
-              />
-              <span className="text-xl font-semibold">mc3digital</span>
+              <Code2 className="h-8 w-8 text-gray-900" />
+              <span className="text-xl font-semibold ml-2">mc3digital</span>
             </div>
 
             {/* Invoice Header */}
