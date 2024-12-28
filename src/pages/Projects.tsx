@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import AdminMenu from "@/components/AdminMenu";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, FolderOpen, Star, Briefcase } from "lucide-react";
+import { PlusCircle, FolderOpen, Star, Briefcase, Calendar, Users, DollarSign } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
