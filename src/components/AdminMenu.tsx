@@ -14,14 +14,14 @@ const AdminMenu = () => {
     <>
       {/* Mobile Header */}
       {isMobile && (
-        <div className="fixed top-0 left-0 right-0 h-16 bg-[#1A1F2C] shadow-lg z-40 px-4 flex items-center justify-between">
+        <div className="fixed top-0 left-0 right-0 h-16 bg-[#1A1F2C] shadow-lg z-50 px-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Code2 className="h-6 w-6 text-white" />
             <span className="text-xl font-bold text-white">mc3digital</span>
           </div>
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="p-2 text-white"
+            className="p-2 text-white hover:text-gray-300 transition-colors"
           >
             {isOpen ? (
               <X className="h-6 w-6" />
@@ -56,36 +56,40 @@ const AdminMenu = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="fixed inset-0 bg-black bg-opacity-50 z-30"
+                className="fixed inset-0 bg-black bg-opacity-50 z-40"
                 onClick={() => setIsOpen(false)}
               />
             )}
 
             {/* Menu Content */}
-            <motion.nav
-              initial={isMobile ? { x: "-100%" } : { x: 0 }}
-              animate={{ x: 0 }}
-              exit={isMobile ? { x: "-100%" } : { x: 0 }}
-              transition={{ type: "tween", duration: 0.2 }}
-              className={cn(
-                "sidebar-gradient border-r border-sidebar-border fixed left-0 h-screen p-4 flex flex-col z-40",
-                isMobile ? "w-[80%] max-w-[300px] top-16" : "w-64 top-0"
-              )}
-            >
-              {/* Logo (desktop only) */}
-              {!isMobile && (
+            {isMobile ? (
+              <motion.nav
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="fixed top-16 left-0 right-0 bg-[#1A1F2C]/95 backdrop-blur-sm overflow-hidden z-40 border-b border-gray-800"
+              >
+                <div className="p-4">
+                  <MenuItems onItemClick={() => setIsOpen(false)} />
+                  <UserActions onActionClick={() => setIsOpen(false)} />
+                </div>
+              </motion.nav>
+            ) : (
+              <motion.nav
+                initial={{ x: 0 }}
+                animate={{ x: 0 }}
+                exit={{ x: 0 }}
+                className="sidebar-gradient border-r border-sidebar-border fixed left-0 top-0 h-screen w-64 p-4 flex flex-col z-40"
+              >
                 <div className="flex items-center space-x-2 mb-8">
                   <Code2 className="h-6 w-6 text-white" />
                   <span className="text-xl font-bold text-white">mc3digital</span>
                 </div>
-              )}
-
-              {/* Menu Items */}
-              <MenuItems onItemClick={() => isMobile && setIsOpen(false)} />
-
-              {/* User Actions */}
-              <UserActions onActionClick={() => isMobile && setIsOpen(false)} />
-            </motion.nav>
+                <MenuItems onItemClick={() => isMobile && setIsOpen(false)} />
+                <UserActions onActionClick={() => isMobile && setIsOpen(false)} />
+              </motion.nav>
+            )}
           </>
         )}
       </AnimatePresence>
