@@ -1,38 +1,83 @@
+import { useEffect, useState } from "react";
 import AdminMenu from "@/components/AdminMenu";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PlusCircle, Calendar, Users, DollarSign } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
+
+interface Project {
+  id: string;
+  name: string;
+  client: string;
+  start_date: string;
+  status: string;
+  team_size: number;
+  budget: number;
+}
 
 const Projects = () => {
-  const projects = [
-    {
-      id: 1,
-      name: "E-commerce Platform",
-      client: "Tech Solutions Inc",
-      startDate: "2024-01-15",
-      status: "In Progress",
-      team: 5,
-      budget: 45000
-    },
-    {
-      id: 2,
-      name: "Mobile App Development",
-      client: "Startup Co",
-      startDate: "2024-02-01",
-      status: "Planning",
-      team: 3,
-      budget: 28000
-    },
-    {
-      id: 3,
-      name: "Website Redesign",
-      client: "Retail Group",
-      startDate: "2024-01-01",
-      status: "In Progress",
-      team: 4,
-      budget: 32000
+  const [projects, setProjects] = useState<Project[]>([]);
+  const { toast } = useToast();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Initial fetch of projects
+    fetchProjects();
+
+    // Set up real-time subscription
+    const channel = supabase
+      .channel('schema-db-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'projects'
+        },
+        (payload) => {
+          console.log('Real-time update received:', payload);
+          fetchProjects();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  const fetchProjects = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('projects')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching projects:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load projects",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setProjects(data || []);
+    } catch (error) {
+      console.error('Error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load projects",
+        variant: "destructive",
+      });
     }
-  ];
+  };
+
+  const totalBudget = projects.reduce((sum, project) => sum + Number(project.budget), 0);
+  const totalTeamMembers = projects.reduce((sum, project) => sum + project.team_size, 0);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
@@ -62,9 +107,7 @@ const Projects = () => {
                 <CardTitle className="text-lg">Team Members</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-3xl font-bold">
-                  {projects.reduce((sum, project) => sum + project.team, 0)}
-                </p>
+                <p className="text-3xl font-bold">{totalTeamMembers}</p>
               </CardContent>
             </Card>
 
@@ -73,9 +116,7 @@ const Projects = () => {
                 <CardTitle className="text-lg">Total Budget</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-3xl font-bold">
-                  ${projects.reduce((sum, project) => sum + project.budget, 0).toLocaleString()}
-                </p>
+                <p className="text-3xl font-bold">${totalBudget.toLocaleString()}</p>
               </CardContent>
             </Card>
           </div>
@@ -92,17 +133,17 @@ const Projects = () => {
                       <p className="font-medium text-foreground">{project.client}</p>
                       <div className="flex items-center text-muted-foreground">
                         <Calendar className="h-4 w-4 mr-2 text-blue-400" />
-                        <span>Started: {project.startDate}</span>
+                        <span>Started: {new Date(project.start_date).toLocaleDateString()}</span>
                       </div>
                       <div className="flex items-center text-muted-foreground">
                         <Users className="h-4 w-4 mr-2 text-green-400" />
-                        <span>Team Size: {project.team}</span>
+                        <span>Team Size: {project.team_size}</span>
                       </div>
                     </div>
                     <div className="flex justify-between items-center pt-2 border-t">
                       <div className="flex items-center text-sm text-muted-foreground">
                         <DollarSign className="h-4 w-4 mr-1 text-amber-400" />
-                        <span>${project.budget.toLocaleString()}</span>
+                        <span>${Number(project.budget).toLocaleString()}</span>
                       </div>
                       <Button variant="outline" size="sm">
                         View Details
