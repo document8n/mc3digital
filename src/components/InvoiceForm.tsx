@@ -33,6 +33,8 @@ export function InvoiceForm({ initialData, clientId, onSuccess }: InvoiceFormPro
   const [isLoading, setIsLoading] = useState(false);
   const [clients, setClients] = useState<any[]>([]);
 
+  console.log("Initial due_date:", initialData?.due_date);
+
   const form = useForm<InvoiceFormValues>({
     defaultValues: {
       invoice_number: initialData?.invoice_number || "",
@@ -64,6 +66,7 @@ export function InvoiceForm({ initialData, clientId, onSuccess }: InvoiceFormPro
 
   const onSubmit = async (values: InvoiceFormValues) => {
     try {
+      console.log("Submitting form with values:", values);
       setIsLoading(true);
       const { data: userData, error: userError } = await supabase.auth.getUser();
       
@@ -78,6 +81,8 @@ export function InvoiceForm({ initialData, clientId, onSuccess }: InvoiceFormPro
         notes: values.notes,
         user_id: userData.user.id,
       };
+
+      console.log("Prepared invoice data:", invoiceData);
 
       if (initialData) {
         const { error } = await supabase
