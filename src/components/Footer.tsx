@@ -24,7 +24,7 @@ export const Footer = () => {
             </Button>
           </div>
           <p className="text-sm text-gray-400">
-            © {new Date().getFullYear()} MC3 Digital. All rights reserved.
+            © {new Date().getFullYear()} MC3Digital. All rights reserved.
           </p>
         </div>
       </div>
