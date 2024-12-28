@@ -14,6 +14,7 @@ interface Task {
   description: string | null;
   status: string;
   due_date: string | null;
+  display_order: number;
   project?: {
     name: string;
   } | null;
@@ -30,9 +31,9 @@ export function TaskBoard({ tasks, onUpdate }: TaskBoardProps) {
   const { toast } = useToast();
 
   const tasksByStatus = {
-    todo: tasks?.filter((task) => task.status === "Todo") || [],
-    inProgress: tasks?.filter((task) => task.status === "In Progress") || [],
-    completed: tasks?.filter((task) => task.status === "Completed") || [],
+    todo: tasks?.filter((task) => task.status === "Todo").sort((a, b) => a.display_order - b.display_order) || [],
+    inProgress: tasks?.filter((task) => task.status === "In Progress").sort((a, b) => a.display_order - b.display_order) || [],
+    completed: tasks?.filter((task) => task.status === "Completed").sort((a, b) => a.display_order - b.display_order) || [],
   };
 
   const handleDragStart = (event: any) => {
@@ -66,9 +67,22 @@ export function TaskBoard({ tasks, onUpdate }: TaskBoardProps) {
     }
 
     try {
+      // Get tasks in the target status to calculate new display order
+      const tasksInTargetStatus = tasksByStatus[container as keyof typeof tasksByStatus];
+      const newDisplayOrder = tasksInTargetStatus.length;
+
+      console.log('Updating task:', {
+        taskId,
+        newStatus,
+        newDisplayOrder
+      });
+
       const { error } = await supabase
         .from('tasks')
-        .update({ status: newStatus })
+        .update({ 
+          status: newStatus,
+          display_order: newDisplayOrder
+        })
         .eq('id', taskId);
 
       if (error) throw error;
