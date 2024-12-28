@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { TaskForm } from "@/components/TaskForm";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 interface Task {
   id: string;
@@ -65,21 +66,19 @@ export function ProjectTasks({ projectId, tasks, refetchTasks }: ProjectTasksPro
         </Button>
       </div>
 
-      {showTaskForm && (
-        <Card>
-          <CardContent className="p-6">
-            <TaskForm
-              projectId={projectId}
-              initialData={editingTask || undefined}
-              onSuccess={handleTaskSuccess}
-              onCancel={() => {
-                setShowTaskForm(false);
-                setEditingTask(null);
-              }}
-            />
-          </CardContent>
-        </Card>
-      )}
+      <Dialog open={showTaskForm} onOpenChange={setShowTaskForm}>
+        <DialogContent>
+          <TaskForm
+            projectId={projectId}
+            initialData={editingTask || undefined}
+            onSuccess={handleTaskSuccess}
+            onCancel={() => {
+              setShowTaskForm(false);
+              setEditingTask(null);
+            }}
+          />
+        </DialogContent>
+      </Dialog>
 
       {tasks?.length === 0 ? (
         <Card>
