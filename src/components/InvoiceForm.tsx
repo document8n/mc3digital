@@ -2,16 +2,11 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { Form } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { format, addDays } from "date-fns";
-import { InvoiceClientField } from "./invoice/InvoiceClientField";
-import { InvoiceDateField } from "./invoice/InvoiceDateField";
-import { InvoiceStatusField } from "./invoice/InvoiceStatusField";
-import { InvoiceLineItems } from "./invoice/InvoiceLineItems";
+import { InvoiceFormFields } from "./invoice/InvoiceFormFields";
 
 interface InvoiceFormProps {
   initialData?: any;
@@ -135,62 +130,10 @@ export function InvoiceForm({ initialData, clientId, onSuccess }: InvoiceFormPro
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <FormField
-          control={form.control}
-          name="invoice_number"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Invoice Number</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <InvoiceClientField form={form} clients={clients} />
-        <InvoiceLineItems form={form} />
-
-        <FormField
-          control={form.control}
-          name="amount"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Total Amount</FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  {...field}
-                  onChange={e => field.onChange(parseFloat(e.target.value))}
-                  disabled
-                  className="bg-gray-50"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <InvoiceStatusField form={form} />
-        <InvoiceDateField form={form} />
-
-        <FormField
-          control={form.control}
-          name="notes"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Notes</FormLabel>
-              <FormControl>
-                <Textarea {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <div className="flex gap-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <InvoiceFormFields form={form} clients={clients} />
+        
+        <div className="flex gap-4 pt-4">
           <Button type="submit" disabled={isLoading}>
             {isLoading ? "Saving..." : initialData ? "Update Invoice" : "Create Invoice"}
           </Button>
