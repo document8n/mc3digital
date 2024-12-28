@@ -30,7 +30,7 @@ export function InvoiceDateField({ form }: InvoiceDateFieldProps) {
                   )}
                 >
                   {field.value ? (
-                    format(field.value, "PPP")
+                    format(new Date(field.value), "PPP")
                   ) : (
                     <span>Pick a date</span>
                   )}
@@ -41,10 +41,10 @@ export function InvoiceDateField({ form }: InvoiceDateFieldProps) {
             <PopoverContent className="w-auto p-0" align="start">
               <Calendar
                 mode="single"
-                selected={field.value}
-                onSelect={field.onChange}
+                selected={new Date(field.value)}
+                onSelect={(date) => field.onChange(date)}
                 disabled={(date) =>
-                  date < new Date()
+                  date < new Date(new Date().setHours(0, 0, 0, 0))
                 }
                 initialFocus
               />
