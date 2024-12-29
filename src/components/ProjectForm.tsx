@@ -3,11 +3,9 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { BasicInfoFields } from "./project-form/BasicInfoFields";
-import { MetricsFields } from "./project-form/MetricsFields";
-import { SettingsFields } from "./project-form/SettingsFields";
 import { ClientField } from "./project-form/ClientField";
 import { DateStatusFields } from "./project-form/DateStatusFields";
+import { SettingsFields } from "./project-form/SettingsFields";
 import { ProjectFormProps, ProjectFormValues } from "./project-form/types";
 import { format } from "date-fns";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
@@ -22,15 +20,14 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
       name: initialData?.name || "",
       client_id: initialData?.client_id || "",
       start_date: initialData?.start_date ? new Date(initialData.start_date) : new Date(),
+      due_date: initialData?.due_date ? new Date(initialData.due_date) : undefined,
       status: initialData?.status || "Planning",
-      team_size: initialData?.team_size || 1,
-      budget: initialData?.budget || 0,
       notes: initialData?.notes || "",
       url: initialData?.url || "",
       image: initialData?.image || "",
       is_active: initialData?.is_active ?? true,
       is_portfolio: initialData?.is_portfolio ?? false,
-      industry: initialData?.industry || "",
+      team_members: initialData?.team_members || "",
     },
   });
 
@@ -47,6 +44,7 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
       const formattedData = {
         ...data,
         start_date: format(data.start_date, "yyyy-MM-dd"),
+        due_date: data.due_date ? format(data.due_date, "yyyy-MM-dd") : null,
         user_id: userData.user.id,
       };
 
@@ -95,7 +93,6 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="space-y-4">
-          {/* Primary Information */}
           <FormField
             control={form.control}
             name="name"
@@ -129,29 +126,27 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
           />
 
           <ClientField form={form} />
+
+          <FormField
+            control={form.control}
+            name="team_members"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Team Members</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter team members" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Project Details */}
           <div className="space-y-4">
             <DateStatusFields form={form} />
-            <MetricsFields form={form} />
-            <FormField
-              control={form.control}
-              name="industry"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Industry</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter industry" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
           </div>
 
-          {/* Settings and Additional Info */}
           <div className="space-y-4">
             <SettingsFields form={form} />
           </div>
