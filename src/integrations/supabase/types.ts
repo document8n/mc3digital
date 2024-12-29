@@ -157,55 +157,58 @@ export type Database = {
       }
       projects: {
         Row: {
+          budget: number
           client_id: string | null
           created_at: string
           display_order: number
-          due_date: string | null
           id: string
           image: string | null
+          industry: string | null
           is_active: boolean
           is_portfolio: boolean
           name: string | null
           notes: string | null
           start_date: string
           status: string
-          team_members: string | null
+          team_size: number
           updated_at: string | null
           url: string | null
           user_id: string
         }
         Insert: {
+          budget?: number
           client_id?: string | null
           created_at?: string
           display_order?: number
-          due_date?: string | null
           id?: string
           image?: string | null
+          industry?: string | null
           is_active?: boolean
           is_portfolio?: boolean
           name?: string | null
           notes?: string | null
           start_date: string
           status: string
-          team_members?: string | null
+          team_size?: number
           updated_at?: string | null
           url?: string | null
           user_id: string
         }
         Update: {
+          budget?: number
           client_id?: string | null
           created_at?: string
           display_order?: number
-          due_date?: string | null
           id?: string
           image?: string | null
+          industry?: string | null
           is_active?: boolean
           is_portfolio?: boolean
           name?: string | null
           notes?: string | null
           start_date?: string
           status?: string
-          team_members?: string | null
+          team_size?: number
           updated_at?: string | null
           url?: string | null
           user_id?: string

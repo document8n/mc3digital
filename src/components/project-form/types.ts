@@ -1,15 +1,16 @@
 export interface ProjectFormValues {
   name: string;
   start_date: Date;
-  due_date?: Date;
   status: string;
+  team_size: number;
+  budget: number;
   is_active: boolean;
   is_portfolio: boolean;
   notes?: string;
   url?: string;
   image?: string;
   client_id?: string;
-  team_members?: string;
+  industry?: string;
 }
 
 export interface ProjectFormProps {
@@ -17,15 +18,16 @@ export interface ProjectFormProps {
     id: string;
     name: string;
     start_date: string;
-    due_date?: string;
     status: string;
+    team_size: number;
+    budget: number;
     is_active: boolean;
     is_portfolio: boolean;
     notes?: string;
     url?: string;
     image?: string;
     client_id?: string;
-    team_members?: string;
+    industry?: string;
   };
   onSuccess?: () => void;
 }
