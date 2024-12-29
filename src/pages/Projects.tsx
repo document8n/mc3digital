@@ -68,7 +68,8 @@ const Projects = () => {
         return;
       }
 
-      setProjects(data || []);
+      // Type assertion to ensure data matches Project type
+      setProjects(data as Project[]);
     } catch (error: any) {
       console.error('Error:', error);
       toast({
