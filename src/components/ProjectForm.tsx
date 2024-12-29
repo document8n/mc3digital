@@ -10,7 +10,7 @@ import { ClientField } from "./project-form/ClientField";
 import { DateStatusFields } from "./project-form/DateStatusFields";
 import { ProjectFormProps, ProjectFormValues } from "./project-form/types";
 import { format } from "date-fns";
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
 export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
@@ -91,37 +91,39 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
   };
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="space-y-4">
-          <BasicInfoFields form={form} />
-          <ClientField form={form} />
-          <DateStatusFields form={form} />
-          <FormField
-            control={form.control}
-            name="industry"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Industry</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter industry" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="space-y-4">
+            <BasicInfoFields form={form} />
+            <ClientField form={form} />
+            <DateStatusFields form={form} />
+            <FormField
+              control={form.control}
+              name="industry"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Industry</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter industry" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="space-y-4">
+            <MetricsFields form={form} />
+            <SettingsFields form={form} />
+          </div>
         </div>
-        <div className="space-y-4">
-          <MetricsFields form={form} />
-          <SettingsFields form={form} />
-        </div>
-      </div>
 
-      <div className="flex justify-end gap-4">
-        <Button type="submit">
-          {initialData ? "Update Project" : "Create Project"}
-        </Button>
-      </div>
-    </form>
+        <div className="flex justify-end gap-4">
+          <Button type="submit">
+            {initialData ? "Update Project" : "Create Project"}
+          </Button>
+        </div>
+      </form>
+    </Form>
   );
 }
