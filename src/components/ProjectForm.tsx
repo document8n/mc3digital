@@ -11,7 +11,6 @@ import { ProjectFormProps, ProjectFormValues } from "./project-form/types";
 import { format } from "date-fns";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 
 export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
   const { toast } = useToast();
@@ -19,7 +18,7 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
   const form = useForm<ProjectFormValues>({
     defaultValues: {
       name: initialData?.name || "",
-      client_id: initialData?.client_id || "",
+      client_id: initialData?.client_id || null, // Changed from empty string to null
       start_date: initialData?.start_date ? new Date(initialData.start_date) : new Date(),
       status: initialData?.status || "Planning",
       notes: initialData?.notes || "",
@@ -41,14 +40,16 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
       const { data: userData, error: userError } = await supabase.auth.getUser();
       if (userError) throw userError;
 
-      // Ensure we're not overwriting the HTML content from the TipTap editor
+      // Format the data and handle null client_id
       const formattedData = {
         ...data,
         start_date: format(data.start_date, "yyyy-MM-dd"),
         user_id: userData.user.id,
-        // Only update notes if it's actually changed
+        client_id: data.client_id || null, // Ensure null is used instead of empty string
         notes: data.notes !== initialData?.notes ? data.notes : initialData?.notes,
       };
+
+      console.log("Formatted data for submission:", formattedData);
 
       let result;
       if (initialData?.id) {

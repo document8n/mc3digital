@@ -163,6 +163,7 @@ export type Database = {
           due_date: string | null
           id: string
           image: string | null
+          industry: string | null
           is_active: boolean
           is_portfolio: boolean
           name: string | null
@@ -181,6 +182,7 @@ export type Database = {
           due_date?: string | null
           id?: string
           image?: string | null
+          industry?: string | null
           is_active?: boolean
           is_portfolio?: boolean
           name?: string | null
@@ -199,6 +201,7 @@ export type Database = {
           due_date?: string | null
           id?: string
           image?: string | null
+          industry?: string | null
           is_active?: boolean
           is_portfolio?: boolean
           name?: string | null
