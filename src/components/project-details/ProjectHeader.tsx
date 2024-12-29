@@ -101,10 +101,6 @@ export function ProjectHeader({ project }: ProjectHeaderProps) {
               </a>
             </div>
           )}
-          <div>
-            <p className="text-sm text-gray-600">Display Order</p>
-            <p className="font-medium">{project.display_order}</p>
-          </div>
         </div>
 
         {/* Column 2 - Additional Info */}
