@@ -22,7 +22,6 @@ export function SettingsFields({ form }: SettingsFieldsProps) {
 
       setUploading(true);
       
-      // Upload the file to Supabase storage
       const fileExt = file.name.split('.').pop();
       const fileName = `${Math.random()}.${fileExt}`;
       const { data, error: uploadError } = await supabase.storage
@@ -31,7 +30,6 @@ export function SettingsFields({ form }: SettingsFieldsProps) {
 
       if (uploadError) throw uploadError;
 
-      // Get the public URL
       const { data: { publicUrl } } = supabase.storage
         .from('project-images')
         .getPublicUrl(fileName);
@@ -94,57 +92,53 @@ export function SettingsFields({ form }: SettingsFieldsProps) {
         )}
       />
 
-      {form.watch("is_portfolio") && (
-        <>
-          <FormField
-            control={form.control}
-            name="url"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Project URL</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter project URL" {...field} value={field.value || ""} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+      <FormField
+        control={form.control}
+        name="url"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Project URL</FormLabel>
+            <FormControl>
+              <Input placeholder="Enter project URL" {...field} value={field.value || ""} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
 
-          <FormField
-            control={form.control}
-            name="image"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Project Image</FormLabel>
-                <FormControl>
-                  <div className="space-y-4">
-                    <Input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                      disabled={uploading}
-                    />
-                    {field.value && (
-                      <div className="relative w-full aspect-video rounded-lg overflow-hidden">
-                        <img
-                          src={field.value}
-                          alt="Project preview"
-                          className="object-cover w-full h-full"
-                        />
-                      </div>
-                    )}
-                    <Input
-                      type="hidden"
-                      {...field}
+      <FormField
+        control={form.control}
+        name="image"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Project Image</FormLabel>
+            <FormControl>
+              <div className="space-y-4">
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  disabled={uploading}
+                />
+                {field.value && (
+                  <div className="relative w-full aspect-video rounded-lg overflow-hidden">
+                    <img
+                      src={field.value}
+                      alt="Project preview"
+                      className="object-cover w-full h-full"
                     />
                   </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </>
-      )}
+                )}
+                <Input
+                  type="hidden"
+                  {...field}
+                />
+              </div>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
     </>
   );
 }
