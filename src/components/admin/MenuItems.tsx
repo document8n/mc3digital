@@ -1,10 +1,11 @@
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { Grid, FileText, User, Settings, Home } from "lucide-react";
+import { Grid, FileText, User, Settings, Home, ListTodo } from "lucide-react";
 
 const menuItems = [
   { icon: Home, label: "Dashboard", path: "/admin" },
   { icon: Grid, label: "Projects", path: "/projects" },
+  { icon: ListTodo, label: "Tasks", path: "/tasks" },
   { icon: FileText, label: "Invoices", path: "/invoice" },
   { icon: User, label: "Clients", path: "/clients" },
   { icon: Settings, label: "Services", path: "/services" },

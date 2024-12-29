@@ -1,50 +1,80 @@
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
 import AdminMenu from "@/components/AdminMenu";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
-import { TaskForm } from "@/components/TaskForm";
-import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { TaskBoard } from "@/components/admin/TaskBoard";
-import { Task } from "@/types/task";
+import { ProjectStats } from "@/components/project/ProjectStats";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ListTodo, FileText, User } from "lucide-react";
 
 const AdminHome = () => {
   const isMobile = useIsMobile();
-  const [isTaskFormOpen, setIsTaskFormOpen] = useState(false);
-  const [editingTask, setEditingTask] = useState<Task | null>(null);
-  
-  const { data: tasks, isLoading, refetch: refetchTasks } = useQuery({
-    queryKey: ["tasks"],
+
+  const { data: projectStats } = useQuery({
+    queryKey: ["projectStats"],
     queryFn: async () => {
-      console.log("Fetching tasks...");
-      const { data, error } = await supabase
-        .from("tasks")
-        .select(`
-          *,
-          project:project_id (
-            name
-          )
-        `)
-        .order("due_date", { ascending: true });
+      const { data: projects, error } = await supabase
+        .from("projects")
+        .select("*");
 
-      if (error) {
-        console.error("Error fetching tasks:", error);
-        throw error;
-      }
+      if (error) throw error;
 
-      console.log("Tasks fetched:", data);
-      return data as Task[];
-    },
+      return {
+        totalProjects: projects.length,
+        activeProjects: projects.filter(p => p.is_active).length,
+        portfolioProjects: projects.filter(p => p.is_portfolio).length
+      };
+    }
   });
 
-  const handleTaskSuccess = () => {
-    setIsTaskFormOpen(false);
-    setEditingTask(null);
-    refetchTasks();
-  };
+  const { data: taskStats } = useQuery({
+    queryKey: ["taskStats"],
+    queryFn: async () => {
+      const { data: tasks, error } = await supabase
+        .from("tasks")
+        .select("status");
+
+      if (error) throw error;
+
+      return {
+        total: tasks.length,
+        todo: tasks.filter(t => t.status === "Todo").length,
+        inProgress: tasks.filter(t => t.status === "In Progress").length,
+        completed: tasks.filter(t => t.status === "Completed").length
+      };
+    }
+  });
+
+  const { data: clientCount } = useQuery({
+    queryKey: ["clientCount"],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from("clients")
+        .select("*", { count: 'exact', head: true });
+
+      if (error) throw error;
+      return count;
+    }
+  });
+
+  const { data: invoiceStats } = useQuery({
+    queryKey: ["invoiceStats"],
+    queryFn: async () => {
+      const { data: invoices, error } = await supabase
+        .from("invoices")
+        .select("status, amount");
+
+      if (error) throw error;
+
+      const total = invoices.reduce((sum, inv) => sum + Number(inv.amount), 0);
+      const pending = invoices.filter(inv => inv.status === "pending").length;
+
+      return {
+        total,
+        pending
+      };
+    }
+  });
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
@@ -54,40 +84,63 @@ const AdminHome = () => {
         isMobile ? "pl-0" : "pl-64"
       )}>
         <div className="p-4 md:p-6 max-w-7xl mx-auto space-y-6">
-          <div className="flex items-center justify-between">
-            <h1 className="text-xl md:text-2xl font-bold text-white">Task Management</h1>
-            <Dialog open={isTaskFormOpen} onOpenChange={setIsTaskFormOpen}>
-              <DialogTrigger asChild>
-                <Button onClick={() => setEditingTask(null)} className="flex items-center gap-2">
-                  <Plus className="h-4 w-4" /> Add Task
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>
-                    {editingTask ? "Edit Task" : "Add Task"}
-                  </DialogTitle>
-                </DialogHeader>
-                <TaskForm
-                  projectId=""
-                  initialData={editingTask || undefined}
-                  onSuccess={handleTaskSuccess}
-                  onCancel={() => {
-                    setIsTaskFormOpen(false);
-                    setEditingTask(null);
-                  }}
-                />
-              </DialogContent>
-            </Dialog>
-          </div>
-
-          {isLoading ? (
-            <div className="text-center py-4 text-white">Loading tasks...</div>
-          ) : tasks?.length === 0 ? (
-            <div className="text-center py-4 text-muted-foreground">No tasks found</div>
-          ) : (
-            <TaskBoard tasks={tasks} onUpdate={refetchTasks} />
+          <h1 className="text-xl md:text-2xl font-bold text-white mb-6">Dashboard Overview</h1>
+          
+          {projectStats && (
+            <ProjectStats
+              totalProjects={projectStats.totalProjects}
+              activeProjects={projectStats.activeProjects}
+              portfolioProjects={projectStats.portfolioProjects}
+            />
           )}
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <ListTodo className="h-5 w-5" />
+                  Tasks Overview
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  <p className="text-sm">Total Tasks: {taskStats?.total || 0}</p>
+                  <p className="text-sm">Todo: {taskStats?.todo || 0}</p>
+                  <p className="text-sm">In Progress: {taskStats?.inProgress || 0}</p>
+                  <p className="text-sm">Completed: {taskStats?.completed || 0}</p>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-orange-500 to-orange-600 text-white">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <FileText className="h-5 w-5" />
+                  Invoice Summary
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  <p className="text-sm">Total Amount: ${invoiceStats?.total.toFixed(2) || '0.00'}</p>
+                  <p className="text-sm">Pending Invoices: {invoiceStats?.pending || 0}</p>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-green-500 to-green-600 text-white">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <User className="h-5 w-5" />
+                  Client Overview
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  <p className="text-sm">Total Clients: {clientCount || 0}</p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
     </div>

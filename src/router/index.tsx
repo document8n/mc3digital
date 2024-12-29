@@ -11,6 +11,7 @@ import Invoices from "@/pages/Invoices";
 import InvoiceDetails from "@/pages/InvoiceDetails";
 import ProjectDetails from "@/pages/ProjectDetails";
 import ClientDetails from "@/pages/ClientDetails";
+import Tasks from "@/pages/Tasks";
 
 export const router = createBrowserRouter([
   {
@@ -90,6 +91,14 @@ export const router = createBrowserRouter([
     element: (
       <ProtectedRoute>
         <InvoiceDetails />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/tasks",
+    element: (
+      <ProtectedRoute>
+        <Tasks />
       </ProtectedRoute>
     ),
   },
