@@ -12,6 +12,7 @@ import { ProjectFormProps, ProjectFormValues } from "./project-form/types";
 import { format } from "date-fns";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
   const { toast } = useToast();
@@ -92,12 +93,49 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <div className="space-y-4">
+          {/* Primary Information */}
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Project Name</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter project name" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="notes"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Notes</FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder="Enter project notes..."
+                    className="min-h-[100px]"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <ClientField form={form} />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Project Details */}
           <div className="space-y-4">
-            <BasicInfoFields form={form} />
-            <ClientField form={form} />
             <DateStatusFields form={form} />
+            <MetricsFields form={form} />
             <FormField
               control={form.control}
               name="industry"
@@ -112,13 +150,14 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
               )}
             />
           </div>
+
+          {/* Settings and Additional Info */}
           <div className="space-y-4">
-            <MetricsFields form={form} />
             <SettingsFields form={form} />
           </div>
         </div>
 
-        <div className="flex justify-end gap-4">
+        <div className="flex justify-end gap-4 pt-4">
           <Button type="submit">
             {initialData ? "Update Project" : "Create Project"}
           </Button>
