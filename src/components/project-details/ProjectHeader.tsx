@@ -87,10 +87,10 @@ export function ProjectHeader({ project, hideEditButton }: ProjectHeaderProps) {
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-      <div className="flex justify-between items-start mb-4">
-        <div>
+      <div className="flex justify-between items-start gap-6">
+        <div className="flex-1">
           <h1 className="text-2xl font-bold mb-2">{project.name}</h1>
-          <div className="flex gap-2 items-center mb-2">
+          <div className="flex flex-wrap gap-2 items-center mb-4">
             <Badge variant="secondary">
               Start Date: {format(new Date(project.start_date), "PPP")}
             </Badge>
@@ -102,30 +102,27 @@ export function ProjectHeader({ project, hideEditButton }: ProjectHeaderProps) {
               <Badge variant="destructive">Inactive</Badge>
             )}
           </div>
-        </div>
-      </div>
 
-      <div className="grid grid-cols-1 gap-6">
-        {/* Project URL */}
-        {project.url && (
-          <div>
-            <p className="text-sm text-gray-600 mb-1">Project URL</p>
-            <a 
-              href={project.url} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-blue-600 hover:underline"
-            >
-              {project.url}
-            </a>
-          </div>
-        )}
+          {/* Project URL */}
+          {project.url && (
+            <div className="mb-4">
+              <p className="text-sm text-gray-600 mb-1">Project URL</p>
+              <a 
+                href={project.url} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:underline"
+              >
+                {project.url}
+              </a>
+            </div>
+          )}
+        </div>
 
         {/* Project Image */}
         {project.image && (
-          <div>
-            <p className="text-sm text-gray-600 mb-2">Project Image</p>
-            <div className="relative w-full max-w-[200px] aspect-video rounded-lg overflow-hidden">
+          <div className="flex-shrink-0">
+            <div className="relative w-[200px] aspect-video rounded-lg overflow-hidden">
               <img
                 src={project.image}
                 alt="Project preview"
@@ -134,13 +131,13 @@ export function ProjectHeader({ project, hideEditButton }: ProjectHeaderProps) {
             </div>
           </div>
         )}
+      </div>
 
-        {/* Notes Editor */}
-        <div className="w-full">
-          <p className="text-sm text-gray-600 mb-2">Notes</p>
-          <div className="min-h-[200px] w-full border rounded-lg p-4 bg-white">
-            <EditorContent editor={editor} />
-          </div>
+      {/* Notes Editor */}
+      <div className="w-full mt-4">
+        <p className="text-sm text-gray-600 mb-2">Notes</p>
+        <div className="min-h-[200px] w-full border rounded-lg p-4 bg-white">
+          <EditorContent editor={editor} />
         </div>
       </div>
 
