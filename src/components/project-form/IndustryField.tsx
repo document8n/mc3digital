@@ -16,25 +16,34 @@ export function IndustryField({ form }: IndustryFieldProps) {
   const [customIndustry, setCustomIndustry] = useState("");
   const { toast } = useToast();
 
-  const { data: industries = [], isLoading } = useQuery({
+  // Initialize with empty array and track loading state
+  const { data: industriesData, isLoading } = useQuery({
     queryKey: ["industries"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("industries")
-        .select("name")
-        .order("name");
+      try {
+        const { data, error } = await supabase
+          .from("industries")
+          .select("name")
+          .order("name");
 
-      if (error) {
-        console.error("Error fetching industries:", error);
+        if (error) {
+          console.error("Error fetching industries:", error);
+          return [];
+        }
+
+        return data || [];
+      } catch (error) {
+        console.error("Error in industries query:", error);
         return [];
       }
-      
-      return data?.map(industry => ({
-        value: industry.name,
-        label: industry.name,
-      })) || [];
     },
   });
+
+  // Transform the data into the format expected by Combobox
+  const industries = (industriesData || []).map(industry => ({
+    value: industry.name,
+    label: industry.name,
+  }));
 
   const handleCustomIndustryAdd = async () => {
     if (!customIndustry.trim()) return;
