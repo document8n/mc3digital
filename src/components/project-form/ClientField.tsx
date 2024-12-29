@@ -48,14 +48,17 @@ export function ClientField({ form }: ClientFieldProps) {
           <FormControl>
             <Select
               disabled={isLoading}
-              onValueChange={field.onChange}
-              value={field.value || "null"}
+              onValueChange={(value) => {
+                // Convert empty string to null, otherwise use the value
+                field.onChange(value === "" ? null : value);
+              }}
+              value={field.value || ""}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select a client" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="null">No client</SelectItem>
+                <SelectItem value="">No client</SelectItem>
                 {clients.map((client) => (
                   <SelectItem key={client.id} value={client.id}>
                     {client.business_name}
