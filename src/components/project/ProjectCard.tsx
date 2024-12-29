@@ -1,18 +1,15 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar, CheckSquare, Users } from "lucide-react";
+import { Activity, Archive } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { cn } from "@/lib/utils";
+import { Task } from "@/types/task";
 
 interface Project {
   id: string;
   name: string;
-  start_date: string;
-  status: string;
-  team_size: number;
-  budget: number;
   is_active: boolean;
   is_portfolio: boolean;
 }
@@ -24,7 +21,7 @@ interface ProjectCardProps {
 }
 
 export function ProjectCard({ project, onClick, isDragging }: ProjectCardProps) {
-  const [activeTasks, setActiveTasks] = useState(0);
+  const [recentTasks, setRecentTasks] = useState<Task[]>([]);
   
   const {
     attributes,
@@ -41,21 +38,25 @@ export function ProjectCard({ project, onClick, isDragging }: ProjectCardProps) 
   };
 
   useEffect(() => {
-    const fetchActiveTasks = async () => {
+    const fetchRecentTasks = async () => {
+      console.log('Fetching recent tasks for project:', project.id);
       const { data, error } = await supabase
         .from('tasks')
-        .select('id')
+        .select('*')
         .eq('project_id', project.id)
-        .neq('status', 'Completed');
+        .neq('status', 'Completed')
+        .order('updated_at', { ascending: false })
+        .limit(3);
 
-      if (!error) {
-        setActiveTasks(data?.length || 0);
+      if (error) {
+        console.error('Error fetching recent tasks:', error);
       } else {
-        console.error('Error fetching active tasks:', error);
+        console.log('Recent tasks fetched:', data);
+        setRecentTasks(data || []);
       }
     };
 
-    fetchActiveTasks();
+    fetchRecentTasks();
   }, [project.id]);
 
   return (
@@ -79,27 +80,37 @@ export function ProjectCard({ project, onClick, isDragging }: ProjectCardProps) 
         onClick={onClick}
       >
         <CardHeader className="pb-2">
-          <CardTitle className="text-lg text-white">{project.name}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            <div className="text-sm space-y-2">
-              <div className="flex items-center text-gray-300">
-                <Calendar className="h-4 w-4 mr-2 text-blue-400" />
-                <span>Started: {new Date(project.start_date).toLocaleDateString()}</span>
-              </div>
-              <div className="flex items-center text-gray-300">
-                <Users className="h-4 w-4 mr-2 text-green-400" />
-                <span>Team Size: {project.team_size}</span>
-              </div>
-            </div>
-            <div className="flex items-center pt-2 border-t border-gray-700">
-              <div className="flex items-center text-sm text-gray-300">
-                <CheckSquare className="h-4 w-4 mr-2 text-amber-400" />
-                <span>Active Tasks: {activeTasks}</span>
-              </div>
+          <div className="flex justify-between items-start">
+            <CardTitle className="text-lg text-white">{project.name}</CardTitle>
+            <div className="flex gap-2">
+              <Activity 
+                className={cn(
+                  "h-5 w-5",
+                  project.is_active ? "text-green-400 fill-current" : "text-gray-400"
+                )}
+              />
+              <Archive 
+                className={cn(
+                  "h-5 w-5",
+                  project.is_portfolio ? "text-blue-400 fill-current" : "text-gray-400"
+                )}
+              />
             </div>
           </div>
+        </CardHeader>
+        <CardContent>
+          {recentTasks.length > 0 ? (
+            <ul className="space-y-2 text-sm text-gray-300">
+              {recentTasks.map((task) => (
+                <li key={task.id} className="flex items-start">
+                  <span className="mr-2">•</span>
+                  <span className="line-clamp-1">{task.title}</span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-sm text-gray-400">No active tasks</p>
+          )}
         </CardContent>
       </Card>
     </div>
