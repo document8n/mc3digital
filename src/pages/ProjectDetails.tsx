@@ -7,10 +7,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ArrowLeft } from "lucide-react";
+import { ProjectFormModal } from "@/components/project/ProjectFormModal";
 
 export default function ProjectDetails() {
   const [project, setProject] = useState<any>(null);
   const [tasks, setTasks] = useState<any[]>([]);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const { id } = useParams();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -94,6 +96,11 @@ export default function ProjectDetails() {
     }
   }, [id]);
 
+  const handleEditSuccess = () => {
+    setIsEditModalOpen(false);
+    fetchProject();
+  };
+
   if (!project) return null;
 
   return (
@@ -110,7 +117,7 @@ export default function ProjectDetails() {
               Back to Projects
             </button>
             <button 
-              onClick={() => project.onEdit?.()}
+              onClick={() => setIsEditModalOpen(true)}
               className="bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md"
             >
               Edit Project
@@ -127,6 +134,13 @@ export default function ProjectDetails() {
           </div>
         </div>
       </div>
+
+      <ProjectFormModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        project={project}
+        onSuccess={handleEditSuccess}
+      />
     </div>
   );
 }
