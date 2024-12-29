@@ -41,10 +41,13 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
       const { data: userData, error: userError } = await supabase.auth.getUser();
       if (userError) throw userError;
 
+      // Ensure we're not overwriting the HTML content from the TipTap editor
       const formattedData = {
         ...data,
         start_date: format(data.start_date, "yyyy-MM-dd"),
         user_id: userData.user.id,
+        // Only update notes if it's actually changed
+        notes: data.notes !== initialData?.notes ? data.notes : initialData?.notes,
       };
 
       let result;
@@ -114,10 +117,9 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
               <FormItem>
                 <FormLabel>Notes</FormLabel>
                 <FormControl>
-                  <Textarea
-                    placeholder="Enter project notes..."
-                    className="min-h-[100px]"
-                    {...field}
+                  <div 
+                    className="min-h-[3em] max-h-[12em] overflow-y-auto border rounded-md p-3"
+                    dangerouslySetInnerHTML={{ __html: field.value || '' }}
                   />
                 </FormControl>
                 <FormMessage />
