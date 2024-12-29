@@ -4,7 +4,6 @@ export interface ProjectFormValues {
   status: string;
   is_active: boolean;
   is_portfolio: boolean;
-  notes?: string;
   url?: string;
   image?: string;
   client_id?: string;
@@ -19,7 +18,6 @@ export interface ProjectFormProps {
     status: string;
     is_active: boolean;
     is_portfolio: boolean;
-    notes?: string;
     url?: string;
     image?: string;
     client_id?: string;

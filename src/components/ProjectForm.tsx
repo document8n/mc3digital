@@ -18,10 +18,9 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
   const form = useForm<ProjectFormValues>({
     defaultValues: {
       name: initialData?.name || "",
-      client_id: initialData?.client_id || null, // Changed from empty string to null
+      client_id: initialData?.client_id || null,
       start_date: initialData?.start_date ? new Date(initialData.start_date) : new Date(),
       status: initialData?.status || "Planning",
-      notes: initialData?.notes || "",
       url: initialData?.url || "",
       image: initialData?.image || "",
       is_active: initialData?.is_active ?? true,
@@ -40,13 +39,11 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
       const { data: userData, error: userError } = await supabase.auth.getUser();
       if (userError) throw userError;
 
-      // Format the data and handle null client_id
       const formattedData = {
         ...data,
         start_date: format(data.start_date, "yyyy-MM-dd"),
         user_id: userData.user.id,
-        client_id: data.client_id || null, // Ensure null is used instead of empty string
-        notes: data.notes !== initialData?.notes ? data.notes : initialData?.notes,
+        client_id: data.client_id || null,
       };
 
       console.log("Formatted data for submission:", formattedData);
@@ -105,23 +102,6 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
                 <FormLabel>Project Name</FormLabel>
                 <FormControl>
                   <Input placeholder="Enter project name" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="notes"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Notes</FormLabel>
-                <FormControl>
-                  <div 
-                    className="min-h-[3em] max-h-[12em] overflow-y-auto border rounded-md p-3"
-                    dangerouslySetInnerHTML={{ __html: field.value || '' }}
-                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
