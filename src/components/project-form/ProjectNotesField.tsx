@@ -20,6 +20,7 @@ export function ProjectNotesField({ form }: ProjectNotesFieldProps) {
               placeholder="Enter project notes..."
               className="min-h-[100px]"
               {...field}
+              value={field.value || ""}
             />
           </FormControl>
           <FormMessage />

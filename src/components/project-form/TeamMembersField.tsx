@@ -16,7 +16,11 @@ export function TeamMembersField({ form }: TeamMembersFieldProps) {
         <FormItem>
           <FormLabel>Team Members</FormLabel>
           <FormControl>
-            <Input placeholder="Enter team members" {...field} />
+            <Input 
+              placeholder="Enter team members" 
+              {...field}
+              value={field.value || ""}
+            />
           </FormControl>
           <FormMessage />
         </FormItem>

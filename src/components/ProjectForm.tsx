@@ -48,7 +48,7 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
         start_date: format(data.start_date, "yyyy-MM-dd"),
         due_date: data.due_date ? format(data.due_date, "yyyy-MM-dd") : null,
         user_id: userData.user.id,
-        notes: data.notes || null, // Ensure notes are properly handled
+        notes: data.notes || null,
       };
 
       console.log("Formatted data for submission:", formattedData);
