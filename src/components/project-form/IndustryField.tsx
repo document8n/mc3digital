@@ -16,7 +16,7 @@ export function IndustryField({ form }: IndustryFieldProps) {
   const [customIndustry, setCustomIndustry] = useState("");
   const { toast } = useToast();
 
-  const { data: industries = [] } = useQuery({
+  const { data: industries = [], isLoading } = useQuery({
     queryKey: ["industries"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -24,11 +24,15 @@ export function IndustryField({ form }: IndustryFieldProps) {
         .select("name")
         .order("name");
 
-      if (error) throw error;
-      return data.map(industry => ({
+      if (error) {
+        console.error("Error fetching industries:", error);
+        return [];
+      }
+      
+      return data?.map(industry => ({
         value: industry.name,
         label: industry.name,
-      }));
+      })) || [];
     },
   });
 
@@ -71,7 +75,7 @@ export function IndustryField({ form }: IndustryFieldProps) {
                 options={industries}
                 value={field.value || ""}
                 onValueChange={field.onChange}
-                placeholder="Select or type to add new industry"
+                placeholder={isLoading ? "Loading industries..." : "Select or type to add new industry"}
               />
               {customIndustry && (
                 <div className="flex gap-2">
