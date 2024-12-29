@@ -10,6 +10,7 @@ interface Project {
   id: string;
   name: string;
   start_date: string;
+  due_date?: string;
   status: string;
   team_size?: number;
   notes: string | null;
@@ -18,6 +19,10 @@ interface Project {
   is_active: boolean;
   is_portfolio: boolean;
   client_id: string | null;
+  display_order: number;
+  team_members: string | null;
+  created_at?: string;
+  updated_at?: string;
 }
 
 interface ProjectHeaderProps {
@@ -53,10 +58,15 @@ export function ProjectHeader({ project }: ProjectHeaderProps) {
       <div className="flex justify-between items-start mb-4">
         <div>
           <h1 className="text-2xl font-bold mb-2">{project.name}</h1>
-          <div className="flex gap-2 items-center mb-2">
+          <div className="flex gap-2 items-center mb-2 flex-wrap">
             <Badge variant="secondary">
               Start Date: {format(new Date(project.start_date), "PPP")}
             </Badge>
+            {project.due_date && (
+              <Badge variant="secondary">
+                Due Date: {format(new Date(project.due_date), "PPP")}
+              </Badge>
+            )}
             <Badge className={getStatusColor(project.status)}>{project.status}</Badge>
             {project.is_portfolio && (
               <Badge variant="outline">Portfolio Project</Badge>
@@ -69,13 +79,13 @@ export function ProjectHeader({ project }: ProjectHeaderProps) {
         <Button onClick={() => setIsEditModalOpen(true)}>Edit Project</Button>
       </div>
 
-      <div className="grid grid-cols-3 gap-4 mt-4">
-        {/* Column 1 */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+        {/* Column 1 - Project Details */}
         <div className="space-y-4">
-          {project.team_size && (
+          {project.team_members && (
             <div>
-              <p className="text-sm text-gray-600">Team Size</p>
-              <p className="font-medium">{project.team_size} members</p>
+              <p className="text-sm text-gray-600">Team Members</p>
+              <p className="font-medium">{project.team_members}</p>
             </div>
           )}
           {project.url && (
@@ -91,14 +101,30 @@ export function ProjectHeader({ project }: ProjectHeaderProps) {
               </a>
             </div>
           )}
+          <div>
+            <p className="text-sm text-gray-600">Display Order</p>
+            <p className="font-medium">{project.display_order}</p>
+          </div>
         </div>
 
-        {/* Column 2 */}
+        {/* Column 2 - Additional Info */}
         <div className="space-y-4">
           {project.notes && (
             <div>
               <p className="text-sm text-gray-600">Notes</p>
               <p className="whitespace-pre-wrap">{project.notes}</p>
+            </div>
+          )}
+          {project.created_at && (
+            <div>
+              <p className="text-sm text-gray-600">Created At</p>
+              <p className="font-medium">{format(new Date(project.created_at), "PPP")}</p>
+            </div>
+          )}
+          {project.updated_at && (
+            <div>
+              <p className="text-sm text-gray-600">Last Updated</p>
+              <p className="font-medium">{format(new Date(project.updated_at), "PPP")}</p>
             </div>
           )}
         </div>
