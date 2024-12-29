@@ -26,9 +26,10 @@ interface Project {
 
 interface ProjectHeaderProps {
   project: Project;
+  hideEditButton?: boolean;
 }
 
-export function ProjectHeader({ project }: ProjectHeaderProps) {
+export function ProjectHeader({ project, hideEditButton }: ProjectHeaderProps) {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -102,7 +103,6 @@ export function ProjectHeader({ project }: ProjectHeaderProps) {
             )}
           </div>
         </div>
-        <Button onClick={() => setIsEditModalOpen(true)}>Edit Project</Button>
       </div>
 
       <div className="grid grid-cols-1 gap-6">
@@ -121,19 +121,11 @@ export function ProjectHeader({ project }: ProjectHeaderProps) {
           </div>
         )}
 
-        {/* Notes Editor */}
-        <div className="w-full">
-          <p className="text-sm text-gray-600 mb-2">Notes</p>
-          <div className="min-h-[200px] w-full border rounded-lg p-4 bg-white">
-            <EditorContent editor={editor} />
-          </div>
-        </div>
-
         {/* Project Image */}
         {project.image && (
           <div>
             <p className="text-sm text-gray-600 mb-2">Project Image</p>
-            <div className="relative w-full aspect-video rounded-lg overflow-hidden">
+            <div className="relative w-full max-w-[200px] aspect-video rounded-lg overflow-hidden">
               <img
                 src={project.image}
                 alt="Project preview"
@@ -142,6 +134,14 @@ export function ProjectHeader({ project }: ProjectHeaderProps) {
             </div>
           </div>
         )}
+
+        {/* Notes Editor */}
+        <div className="w-full">
+          <p className="text-sm text-gray-600 mb-2">Notes</p>
+          <div className="min-h-[200px] w-full border rounded-lg p-4 bg-white">
+            <EditorContent editor={editor} />
+          </div>
+        </div>
       </div>
 
       <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>

@@ -101,16 +101,24 @@ export default function ProjectDetails() {
       <AdminMenu />
       <div className={`${isMobile ? 'pt-20' : 'pl-64'}`}>
         <div className="p-4 md:p-6 max-w-7xl mx-auto">
-          <button 
-            onClick={() => navigate('/projects')}
-            className="flex items-center text-white hover:text-gray-300 mb-6"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Projects
-          </button>
+          <div className="flex justify-between items-center mb-6">
+            <button 
+              onClick={() => navigate('/projects')}
+              className="flex items-center text-white hover:text-gray-300"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Projects
+            </button>
+            <button 
+              onClick={() => project.onEdit?.()}
+              className="bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md"
+            >
+              Edit Project
+            </button>
+          </div>
           
           <div className="space-y-6 bg-white/5 backdrop-blur-sm rounded-lg p-6">
-            <ProjectHeader project={project} />
+            <ProjectHeader project={project} hideEditButton />
             <ProjectTasks 
               projectId={project.id} 
               tasks={tasks}
