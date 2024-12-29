@@ -43,10 +43,14 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
 
       const formattedData = {
         ...data,
+        // Convert empty string client_id to null
+        client_id: data.client_id || null,
         start_date: format(data.start_date, "yyyy-MM-dd"),
         due_date: data.due_date ? format(data.due_date, "yyyy-MM-dd") : null,
         user_id: userData.user.id,
       };
+
+      console.log("Formatted data for submission:", formattedData);
 
       let result;
       if (initialData?.id) {
@@ -67,6 +71,7 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
       }
 
       if (result.error) {
+        console.error("Database operation failed:", result.error);
         throw result.error;
       }
 
