@@ -10,9 +10,10 @@ import { DateStatusFields } from "./project-form/DateStatusFields";
 import { MetricsFields } from "./project-form/MetricsFields";
 import { SettingsFields } from "./project-form/SettingsFields";
 import { ClientField } from "./project-form/ClientField";
-import { IndustryField } from "./project-form/IndustryField";
 import { ProjectFormProps, ProjectFormValues } from "./project-form/types";
 import { format } from "date-fns";
+import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 
 export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
   const { toast } = useToast();
@@ -107,7 +108,19 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
             <BasicInfoFields form={form} />
             <ClientField form={form} />
             <DateStatusFields form={form} />
-            <IndustryField form={form} />
+            <FormField
+              control={form.control}
+              name="industry"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Industry</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter industry" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
           <div className="space-y-4">
             <MetricsFields form={form} />
