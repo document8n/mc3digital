@@ -5,6 +5,11 @@ import { format } from "date-fns";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ProjectForm } from "@/components/ProjectForm";
 import { useQueryClient } from "@tanstack/react-query";
+import { useEditor, EditorContent } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import debounce from 'lodash/debounce';
 
 interface Project {
   id: string;
@@ -26,6 +31,38 @@ interface ProjectHeaderProps {
 export function ProjectHeader({ project }: ProjectHeaderProps) {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  const editor = useEditor({
+    extensions: [
+      StarterKit,
+    ],
+    content: project.notes || '',
+    editorProps: {
+      attributes: {
+        class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl focus:outline-none min-h-[200px] w-full',
+      },
+    },
+    onUpdate: debounce(async ({ editor }) => {
+      try {
+        const { error } = await supabase
+          .from('projects')
+          .update({ notes: editor.getHTML() })
+          .eq('id', project.id);
+
+        if (error) throw error;
+
+        queryClient.invalidateQueries({ queryKey: ['project', project.id] });
+      } catch (error: any) {
+        console.error('Error updating notes:', error);
+        toast({
+          title: "Error",
+          description: "Failed to save notes",
+          variant: "destructive",
+        });
+      }
+    }, 1000),
+  });
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -68,31 +105,31 @@ export function ProjectHeader({ project }: ProjectHeaderProps) {
         <Button onClick={() => setIsEditModalOpen(true)}>Edit Project</Button>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 mt-4">
-        {/* Column 1 */}
-        <div className="space-y-4">
-          {project.url && (
-            <div>
-              <p className="text-sm text-gray-600">Project URL</p>
-              <a 
-                href={project.url} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:underline"
-              >
-                {project.url}
-              </a>
-            </div>
-          )}
-          {project.notes && (
-            <div>
-              <p className="text-sm text-gray-600">Notes</p>
-              <p className="whitespace-pre-wrap">{project.notes}</p>
-            </div>
-          )}
+      <div className="grid grid-cols-1 gap-6">
+        {/* Project URL */}
+        {project.url && (
+          <div>
+            <p className="text-sm text-gray-600 mb-1">Project URL</p>
+            <a 
+              href={project.url} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:underline"
+            >
+              {project.url}
+            </a>
+          </div>
+        )}
+
+        {/* Notes Editor */}
+        <div className="w-full">
+          <p className="text-sm text-gray-600 mb-2">Notes</p>
+          <div className="min-h-[200px] w-full border rounded-lg p-4 bg-white">
+            <EditorContent editor={editor} />
+          </div>
         </div>
 
-        {/* Column 2 - Project Image */}
+        {/* Project Image */}
         {project.image && (
           <div>
             <p className="text-sm text-gray-600 mb-2">Project Image</p>
