@@ -9,12 +9,14 @@ import { ClientForm } from "@/components/ClientForm";
 import { useState } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
 
 const Clients = () => {
   console.log("Rendering Clients page");
   const [selectedClient, setSelectedClient] = useState<any>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
 
   const { data: clients, isLoading, refetch } = useQuery({
     queryKey: ['clients'],
@@ -34,7 +36,8 @@ const Clients = () => {
     },
   });
 
-  const handleEditClient = (client: any) => {
+  const handleEditClient = (client: any, e: React.MouseEvent) => {
+    e.stopPropagation();
     setSelectedClient(client);
     setIsFormOpen(true);
   };
@@ -117,7 +120,11 @@ const Clients = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {clients?.map((client) => (
-                <Card key={client.id} className="hover:scale-105 transition-transform duration-200">
+                <Card 
+                  key={client.id} 
+                  className="hover:scale-105 transition-transform duration-200 cursor-pointer"
+                  onClick={() => navigate(`/clients/${client.id}`)}
+                >
                   <CardHeader>
                     <CardTitle className="text-lg flex items-center justify-between">
                       <div className="flex items-center space-x-2">
@@ -127,7 +134,7 @@ const Clients = () => {
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => handleEditClient(client)}
+                        onClick={(e) => handleEditClient(client, e)}
                       >
                         <Pencil className="h-4 w-4" />
                       </Button>
@@ -167,6 +174,20 @@ const Clients = () => {
           )}
         </div>
       </div>
+
+      <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>
+              {selectedClient ? "Edit Client" : "Add New Client"}
+            </DialogTitle>
+          </DialogHeader>
+          <ClientForm
+            initialData={selectedClient}
+            onSuccess={handleFormSuccess}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
