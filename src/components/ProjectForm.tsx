@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { BasicInfoFields } from "./project-form/BasicInfoFields";
-import { MetricsFields } from "./project-form/MetricsFields";
 import { SettingsFields } from "./project-form/SettingsFields";
 import { ClientField } from "./project-form/ClientField";
 import { DateStatusFields } from "./project-form/DateStatusFields";
@@ -23,8 +22,6 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
       client_id: initialData?.client_id || "",
       start_date: initialData?.start_date ? new Date(initialData.start_date) : new Date(),
       status: initialData?.status || "Planning",
-      team_size: initialData?.team_size || 1,
-      budget: initialData?.budget || 0,
       notes: initialData?.notes || "",
       url: initialData?.url || "",
       image: initialData?.image || "",
@@ -135,7 +132,6 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
           {/* Project Details */}
           <div className="space-y-4">
             <DateStatusFields form={form} />
-            <MetricsFields form={form} />
             <FormField
               control={form.control}
               name="industry"

@@ -11,8 +11,6 @@ interface Project {
   name: string;
   start_date: string;
   status: string;
-  team_size: number;
-  budget: number;
   notes: string | null;
   url: string | null;
   image: string | null;
@@ -70,13 +68,9 @@ export function ProjectHeader({ project }: ProjectHeaderProps) {
         <Button onClick={() => setIsEditModalOpen(true)}>Edit Project</Button>
       </div>
 
-      <div className="grid grid-cols-3 gap-4 mt-4">
+      <div className="grid grid-cols-2 gap-4 mt-4">
         {/* Column 1 */}
         <div className="space-y-4">
-          <div>
-            <p className="text-sm text-gray-600">Team Size</p>
-            <p className="font-medium">{project.team_size} members</p>
-          </div>
           {project.url && (
             <div>
               <p className="text-sm text-gray-600">Project URL</p>
@@ -90,14 +84,6 @@ export function ProjectHeader({ project }: ProjectHeaderProps) {
               </a>
             </div>
           )}
-        </div>
-
-        {/* Column 2 */}
-        <div className="space-y-4">
-          <div>
-            <p className="text-sm text-gray-600">Budget</p>
-            <p className="font-medium">${project.budget.toLocaleString()}</p>
-          </div>
           {project.notes && (
             <div>
               <p className="text-sm text-gray-600">Notes</p>
@@ -106,7 +92,7 @@ export function ProjectHeader({ project }: ProjectHeaderProps) {
           )}
         </div>
 
-        {/* Column 3 - Project Image */}
+        {/* Column 2 - Project Image */}
         {project.image && (
           <div>
             <p className="text-sm text-gray-600 mb-2">Project Image</p>

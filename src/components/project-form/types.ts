@@ -2,8 +2,6 @@ export interface ProjectFormValues {
   name: string;
   start_date: Date;
   status: string;
-  team_size: number;
-  budget: number;
   is_active: boolean;
   is_portfolio: boolean;
   notes?: string;
@@ -19,8 +17,6 @@ export interface ProjectFormProps {
     name: string;
     start_date: string;
     status: string;
-    team_size: number;
-    budget: number;
     is_active: boolean;
     is_portfolio: boolean;
     notes?: string;
