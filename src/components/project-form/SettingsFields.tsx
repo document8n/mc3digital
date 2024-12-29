@@ -94,57 +94,53 @@ export function SettingsFields({ form }: SettingsFieldsProps) {
         )}
       />
 
-      {form.watch("is_portfolio") && (
-        <>
-          <FormField
-            control={form.control}
-            name="url"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Project URL</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter project URL" {...field} value={field.value || ""} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+      <FormField
+        control={form.control}
+        name="url"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Project URL</FormLabel>
+            <FormControl>
+              <Input placeholder="Enter project URL" {...field} value={field.value || ""} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
 
-          <FormField
-            control={form.control}
-            name="image"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Project Image</FormLabel>
-                <FormControl>
-                  <div className="space-y-4">
-                    <Input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                      disabled={uploading}
-                    />
-                    {field.value && (
-                      <div className="relative w-full aspect-video rounded-lg overflow-hidden">
-                        <img
-                          src={field.value}
-                          alt="Project preview"
-                          className="object-cover w-full h-full"
-                        />
-                      </div>
-                    )}
-                    <Input
-                      type="hidden"
-                      {...field}
+      <FormField
+        control={form.control}
+        name="image"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Project Image</FormLabel>
+            <FormControl>
+              <div className="space-y-4">
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  disabled={uploading}
+                />
+                {field.value && (
+                  <div className="relative w-full aspect-video rounded-lg overflow-hidden">
+                    <img
+                      src={field.value}
+                      alt="Project preview"
+                      className="object-cover w-full h-full"
                     />
                   </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </>
-      )}
+                )}
+                <Input
+                  type="hidden"
+                  {...field}
+                />
+              </div>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
     </>
   );
 }
