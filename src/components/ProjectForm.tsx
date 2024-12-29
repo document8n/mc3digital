@@ -7,6 +7,7 @@ import { BasicInfoFields } from "./project-form/BasicInfoFields";
 import { MetricsFields } from "./project-form/MetricsFields";
 import { SettingsFields } from "./project-form/SettingsFields";
 import { ClientField } from "./project-form/ClientField";
+import { DateStatusFields } from "./project-form/DateStatusFields";
 import { ProjectFormProps, ProjectFormValues } from "./project-form/types";
 import { format } from "date-fns";
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
