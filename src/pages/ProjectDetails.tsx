@@ -18,13 +18,36 @@ export default function ProjectDetails() {
 
   const fetchProject = async () => {
     try {
+      // Validate that we have a valid UUID before making the request
+      if (!id || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
+        console.error('Invalid project ID:', id);
+        toast({
+          title: "Error",
+          description: "Invalid project ID",
+          variant: "destructive",
+        });
+        navigate('/projects');
+        return;
+      }
+
       const { data, error } = await supabase
         .from('projects')
         .select('*')
         .eq('id', id)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
+      
+      if (!data) {
+        toast({
+          title: "Error",
+          description: "Project not found",
+          variant: "destructive",
+        });
+        navigate('/projects');
+        return;
+      }
+
       setProject(data);
     } catch (error: any) {
       console.error('Error fetching project:', error);
@@ -39,6 +62,11 @@ export default function ProjectDetails() {
 
   const fetchTasks = async () => {
     try {
+      // Only fetch tasks if we have a valid project ID
+      if (!id || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
+        return;
+      }
+
       const { data, error } = await supabase
         .from('tasks')
         .select('*')
@@ -61,6 +89,8 @@ export default function ProjectDetails() {
     if (id) {
       fetchProject();
       fetchTasks();
+    } else {
+      navigate('/projects');
     }
   }, [id]);
 
