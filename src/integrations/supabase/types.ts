@@ -63,27 +63,6 @@ export type Database = {
         }
         Relationships: []
       }
-      industries: {
-        Row: {
-          created_at: string
-          id: string
-          is_custom: boolean | null
-          name: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          is_custom?: boolean | null
-          name: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          is_custom?: boolean | null
-          name?: string
-        }
-        Relationships: []
-      }
       invoices: {
         Row: {
           amount: number
