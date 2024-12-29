@@ -1,16 +1,17 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { Form } from "@/components/ui/form";
+import { format } from "date-fns";
+import { ProjectFormProps, ProjectFormValues } from "./project-form/types";
+import { ProjectNameField } from "./project-form/ProjectNameField";
+import { ProjectNotesField } from "./project-form/ProjectNotesField";
 import { ClientField } from "./project-form/ClientField";
+import { TeamMembersField } from "./project-form/TeamMembersField";
 import { DateStatusFields } from "./project-form/DateStatusFields";
 import { SettingsFields } from "./project-form/SettingsFields";
-import { ProjectFormProps, ProjectFormValues } from "./project-form/types";
-import { format } from "date-fns";
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { ProjectFormSubmit } from "./project-form/ProjectFormSubmit";
 
 export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
   const { toast } = useToast();
@@ -43,7 +44,6 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
 
       const formattedData = {
         ...data,
-        // Convert empty string client_id to null
         client_id: data.client_id || null,
         start_date: format(data.start_date, "yyyy-MM-dd"),
         due_date: data.due_date ? format(data.due_date, "yyyy-MM-dd") : null,
@@ -98,70 +98,22 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="space-y-4">
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Project Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter project name" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="notes"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Notes</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder="Enter project notes..."
-                    className="min-h-[100px]"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
+          <ProjectNameField form={form} />
+          <ProjectNotesField form={form} />
           <ClientField form={form} />
-
-          <FormField
-            control={form.control}
-            name="team_members"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Team Members</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter team members" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <TeamMembersField form={form} />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-4">
             <DateStatusFields form={form} />
           </div>
-
           <div className="space-y-4">
             <SettingsFields form={form} />
           </div>
         </div>
 
-        <div className="flex justify-end gap-4 pt-4">
-          <Button type="submit">
-            {initialData ? "Update Project" : "Create Project"}
-          </Button>
-        </div>
+        <ProjectFormSubmit isEditing={!!initialData} />
       </form>
     </Form>
   );
