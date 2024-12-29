@@ -10,6 +10,7 @@ import { DateStatusFields } from "./project-form/DateStatusFields";
 import { MetricsFields } from "./project-form/MetricsFields";
 import { SettingsFields } from "./project-form/SettingsFields";
 import { ClientField } from "./project-form/ClientField";
+import { IndustryField } from "./project-form/IndustryField";
 import { ProjectFormProps, ProjectFormValues } from "./project-form/types";
 import { format } from "date-fns";
 
@@ -31,6 +32,7 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
       url: initialData?.url || "",
       image: initialData?.image || "",
       client_id: initialData?.client_id || "null",
+      industry: initialData?.industry || "",
     },
   });
 
@@ -53,6 +55,7 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
         url: values.url,
         image: values.image,
         client_id: values.client_id === "null" ? null : values.client_id,
+        industry: values.industry,
         user_id: userData.user.id,
       };
 
@@ -104,6 +107,7 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
             <BasicInfoFields form={form} />
             <ClientField form={form} />
             <DateStatusFields form={form} />
+            <IndustryField form={form} />
           </div>
           <div className="space-y-4">
             <MetricsFields form={form} />

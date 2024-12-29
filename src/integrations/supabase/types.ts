@@ -63,6 +63,27 @@ export type Database = {
         }
         Relationships: []
       }
+      industries: {
+        Row: {
+          created_at: string
+          id: string
+          is_custom: boolean | null
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_custom?: boolean | null
+          name: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_custom?: boolean | null
+          name?: string
+        }
+        Relationships: []
+      }
       invoices: {
         Row: {
           amount: number
@@ -163,6 +184,7 @@ export type Database = {
           display_order: number
           id: string
           image: string | null
+          industry: string | null
           is_active: boolean
           is_portfolio: boolean
           name: string | null
@@ -181,6 +203,7 @@ export type Database = {
           display_order?: number
           id?: string
           image?: string | null
+          industry?: string | null
           is_active?: boolean
           is_portfolio?: boolean
           name?: string | null
@@ -199,6 +222,7 @@ export type Database = {
           display_order?: number
           id?: string
           image?: string | null
+          industry?: string | null
           is_active?: boolean
           is_portfolio?: boolean
           name?: string | null
