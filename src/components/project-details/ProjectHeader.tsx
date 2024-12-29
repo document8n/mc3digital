@@ -46,6 +46,7 @@ export function ProjectHeader({ project, hideEditButton }: ProjectHeaderProps) {
     },
     onUpdate: debounce(async ({ editor }) => {
       try {
+        console.log('Saving notes to database...');
         const { error } = await supabase
           .from('projects')
           .update({ notes: editor.getHTML() })
@@ -53,6 +54,7 @@ export function ProjectHeader({ project, hideEditButton }: ProjectHeaderProps) {
 
         if (error) throw error;
 
+        console.log('Notes saved successfully');
         queryClient.invalidateQueries({ queryKey: ['project', project.id] });
       } catch (error: any) {
         console.error('Error updating notes:', error);
