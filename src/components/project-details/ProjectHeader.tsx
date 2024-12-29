@@ -41,7 +41,7 @@ export function ProjectHeader({ project, hideEditButton }: ProjectHeaderProps) {
     content: project.notes || '',
     editorProps: {
       attributes: {
-        class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl focus:outline-none min-h-[200px] w-full',
+        class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl focus:outline-none min-h-[3em] max-h-[12em] overflow-y-auto w-full',
       },
     },
     onUpdate: debounce(async ({ editor }) => {
@@ -135,14 +135,25 @@ export function ProjectHeader({ project, hideEditButton }: ProjectHeaderProps) {
 
       {/* Notes Editor */}
       <div className="w-full mt-4">
-        <p className="text-sm text-gray-600 mb-2">Notes</p>
-        <div className="min-h-[200px] w-full border rounded-lg p-4 bg-white">
+        <div className="flex justify-between items-center mb-2">
+          <p className="text-sm text-gray-600">Notes</p>
+          {!hideEditButton && (
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => setIsEditModalOpen(true)}
+            >
+              Edit Project
+            </Button>
+          )}
+        </div>
+        <div className="border rounded-lg p-4 bg-white">
           <EditorContent editor={editor} />
         </div>
       </div>
 
       <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-        <DialogContent className="max-w-2xl max-h-[30vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Edit Project</DialogTitle>
           </DialogHeader>
