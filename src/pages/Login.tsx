@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Header } from '@/components/Header';
 import { useToast } from "@/hooks/use-toast";
 import { ThemeSupa } from '@supabase/auth-ui-shared';
-import { AuthError, Session } from '@supabase/supabase-js';
+import { AuthError, Session, AuthChangeEvent } from '@supabase/supabase-js';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -24,7 +24,7 @@ const Login = () => {
     checkUser();
 
     // Listen for auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, session) => {
       console.log("Auth state changed:", event);
       
       if (event === 'SIGNED_UP' && session) {
