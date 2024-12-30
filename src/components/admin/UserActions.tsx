@@ -9,10 +9,39 @@ export const UserActions = ({ onActionClick }: { onActionClick?: () => void }) =
 
   const handleLogout = async () => {
     try {
-      // First clear any local session state
-      await supabase.auth.signOut({ scope: 'local' });
+      // First check if we have a session
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       
-      console.log("Local session cleared, redirecting to home...");
+      if (sessionError) {
+        console.error("Error checking session:", sessionError);
+        // If there's an error checking the session, just redirect to login
+        navigate('/login');
+        return;
+      }
+
+      if (!session) {
+        console.log("No active session found, redirecting to login...");
+        navigate('/login');
+        return;
+      }
+
+      // We have a valid session, proceed with logout
+      console.log("Active session found, proceeding with logout...");
+      const { error: signOutError } = await supabase.auth.signOut();
+      
+      if (signOutError) {
+        console.error("Error during sign out:", signOutError);
+        // Even if there's an error, we'll redirect to login for safety
+        navigate('/login');
+        toast({
+          title: "Warning",
+          description: "There might have been an issue during logout. Please check your login status.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      console.log("Logout successful, redirecting to home...");
       navigate('/');
       toast({
         title: "Logged out successfully",
@@ -20,6 +49,8 @@ export const UserActions = ({ onActionClick }: { onActionClick?: () => void }) =
       });
     } catch (error) {
       console.error("Unexpected error during logout:", error);
+      // For any unexpected errors, redirect to login for safety
+      navigate('/login');
       toast({
         title: "Error",
         description: "An unexpected error occurred. Please try again.",

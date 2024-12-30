@@ -16,8 +16,6 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
         
         if (error) {
           console.error("Auth error:", error);
-          // Clear local session state on error
-          await supabase.auth.signOut({ scope: 'local' });
           navigate('/login');
           return;
         }
@@ -37,8 +35,6 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
         setIsLoading(false);
       } catch (error) {
         console.error("Session check failed:", error);
-        // Clear local session state on error
-        await supabase.auth.signOut({ scope: 'local' });
         navigate('/login');
       }
     };
