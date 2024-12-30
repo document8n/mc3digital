@@ -11,7 +11,7 @@ const Login = () => {
   const { toast } = useToast();
   const [signupCode, setSignupCode] = useState('');
   const [isCodeValid, setIsCodeValid] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(false);
+  const [view, setView] = useState<'sign_in' | 'sign_up'>('sign_in');
 
   useEffect(() => {
     // Check if user is already logged in
@@ -79,7 +79,7 @@ const Login = () => {
       <div className="pt-16 flex items-center justify-center p-4 min-h-screen">
         <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6">
           <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">Customer Portal</h2>
-          {isSignUp && !isCodeValid && (
+          {view === 'sign_up' && !isCodeValid && (
             <div className="mb-6">
               <label htmlFor="signupCode" className="block text-sm font-medium text-gray-700 mb-2">
                 Enter Signup Code
@@ -107,10 +107,13 @@ const Login = () => {
               }
             }}
             providers={[]}
-            view={isSignUp ? 'sign_up' : 'sign_in'}
-            showLinks={!isSignUp || isCodeValid}
-            onViewChange={(view) => setIsSignUp(view === 'sign_up')}
-            redirectTo={`${window.location.origin}/admin`}
+            view={view}
+            showLinks={view === 'sign_in' || isCodeValid}
+            viewOptions={{
+              signUp: {
+                showLinks: isCodeValid
+              }
+            }}
           />
         </div>
       </div>

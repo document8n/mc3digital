@@ -2,6 +2,14 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Database } from "@/integrations/supabase/types";
 import AdminMenu from "@/components/AdminMenu";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 type Profile = Database["public"]["Tables"]["profiles"]["Row"];
 
@@ -10,17 +18,29 @@ export default function Users() {
     queryKey: ["profiles"],
     queryFn: async () => {
       console.log("Fetching profiles...");
-      const { data, error } = await supabase
+      const { data: profiles, error: profilesError } = await supabase
         .from("profiles")
-        .select("*, email:id(email)")
+        .select("*")
         .order("created_at", { ascending: false });
 
-      if (error) {
-        console.error("Error fetching profiles:", error);
-        throw error;
+      if (profilesError) {
+        console.error("Error fetching profiles:", profilesError);
+        throw profilesError;
       }
 
-      return data;
+      // Get users data from auth.users through admin API
+      const { data: { users }, error: usersError } = await supabase.auth.admin.listUsers();
+      
+      if (usersError) {
+        console.error("Error fetching users:", usersError);
+        throw usersError;
+      }
+
+      // Combine profiles with user emails
+      return profiles.map(profile => ({
+        ...profile,
+        email: users.find(user => user.id === profile.id)?.email || "No email found"
+      }));
     },
   });
 
@@ -36,36 +56,28 @@ export default function Users() {
           </div>
         ) : (
           <div className="bg-white rounded-lg shadow overflow-hidden">
-            <div className="min-w-full divide-y divide-gray-200">
-              <div className="bg-gray-50 px-6 py-3">
-                <div className="grid grid-cols-4 gap-4">
-                  <div className="font-medium text-gray-500">Username</div>
-                  <div className="font-medium text-gray-500">Email</div>
-                  <div className="font-medium text-gray-500">Role</div>
-                  <div className="font-medium text-gray-500">Created</div>
-                </div>
-              </div>
-              <div className="divide-y divide-gray-200 bg-white">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Username</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Role</TableHead>
+                  <TableHead>Created</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {profiles?.map((profile) => (
-                  <div key={profile.id} className="px-6 py-4">
-                    <div className="grid grid-cols-4 gap-4">
-                      <div className="text-sm text-gray-900">
-                        {profile.username || "No username set"}
-                      </div>
-                      <div className="text-sm text-gray-900">
-                        {(profile as any).email?.email || "No email set"}
-                      </div>
-                      <div className="text-sm text-gray-900">
-                        {profile.role}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        {new Date(profile.created_at).toLocaleDateString()}
-                      </div>
-                    </div>
-                  </div>
+                  <TableRow key={profile.id}>
+                    <TableCell>{profile.username || "No username set"}</TableCell>
+                    <TableCell>{profile.email}</TableCell>
+                    <TableCell>{profile.role}</TableCell>
+                    <TableCell>
+                      {new Date(profile.created_at).toLocaleDateString()}
+                    </TableCell>
+                  </TableRow>
                 ))}
-              </div>
-            </div>
+              </TableBody>
+            </Table>
           </div>
         )}
       </div>
