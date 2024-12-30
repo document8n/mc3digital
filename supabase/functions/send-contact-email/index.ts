@@ -20,6 +20,20 @@ const handler = async (req: Request): Promise<Response> => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Validate API key
+  if (!RESEND_API_KEY) {
+    console.error("RESEND_API_KEY is not set");
+    return new Response(
+      JSON.stringify({ 
+        error: "Server configuration error - missing API key" 
+      }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      }
+    );
+  }
+
   try {
     const contactRequest: ContactRequest = await req.json();
     console.log("Received contact request:", contactRequest);
@@ -44,16 +58,18 @@ const handler = async (req: Request): Promise<Response> => {
       }),
     });
 
+    const responseData = await res.json();
+    console.log("Resend API response:", responseData);
+
     if (res.ok) {
-      const data = await res.json();
-      return new Response(JSON.stringify(data), {
+      return new Response(JSON.stringify(responseData), {
         status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     } else {
-      const error = await res.text();
-      return new Response(JSON.stringify({ error }), {
-        status: 400,
+      console.error("Resend API error:", responseData);
+      return new Response(JSON.stringify({ error: responseData }), {
+        status: res.status,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
