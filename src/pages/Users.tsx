@@ -37,22 +37,9 @@ export default function Users() {
         throw error;
       }
 
-      console.log("Profiles fetched:", data);
-      return data as Profile[];
+      return data;
     },
   });
-
-  if (error) {
-    console.error("Query error:", error);
-    return (
-      <div className="min-h-screen">
-        <AdminMenu />
-        <div className="container mx-auto py-10">
-          <div className="text-red-500">Failed to load users. Please try again later.</div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen">
@@ -63,6 +50,8 @@ export default function Users() {
           <div className="flex items-center justify-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
           </div>
+        ) : error ? (
+          <div className="text-red-500">Failed to load users. Please try again later.</div>
         ) : (
           <div className="rounded-md border">
             <Table>
