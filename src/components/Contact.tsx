@@ -33,6 +33,7 @@ export const Contact = () => {
       toast({
         title: "Message sent!",
         description: "We'll get back to you as soon as possible.",
+        variant: "default", // This ensures it's not red
       });
     } catch (error) {
       console.error("Error sending message:", error);
