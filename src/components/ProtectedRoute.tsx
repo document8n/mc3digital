@@ -15,6 +15,8 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
         
         if (error) {
           console.error("Auth error:", error);
+          // Clear any existing session data
+          await supabase.auth.signOut();
           throw error;
         }
         
@@ -32,15 +34,13 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
         setIsLoading(false);
       } catch (error) {
         console.error("Session check failed:", error);
-        // Clear any existing session data
-        await supabase.auth.signOut();
         navigate('/login');
       }
     };
 
     checkAuth();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("Auth state changed:", event, session ? "Session exists" : "No session");
       
       if (event === 'SIGNED_OUT' || !session) {

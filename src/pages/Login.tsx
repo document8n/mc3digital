@@ -1,16 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Auth } from "@supabase/auth-ui-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Header } from '@/components/Header';
 import { useToast } from "@/hooks/use-toast";
 import { ThemeSupa } from '@supabase/auth-ui-shared';
-import { AuthError, Session, AuthChangeEvent } from '@supabase/supabase-js';
 
 const Login = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [isCodeValid, setIsCodeValid] = useState(false);
 
   useEffect(() => {
     const checkUser = async () => {
@@ -24,20 +22,16 @@ const Login = () => {
     checkUser();
 
     // Listen for auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("Auth state changed:", event);
       
-      if (event === 'SIGNED_UP' && session) {
-        console.log("User signed up, showing success message");
-        toast({
-          title: "Account created successfully!",
-          description: "Welcome to MC3digital",
-        });
-      }
-
       if (event === 'SIGNED_IN' && session) {
         console.log("User signed in, redirecting to admin...");
         navigate('/admin');
+        toast({
+          title: "Welcome back!",
+          description: "Successfully signed in",
+        });
       }
     });
 
