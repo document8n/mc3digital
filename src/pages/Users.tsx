@@ -12,7 +12,7 @@ export default function Users() {
       console.log("Fetching profiles...");
       const { data, error } = await supabase
         .from("profiles")
-        .select("*")
+        .select("*, email:id(email)")
         .order("created_at", { ascending: false });
 
       if (error) {
@@ -38,8 +38,9 @@ export default function Users() {
           <div className="bg-white rounded-lg shadow overflow-hidden">
             <div className="min-w-full divide-y divide-gray-200">
               <div className="bg-gray-50 px-6 py-3">
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-4 gap-4">
                   <div className="font-medium text-gray-500">Username</div>
+                  <div className="font-medium text-gray-500">Email</div>
                   <div className="font-medium text-gray-500">Role</div>
                   <div className="font-medium text-gray-500">Created</div>
                 </div>
@@ -47,9 +48,12 @@ export default function Users() {
               <div className="divide-y divide-gray-200 bg-white">
                 {profiles?.map((profile) => (
                   <div key={profile.id} className="px-6 py-4">
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-4 gap-4">
                       <div className="text-sm text-gray-900">
                         {profile.username || "No username set"}
+                      </div>
+                      <div className="text-sm text-gray-900">
+                        {(profile as any).email?.email || "No email set"}
                       </div>
                       <div className="text-sm text-gray-900">
                         {profile.role}
