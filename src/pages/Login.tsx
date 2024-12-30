@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Header } from '@/components/Header';
 import { useToast } from "@/hooks/use-toast";
 import { ThemeSupa } from '@supabase/auth-ui-shared';
+import { AuthChangeEvent } from "@supabase/supabase-js";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -28,7 +29,7 @@ const Login = () => {
 
     checkUser();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session) => {
       console.log("Auth state changed:", event, session ? "Session exists" : "No session");
       
       if (event === 'SIGNED_IN' && session) {
@@ -38,7 +39,7 @@ const Login = () => {
           description: "Successfully signed in",
         });
         navigate('/admin');
-      } else if (event === 'SIGNED_UP' && session) {
+      } else if (event === 'USER_UPDATED' && session) {
         console.log("New user signed up successfully, redirecting to admin...");
         toast({
           title: "Welcome to MC3digital!",

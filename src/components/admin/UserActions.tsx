@@ -11,7 +11,26 @@ export const UserActions = ({ onActionClick }: { onActionClick?: () => void }) =
     try {
       console.log("Starting logout process...");
       
-      const { error } = await supabase.auth.signOut();
+      // First check if we have an active session
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError) {
+        console.error("Error checking session:", sessionError);
+        navigate('/login');
+        return;
+      }
+
+      if (!session) {
+        console.log("No active session found, redirecting to login...");
+        navigate('/login');
+        return;
+      }
+
+      // Clear the session first
+      await supabase.auth.clearSession();
+      
+      // Then attempt to sign out with local scope
+      const { error } = await supabase.auth.signOut({ scope: 'local' });
       
       if (error) {
         console.error("Error during sign out:", error);
