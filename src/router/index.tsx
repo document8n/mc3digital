@@ -12,6 +12,7 @@ import InvoiceDetails from "@/pages/InvoiceDetails";
 import ProjectDetails from "@/pages/ProjectDetails";
 import ClientDetails from "@/pages/ClientDetails";
 import Tasks from "@/pages/Tasks";
+import Users from "@/pages/Users";
 
 export const router = createBrowserRouter([
   {
@@ -99,6 +100,14 @@ export const router = createBrowserRouter([
     element: (
       <ProtectedRoute>
         <Tasks />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/users",
+    element: (
+      <ProtectedRoute>
+        <Users />
       </ProtectedRoute>
     ),
   },

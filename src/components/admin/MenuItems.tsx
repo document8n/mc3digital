@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { Grid, FileText, User, Settings, Home, ListTodo } from "lucide-react";
+import { Grid, FileText, User, Settings, Home, ListTodo, Users } from "lucide-react";
 
 const menuItems = [
   { icon: Home, label: "Dashboard", path: "/admin" },
@@ -9,6 +9,7 @@ const menuItems = [
   { icon: FileText, label: "Invoices", path: "/invoice" },
   { icon: User, label: "Clients", path: "/clients" },
   { icon: Settings, label: "Services", path: "/services" },
+  { icon: Users, label: "Users", path: "/users" },
 ];
 
 export const MenuItems = ({ onItemClick }: { onItemClick?: () => void }) => {

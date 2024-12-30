@@ -136,6 +136,7 @@ export type Database = {
           avatar_url: string | null
           created_at: string
           id: string
+          role: Database["public"]["Enums"]["user_role"]
           updated_at: string | null
           username: string | null
         }
@@ -143,6 +144,7 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           id: string
+          role?: Database["public"]["Enums"]["user_role"]
           updated_at?: string | null
           username?: string | null
         }
@@ -150,6 +152,7 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           id?: string
+          role?: Database["public"]["Enums"]["user_role"]
           updated_at?: string | null
           username?: string | null
         }
@@ -275,7 +278,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      user_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
