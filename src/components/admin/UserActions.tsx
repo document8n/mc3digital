@@ -11,7 +11,7 @@ export const UserActions = ({ onActionClick }: { onActionClick?: () => void }) =
     try {
       console.log("Starting logout process...");
       
-      // Check for active session first
+      // First check if we have an active session
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       
       if (sessionError) {
@@ -30,7 +30,7 @@ export const UserActions = ({ onActionClick }: { onActionClick?: () => void }) =
         return;
       }
 
-      // Perform the signOut operation
+      // Perform the signOut operation without any scope parameter
       const { error } = await supabase.auth.signOut();
       
       if (error) {
@@ -44,11 +44,11 @@ export const UserActions = ({ onActionClick }: { onActionClick?: () => void }) =
       }
 
       console.log("Logout successful, redirecting to login...");
-      navigate('/login');
       toast({
         title: "Logged out successfully",
         description: "You have been logged out of your account",
       });
+      navigate('/login');
     } catch (error) {
       console.error("Unexpected error during logout:", error);
       toast({
