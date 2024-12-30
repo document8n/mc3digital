@@ -29,7 +29,7 @@ const Login = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("Auth state changed:", event);
       
-      if (event === 'SIGNED_UP') {
+      if (event === 'SIGNED_UP' && session) {
         // Verify signup code when user attempts to sign up
         const { data: settings } = await supabase
           .from('site_settings')
@@ -109,16 +109,7 @@ const Login = () => {
             providers={[]}
             view={isSignUp ? 'sign_up' : 'sign_in'}
             showLinks={!isSignUp || isCodeValid}
-            viewOptions={{
-              signUp: {
-                showLinks: isCodeValid,
-                callback: () => setIsSignUp(true)
-              },
-              signIn: {
-                showLinks: true,
-                callback: () => setIsSignUp(false)
-              }
-            }}
+            onViewChange={(view) => setIsSignUp(view === 'sign_up')}
             redirectTo={`${window.location.origin}/admin`}
           />
         </div>
