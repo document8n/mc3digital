@@ -49,7 +49,7 @@ export const Contact = () => {
 
   if (showSuccess) {
     return (
-      <section id="contact" className="section-padding">
+      <section id="contact" className="section-padding bg-gradient-to-b from-gray-50 to-white">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -58,7 +58,7 @@ export const Contact = () => {
           <div className="glass-card p-8 rounded-xl">
             <h2 className="text-3xl font-bold mb-4">Thank You!</h2>
             <p className="text-gray-600 mb-6">
-              Your message has been sent successfully. We'll get back to you soon!
+              Your message has been sent successfully. Our team will review your inquiry and get back to you within 24 hours.
             </p>
             <button
               onClick={() => setShowSuccess(false)}
@@ -73,26 +73,39 @@ export const Contact = () => {
   }
 
   return (
-    <section id="contact" className="section-padding">
+    <section id="contact" className="section-padding bg-gradient-to-b from-gray-50 to-white">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-16">
-          <span className="inline-block px-3 py-1 text-sm font-medium bg-gray-100 rounded-full mb-4">
-            Get in Touch
-          </span>
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Start Your Project</h2>
-          <p className="text-gray-600">
-            Ready to transform your digital presence? Let's talk about your project.
-          </p>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="space-y-4"
+          >
+            <span className="inline-block px-4 py-1.5 text-sm font-medium bg-gray-100 rounded-full mb-4">
+              Let's Discuss Your Vision
+            </span>
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 bg-clip-text text-transparent">
+              Transform Your Digital Presence
+            </h2>
+            <div className="max-w-2xl mx-auto">
+              <p className="text-gray-600 text-lg leading-relaxed">
+                Whether you're a seasoned business owner looking to modernize your digital infrastructure, 
+                or an entrepreneur ready to establish your online presence, we're here to help you succeed.
+              </p>
+            </div>
+          </motion.div>
         </div>
+
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          className="glass-card p-8 rounded-xl"
+          className="glass-card p-8 md:p-10 rounded-xl shadow-xl backdrop-blur-lg"
         >
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
+          <form onSubmit={handleSubmit} className="space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Name
                 </label>
@@ -100,10 +113,11 @@ export const Contact = () => {
                   name="name"
                   required
                   type="text"
-                  className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-200"
+                  placeholder="John Smith"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all duration-200"
                 />
               </div>
-              <div>
+              <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Email
                 </label>
@@ -111,30 +125,43 @@ export const Contact = () => {
                   name="email"
                   required
                   type="email"
-                  className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-200"
+                  placeholder="john@company.com"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all duration-200"
                 />
               </div>
             </div>
-            <div>
+            <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Message
               </label>
               <textarea
                 name="message"
                 required
-                rows={4}
-                className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-200"
+                rows={5}
+                placeholder="Tell us about your business and what you're looking to achieve..."
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all duration-200"
               />
             </div>
             <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               disabled={isSubmitting}
-              className="w-full px-8 py-3 bg-gray-900 text-white rounded-lg font-medium hover-lift flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full px-8 py-4 bg-gradient-to-r from-gray-900 to-gray-700 text-white rounded-lg font-medium 
+                         hover:shadow-lg transform transition-all duration-200 flex items-center justify-center gap-2 
+                         disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isSubmitting ? "Sending..." : "Send Message"}
-              <Send className="w-4 h-4" />
+              {isSubmitting ? (
+                "Sending..."
+              ) : (
+                <>
+                  Start the Conversation
+                  <Send className="w-4 h-4" />
+                </>
+              )}
             </motion.button>
+            <p className="text-center text-sm text-gray-500 mt-4">
+              We typically respond within 24 hours during business days.
+            </p>
           </form>
         </motion.div>
       </div>
