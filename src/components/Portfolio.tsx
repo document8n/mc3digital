@@ -12,12 +12,15 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
+import { Badge } from "@/components/ui/badge";
+import { ExternalLink } from "lucide-react";
 
 interface PortfolioProject {
   id: string;
   name: string;
   image: string;
   url: string;
+  industry: string;
 }
 
 export const Portfolio = () => {
@@ -36,7 +39,7 @@ export const Portfolio = () => {
       try {
         const { data, error } = await supabase
           .from('projects')
-          .select('id, name, image, url')
+          .select('id, name, image, url, industry')
           .eq('is_portfolio', true)
           .eq('is_active', true)
           .order('display_order', { ascending: true });
@@ -91,24 +94,32 @@ export const Portfolio = () => {
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   className="h-full"
                 >
-                  <Card className="overflow-hidden group hover:scale-105 transition-transform duration-300 h-full flex flex-col bg-white bg-opacity-95 shadow-xl">
-                    <div className="relative h-48 flex items-center justify-center bg-white p-6">
+                  <Card className="overflow-hidden group hover:scale-105 transition-transform duration-300 h-full flex flex-col bg-white/95 backdrop-blur-sm shadow-xl border-white/20">
+                    <div className="relative h-48 flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 p-6">
                       <img
                         src={project.image || '/placeholder.svg'}
                         alt={project.name}
                         className="w-full h-full object-contain max-h-40"
                       />
                     </div>
-                    <CardContent className="p-6 flex flex-col bg-gradient-to-b from-white via-white to-gray-50">
-                      <h3 className="text-xl font-semibold text-gray-800 mb-2">{project.name}</h3>
+                    <CardContent className="p-6 flex flex-col gap-3 bg-gradient-to-b from-white via-white to-gray-50">
+                      <div className="flex justify-between items-start">
+                        <h3 className="text-xl font-semibold text-gray-800">{project.name}</h3>
+                        {project.industry && (
+                          <Badge variant="secondary" className="ml-2">
+                            {project.industry}
+                          </Badge>
+                        )}
+                      </div>
                       {project.url && (
                         <Link 
                           to={project.url} 
                           target="_blank" 
                           rel="noopener noreferrer"
-                          className="text-blue-600 hover:text-blue-700 transition-colors mt-auto font-medium"
+                          className="inline-flex items-center text-blue-600 hover:text-blue-700 transition-colors mt-auto font-medium group"
                         >
-                          View Project →
+                          View Project 
+                          <ExternalLink className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
                         </Link>
                       )}
                     </CardContent>
