@@ -9,29 +9,30 @@ export const UserActions = ({ onActionClick }: { onActionClick?: () => void }) =
 
   const handleLogout = async () => {
     try {
-      // First check if we have a session
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      console.log("Starting logout process...");
       
-      if (sessionError) {
-        console.error("Error checking session:", sessionError);
-        // If there's an error checking the session, just redirect to login
-        navigate('/login');
-        return;
-      }
-
+      // First try to get the current session
+      const { data: { session } } = await supabase.auth.getSession();
+      
       if (!session) {
         console.log("No active session found, redirecting to login...");
         navigate('/login');
         return;
       }
 
-      // We have a valid session, proceed with logout
-      console.log("Active session found, proceeding with logout...");
-      const { error: signOutError } = await supabase.auth.signOut();
+      // Clear browser storage first
+      console.log("Clearing browser storage...");
+      await supabase.auth.clearSession();
       
-      if (signOutError) {
-        console.error("Error during sign out:", signOutError);
-        // Even if there's an error, we'll redirect to login for safety
+      // Then attempt to sign out
+      console.log("Attempting to sign out...");
+      const { error } = await supabase.auth.signOut({
+        scope: 'local'
+      });
+      
+      if (error) {
+        console.error("Error during sign out:", error);
+        // Even if there's an error, we'll redirect to login
         navigate('/login');
         toast({
           title: "Warning",
@@ -49,7 +50,6 @@ export const UserActions = ({ onActionClick }: { onActionClick?: () => void }) =
       });
     } catch (error) {
       console.error("Unexpected error during logout:", error);
-      // For any unexpected errors, redirect to login for safety
       navigate('/login');
       toast({
         title: "Error",
