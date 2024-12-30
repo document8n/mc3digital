@@ -28,7 +28,7 @@ export const Portfolio = () => {
   const { toast } = useToast();
   
   const autoplayPlugin = Autoplay({
-    delay: 4000,
+    delay: 4600, // Increased by 15% from 4000ms
     stopOnInteraction: false,
     jump: false,
     playOnInit: true,
@@ -94,15 +94,15 @@ export const Portfolio = () => {
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   className="h-full"
                 >
-                  <Card className="overflow-hidden group hover:scale-105 transition-transform duration-300 h-full flex flex-col bg-white/95 backdrop-blur-sm shadow-xl border-white/20">
-                    <div className="relative h-48 flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 p-6">
+                  <Card className="overflow-hidden group hover:scale-105 transition-transform duration-300 h-full flex flex-col bg-[#FFFFFF] shadow-xl border-white/20">
+                    <div className="relative h-48 flex items-center justify-center bg-[#FFFFFF] p-6">
                       <img
                         src={project.image || '/placeholder.svg'}
                         alt={project.name}
                         className="w-full h-full object-contain max-h-40"
                       />
                     </div>
-                    <CardContent className="p-6 flex flex-col gap-3 bg-gradient-to-b from-white via-white to-gray-50">
+                    <CardContent className="p-6 flex flex-col gap-3 bg-[#FFFFFF]">
                       <div className="flex justify-between items-start">
                         <h3 className="text-xl font-semibold text-gray-800">{project.name}</h3>
                         {project.industry && (
