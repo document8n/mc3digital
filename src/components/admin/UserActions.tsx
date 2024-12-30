@@ -1,28 +1,50 @@
 import { Link, useNavigate } from "react-router-dom";
 import { LogOut, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 export const UserActions = ({ onActionClick }: { onActionClick?: () => void }) => {
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const handleLogout = async () => {
-    console.log("Logging out...");
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      console.error("Error logging out:", error);
+    try {
+      console.log("Checking current session before logout...");
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        console.log("No active session found, redirecting to login...");
+        navigate('/login');
+        return;
+      }
+
+      console.log("Active session found, proceeding with logout...");
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) {
+        console.error("Error during logout:", error);
+        toast({
+          title: "Error",
+          description: "There was a problem logging out. Please try again.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      console.log("Logout successful, redirecting to home...");
+      navigate('/');
+      toast({
+        title: "Logged out successfully",
+        description: "You have been logged out of your account",
+      });
+    } catch (error) {
+      console.error("Unexpected error during logout:", error);
       toast({
         title: "Error",
-        description: "There was a problem logging out",
+        description: "An unexpected error occurred. Please try again.",
         variant: "destructive",
       });
-      return;
     }
-    navigate('/');
-    toast({
-      title: "Logged out successfully",
-      description: "You have been logged out of your account",
-    });
   };
 
   return (

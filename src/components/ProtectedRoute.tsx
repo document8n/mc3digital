@@ -11,13 +11,13 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        console.log("Checking authentication status...");
         const { data: { session }, error } = await supabase.auth.getSession();
         
         if (error) {
           console.error("Auth error:", error);
-          // Clear any existing session data
-          await supabase.auth.signOut();
-          throw error;
+          navigate('/login');
+          return;
         }
         
         if (!session) {
@@ -31,6 +31,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
           return;
         }
 
+        console.log("Valid session found, allowing access");
         setIsLoading(false);
       } catch (error) {
         console.error("Session check failed:", error);
