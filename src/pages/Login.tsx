@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Auth } from '@supabase/auth-ui-react';
-import { ThemeSupa } from '@supabase/auth-ui-shared';
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Auth } from "@supabase/auth-ui-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Header } from '@/components/Header';
 import { useToast } from "@/hooks/use-toast";
@@ -10,16 +9,14 @@ import { AuthChangeEvent } from '@supabase/supabase-js';
 const Login = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [signupCode, setSignupCode] = useState('');
+  const [view, setView] = useState('sign_in');
   const [isCodeValid, setIsCodeValid] = useState(false);
-  const [view, setView] = useState<'sign_in' | 'sign_up'>('sign_in');
 
   useEffect(() => {
-    // Check if user is already logged in
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        console.log("User already logged in, redirecting to admin");
+        console.log("User is already logged in, redirecting to admin...");
         navigate('/admin');
       }
     };
@@ -30,29 +27,16 @@ const Login = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, session) => {
       console.log("Auth state changed:", event);
       
-      if (event === 'SIGNED_UP' && session) {
-        // Verify signup code when user attempts to sign up
-        const { data: settings } = await supabase
-          .from('site_settings')
-          .select('value')
-          .eq('name', 'signup_code')
-          .single();
-
-        if (settings?.value !== signupCode) {
-          // Invalid code, delete the user and show error
-          if (session?.user) {
-            await supabase.auth.admin.deleteUser(session.user.id);
-          }
-          toast({
-            title: "Invalid Signup Code",
-            description: "Please enter the correct signup code to register.",
-            variant: "destructive",
-          });
-          return;
-        }
+      if (event === "SIGNED_UP" && session) {
+        console.log("User signed up, showing success message");
+        toast({
+          title: "Account created successfully!",
+          description: "Welcome to MC3digital",
+        });
       }
 
-      if (session) {
+      if (event === 'SIGNED_IN' && session) {
+        console.log("User signed in, redirecting to admin...");
         navigate('/admin');
       }
     });
@@ -60,52 +44,34 @@ const Login = () => {
     return () => {
       subscription.unsubscribe();
     };
-  }, [navigate, signupCode, toast]);
-
-  // Function to verify signup code
-  const verifyCode = async (code: string) => {
-    const { data: settings } = await supabase
-      .from('site_settings')
-      .select('value')
-      .eq('name', 'signup_code')
-      .single();
-
-    setIsCodeValid(settings?.value === code);
-    setSignupCode(code);
-  };
+  }, [navigate, toast]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
       <Header />
-      <div className="pt-16 flex items-center justify-center p-4 min-h-screen">
-        <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">Customer Portal</h2>
-          {view === 'sign_up' && !isCodeValid && (
-            <div className="mb-6">
-              <label htmlFor="signupCode" className="block text-sm font-medium text-gray-700 mb-2">
-                Enter Signup Code
-              </label>
-              <input
-                type="text"
-                id="signupCode"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                onChange={(e) => verifyCode(e.target.value)}
-                placeholder="Enter code to register"
-              />
-            </div>
-          )}
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-md mx-auto bg-white/5 backdrop-blur-sm p-8 rounded-lg shadow-lg">
+          <h1 className="text-2xl font-bold mb-6 text-center text-white">
+            Welcome Back
+          </h1>
           <Auth
             supabaseClient={supabase}
             appearance={{
-              theme: ThemeSupa,
+              theme: 'dark',
               variables: {
                 default: {
                   colors: {
-                    brand: '#1A1F2C',
-                    brandAccent: '#2A2F3C'
-                  }
-                }
-              }
+                    brand: '#4F46E5',
+                    brandAccent: '#4338CA',
+                  },
+                },
+              },
+              className: {
+                container: 'auth-container',
+                button: 'auth-button',
+                input: 'auth-input',
+                label: 'auth-label',
+              },
             }}
             providers={[]}
             view={view}

@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Database } from "@/integrations/supabase/types";
-import AdminMenu from "@/components/AdminMenu";
+import { AdminLayout } from "@/components/layouts/AdminLayout";
 import {
   Table,
   TableBody,
@@ -33,40 +33,39 @@ export default function Users() {
   });
 
   return (
-    <div className="min-h-screen">
-      <AdminMenu />
-      <div className="container mx-auto py-10">
-        <h1 className="text-2xl font-bold mb-6">Users</h1>
-        
-        {isLoading ? (
-          <div className="flex items-center justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-          </div>
-        ) : (
-          <div className="bg-white rounded-lg shadow overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Username</TableHead>
-                  <TableHead>Role</TableHead>
-                  <TableHead>Created</TableHead>
+    <AdminLayout>
+      <h1 className="text-2xl font-bold mb-6 text-white">Users</h1>
+      
+      {isLoading ? (
+        <div className="flex items-center justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+        </div>
+      ) : (
+        <div className="bg-white/5 backdrop-blur-sm rounded-lg shadow overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="text-gray-300">Username</TableHead>
+                <TableHead className="text-gray-300">Role</TableHead>
+                <TableHead className="text-gray-300">Created</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {profiles?.map((profile) => (
+                <TableRow key={profile.id} className="hover:bg-white/10">
+                  <TableCell className="text-gray-200">
+                    {profile.username || "No username set"}
+                  </TableCell>
+                  <TableCell className="text-gray-200">{profile.role}</TableCell>
+                  <TableCell className="text-gray-200">
+                    {new Date(profile.created_at).toLocaleDateString()}
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {profiles?.map((profile) => (
-                  <TableRow key={profile.id}>
-                    <TableCell>{profile.username || "No username set"}</TableCell>
-                    <TableCell>{profile.role}</TableCell>
-                    <TableCell>
-                      {new Date(profile.created_at).toLocaleDateString()}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        )}
-      </div>
-    </div>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
+    </AdminLayout>
   );
 }
