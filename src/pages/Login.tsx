@@ -12,26 +12,39 @@ const Login = () => {
 
   useEffect(() => {
     const checkUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      console.log("Checking for existing session...");
+      const { data: { session }, error } = await supabase.auth.getSession();
+      
+      if (error) {
+        console.error("Error checking session:", error);
+        return;
+      }
+      
       if (session) {
-        console.log("User is already logged in, redirecting to admin...");
+        console.log("Active session found, redirecting to admin...");
         navigate('/admin');
       }
     };
 
     checkUser();
 
-    // Listen for auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Auth state changed:", event);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("Auth state changed:", event, session ? "Session exists" : "No session");
       
       if (event === 'SIGNED_IN' && session) {
-        console.log("User signed in, redirecting to admin...");
-        navigate('/admin');
+        console.log("User signed in successfully, redirecting to admin...");
         toast({
-          title: "Welcome back!",
+          title: "Welcome!",
           description: "Successfully signed in",
         });
+        navigate('/admin');
+      } else if (event === 'SIGNED_UP' && session) {
+        console.log("New user signed up successfully, redirecting to admin...");
+        toast({
+          title: "Welcome to MC3digital!",
+          description: "Your account has been created successfully",
+        });
+        navigate('/admin');
       }
     });
 
@@ -46,7 +59,7 @@ const Login = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-md mx-auto bg-white/5 backdrop-blur-sm p-8 rounded-lg shadow-lg">
           <h1 className="text-2xl font-bold mb-6 text-center text-white">
-            Welcome Back
+            Welcome to MC3digital
           </h1>
           <Auth
             supabaseClient={supabase}

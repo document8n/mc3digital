@@ -42,11 +42,17 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     checkAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log("Auth state changed:", event, session ? "Session exists" : "No session");
+      console.log("Auth state changed in ProtectedRoute:", event);
       
       if (event === 'SIGNED_OUT' || !session) {
         console.log("User signed out or session lost, redirecting to login");
         navigate('/login');
+        return;
+      }
+      
+      if (event === 'SIGNED_IN') {
+        console.log("User signed in, allowing access");
+        setIsLoading(false);
       }
     });
 
