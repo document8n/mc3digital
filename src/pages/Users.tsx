@@ -18,29 +18,17 @@ export default function Users() {
     queryKey: ["profiles"],
     queryFn: async () => {
       console.log("Fetching profiles...");
-      const { data: profiles, error: profilesError } = await supabase
+      const { data: profiles, error } = await supabase
         .from("profiles")
         .select("*")
         .order("created_at", { ascending: false });
 
-      if (profilesError) {
-        console.error("Error fetching profiles:", profilesError);
-        throw profilesError;
+      if (error) {
+        console.error("Error fetching profiles:", error);
+        throw error;
       }
 
-      // Get users data from auth.users through admin API
-      const { data: { users }, error: usersError } = await supabase.auth.admin.listUsers();
-      
-      if (usersError) {
-        console.error("Error fetching users:", usersError);
-        throw usersError;
-      }
-
-      // Combine profiles with user emails
-      return profiles.map(profile => ({
-        ...profile,
-        email: users.find(user => user.id === profile.id)?.email || "No email found"
-      }));
+      return profiles;
     },
   });
 
@@ -60,7 +48,6 @@ export default function Users() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Username</TableHead>
-                  <TableHead>Email</TableHead>
                   <TableHead>Role</TableHead>
                   <TableHead>Created</TableHead>
                 </TableRow>
@@ -69,7 +56,6 @@ export default function Users() {
                 {profiles?.map((profile) => (
                   <TableRow key={profile.id}>
                     <TableCell>{profile.username || "No username set"}</TableCell>
-                    <TableCell>{profile.email}</TableCell>
                     <TableCell>{profile.role}</TableCell>
                     <TableCell>
                       {new Date(profile.created_at).toLocaleDateString()}
