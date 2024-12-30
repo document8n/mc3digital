@@ -4,12 +4,13 @@ import { Auth } from "@supabase/auth-ui-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Header } from '@/components/Header';
 import { useToast } from "@/hooks/use-toast";
-import { AuthChangeEvent } from '@supabase/supabase-js';
+import { AuthChangeEvent, ThemeMinimal } from '@supabase/auth-ui-shared';
+import { ViewType } from '@supabase/auth-ui-react';
 
 const Login = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [view, setView] = useState('sign_in');
+  const [view, setView] = useState<ViewType>('sign_in');
   const [isCodeValid, setIsCodeValid] = useState(false);
 
   useEffect(() => {
@@ -27,7 +28,7 @@ const Login = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, session) => {
       console.log("Auth state changed:", event);
       
-      if (event === "SIGNED_UP" && session) {
+      if (event === 'SIGNED_UP' && session) {
         console.log("User signed up, showing success message");
         toast({
           title: "Account created successfully!",
@@ -57,7 +58,7 @@ const Login = () => {
           <Auth
             supabaseClient={supabase}
             appearance={{
-              theme: 'dark',
+              theme: ThemeMinimal,
               variables: {
                 default: {
                   colors: {
