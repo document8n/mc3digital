@@ -28,7 +28,7 @@ const Login = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("Auth state changed:", event);
       
-      if (event === 'SIGNED_UP') {
+      if (event === 'SIGNED_UP' as const) {
         // Verify signup code when user attempts to sign up
         const { data: settings } = await supabase
           .from('site_settings')
