@@ -4,13 +4,12 @@ import { Auth } from "@supabase/auth-ui-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Header } from '@/components/Header';
 import { useToast } from "@/hooks/use-toast";
-import { AuthChangeEvent, ThemeMinimal } from '@supabase/auth-ui-shared';
-import { ViewType } from '@supabase/auth-ui-react';
+import { ThemeSupa } from '@supabase/auth-ui-shared';
+import { AuthError, Session } from '@supabase/supabase-js';
 
 const Login = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [view, setView] = useState<ViewType>('sign_in');
   const [isCodeValid, setIsCodeValid] = useState(false);
 
   useEffect(() => {
@@ -25,7 +24,7 @@ const Login = () => {
     checkUser();
 
     // Listen for auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("Auth state changed:", event);
       
       if (event === 'SIGNED_UP' && session) {
@@ -58,7 +57,7 @@ const Login = () => {
           <Auth
             supabaseClient={supabase}
             appearance={{
-              theme: ThemeMinimal,
+              theme: ThemeSupa,
               variables: {
                 default: {
                   colors: {
@@ -75,8 +74,7 @@ const Login = () => {
               },
             }}
             providers={[]}
-            view={view}
-            showLinks={view === 'sign_in' || isCodeValid}
+            showLinks={true}
           />
         </div>
       </div>

@@ -32,6 +32,8 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
         setIsLoading(false);
       } catch (error) {
         console.error("Session check failed:", error);
+        // Clear any existing session data
+        await supabase.auth.signOut();
         navigate('/login');
       }
     };
