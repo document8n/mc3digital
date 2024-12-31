@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Header } from '@/components/Header';
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -9,6 +10,7 @@ const Login = () => {
   const [isSignUpMode, setIsSignUpMode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,10 +64,8 @@ const Login = () => {
 
       if (error) throw error;
 
-      toast({
-        title: "Welcome back!",
-        description: "Successfully signed in",
-      });
+      // Instead of showing a toast, redirect to the dashboard
+      navigate('/admin');
     } catch (error: any) {
       console.error('Sign in error:', error);
       toast({
