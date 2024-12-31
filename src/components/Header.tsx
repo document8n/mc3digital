@@ -12,17 +12,23 @@ export const Header = () => {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        const { data: privateData } = await supabase
-          .from('user_private')
-          .select('approved, role')
-          .eq('id', session.user.id)
-          .single();
-        
-        setIsLoggedIn(privateData?.approved || false);
-        setIsAdmin(privateData?.role === 'admin');
-      } else {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          const { data: privateData } = await supabase
+            .from('user_private')
+            .select('approved, role')
+            .eq('id', session.user.id)
+            .single();
+          
+          setIsLoggedIn(privateData?.approved || false);
+          setIsAdmin(privateData?.role === 'admin');
+        } else {
+          setIsLoggedIn(false);
+          setIsAdmin(false);
+        }
+      } catch (error) {
+        console.error('Auth check error:', error);
         setIsLoggedIn(false);
         setIsAdmin(false);
       }
@@ -31,10 +37,11 @@ export const Header = () => {
     checkAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_OUT') {
+      console.log('Auth state changed:', event);
+      if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
         setIsLoggedIn(false);
         setIsAdmin(false);
-      } else if (session) {
+      } else if (session?.user) {
         checkAuth();
       }
     });
