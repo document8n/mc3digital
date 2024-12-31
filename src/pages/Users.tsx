@@ -40,12 +40,14 @@ export default function Users() {
         return;
       }
 
-      // Fetch user_private data with emails from auth.users using a join
       const { data: userData, error: userError } = await supabase
         .from('user_private')
         .select(`
-          *,
-          auth_users:id (
+          id,
+          role,
+          approved,
+          created_at,
+          auth_users!inner (
             email,
             last_sign_in_at
           )
@@ -57,7 +59,7 @@ export default function Users() {
       }
 
       // Transform the data to match our UserData interface
-      const transformedUsers = userData.map(user => ({
+      const transformedUsers = (userData || []).map(user => ({
         id: user.id,
         role: user.role,
         approved: user.approved,
