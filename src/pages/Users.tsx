@@ -9,33 +9,44 @@ import {
 } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
 import { Mail, Shield, Clock, Check } from "lucide-react";
-
-// Mock data for demonstration
-const mockUsers = [
-  {
-    id: '1',
-    email: 'john@example.com',
-    role: 'admin',
-    approved: true,
-    lastActive: '2024-03-20T10:30:00Z',
-  },
-  {
-    id: '2',
-    email: 'jane@example.com',
-    role: 'user',
-    approved: false,
-    lastActive: '2024-03-19T15:45:00Z',
-  },
-  {
-    id: '3',
-    email: 'bob@example.com',
-    role: 'user',
-    approved: true,
-    lastActive: '2024-03-21T08:15:00Z',
-  },
-];
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function Users() {
+  const { toast } = useToast();
+  
+  const { data: users, isLoading } = useQuery({
+    queryKey: ['users'],
+    queryFn: async () => {
+      console.log('Fetching users data...');
+      const { data: privateData, error: privateError } = await supabase
+        .from('user_private')
+        .select(`
+          id,
+          role,
+          approved,
+          created_at,
+          user_public (
+            email
+          )
+        `);
+
+      if (privateError) {
+        console.error('Error fetching users:', privateError);
+        toast({
+          title: "Error",
+          description: "Could not load users. Please try again later.",
+          variant: "destructive",
+        });
+        throw privateError;
+      }
+
+      console.log('Users data fetched:', privateData);
+      return privateData;
+    },
+  });
+
   const formatLastActive = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -46,6 +57,16 @@ export default function Users() {
     });
   };
 
+  if (isLoading) {
+    return (
+      <AdminLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-white">Loading users...</div>
+        </div>
+      </AdminLayout>
+    );
+  }
+
   return (
     <AdminLayout>
       <h1 className="text-2xl font-bold mb-6 text-white">Users</h1>
@@ -55,36 +76,36 @@ export default function Users() {
           <TableHeader>
             <TableRow>
               <TableHead className="text-gray-300">
-                <span className="inline-flex items-center gap-2">
+                <div className="flex items-center gap-2">
                   <Mail className="h-4 w-4" />
-                  Email
-                </span>
+                  <span>Email</span>
+                </div>
               </TableHead>
               <TableHead className="text-gray-300">
-                <span className="inline-flex items-center gap-2">
+                <div className="flex items-center gap-2">
                   <Shield className="h-4 w-4" />
-                  Role
-                </span>
+                  <span>Role</span>
+                </div>
               </TableHead>
               <TableHead className="text-gray-300">
-                <span className="inline-flex items-center gap-2">
+                <div className="flex items-center gap-2">
                   <Check className="h-4 w-4" />
-                  Approved
-                </span>
+                  <span>Approved</span>
+                </div>
               </TableHead>
               <TableHead className="text-gray-300">
-                <span className="inline-flex items-center gap-2">
+                <div className="flex items-center gap-2">
                   <Clock className="h-4 w-4" />
-                  Last Active
-                </span>
+                  <span>Last Active</span>
+                </div>
               </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {mockUsers.map((user) => (
+            {users?.map((user) => (
               <TableRow key={user.id} className="hover:bg-white/10">
                 <TableCell className="text-gray-200">
-                  {user.email}
+                  {user.user_public?.email}
                 </TableCell>
                 <TableCell className="text-gray-200">
                   <span className={`px-2 py-1 rounded-full text-xs ${
@@ -100,7 +121,7 @@ export default function Users() {
                   />
                 </TableCell>
                 <TableCell className="text-gray-200">
-                  {formatLastActive(user.lastActive)}
+                  {formatLastActive(user.created_at)}
                 </TableCell>
               </TableRow>
             ))}
