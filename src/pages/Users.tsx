@@ -11,6 +11,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { User } from "@supabase/supabase-js";
 
 interface User {
   id: string;
@@ -41,12 +42,14 @@ export default function Users() {
       }
 
       // Fetch all users from auth.users (requires admin rights)
-      const { data: authUsers, error: authError } = await supabase.auth.admin.listUsers();
+      const { data: authData, error: authError } = await supabase.auth.admin.listUsers();
       
       if (authError) {
         console.error('Error fetching auth users:', authError);
         throw authError;
       }
+
+      const authUsers = authData?.users || [];
 
       // Fetch user_private data
       const { data: privateData, error: privateError } = await supabase
@@ -60,7 +63,7 @@ export default function Users() {
 
       // Combine the data
       const combinedUsers = privateData.map(privateUser => {
-        const authUser = authUsers.users.find(au => au.id === privateUser.id);
+        const authUser = authUsers.find(au => au.id === privateUser.id);
         return {
           ...privateUser,
           email: authUser?.email || 'N/A',
