@@ -21,43 +21,66 @@ const Login = () => {
         
         if (sessionError) {
           console.error("Session error:", sessionError);
+          if (mounted) {
+            toast({
+              title: "Authentication Error",
+              description: sessionError.message,
+              variant: "destructive",
+            });
+          }
           return;
         }
         
-        if (session) {
-          console.log("Active session found, checking user status...");
-          const { data: privateData, error: privateError } = await supabase
-            .from('user_private')
-            .select('approved, role')
-            .eq('id', session.user.id)
-            .limit(1)
-            .maybeSingle();
+        if (!session) {
+          console.log("No active session found");
+          return;
+        }
 
-          if (privateError) {
-            console.error("Error fetching user private data:", privateError);
-            return;
-          }
+        console.log("Active session found, checking user status...");
+        const { data: privateData, error: privateError } = await supabase
+          .from('user_private')
+          .select('approved, role')
+          .eq('id', session.user.id)
+          .maybeSingle();
 
-          if (!privateData || !privateData.approved) {
-            console.log("User not approved");
-            if (mounted) {
-              toast({
-                title: "Access Denied",
-                description: "Your account is pending approval",
-                variant: "destructive",
-              });
-              await supabase.auth.signOut();
-            }
-            return;
-          }
-
-          console.log("User approved, redirecting to admin...");
+        if (privateError) {
+          console.error("Error fetching user private data:", privateError);
           if (mounted) {
-            navigate('/admin');
+            toast({
+              title: "Error",
+              description: "Unable to verify account status",
+              variant: "destructive",
+            });
           }
+          return;
+        }
+
+        if (!privateData || !privateData.approved) {
+          console.log("User not approved or data not found");
+          if (mounted) {
+            toast({
+              title: "Access Denied",
+              description: "Your account is pending approval",
+              variant: "destructive",
+            });
+            await supabase.auth.signOut();
+          }
+          return;
+        }
+
+        console.log("User approved, redirecting to admin...");
+        if (mounted) {
+          navigate('/admin');
         }
       } catch (error) {
         console.error("Auth check failed:", error);
+        if (mounted) {
+          toast({
+            title: "Error",
+            description: "An unexpected error occurred",
+            variant: "destructive",
+          });
+        }
       }
     };
 
@@ -66,17 +89,23 @@ const Login = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, session) => {
       console.log("Auth state changed:", event, session ? "Session exists" : "No session");
       
+      if (!mounted) return;
+
       if (event === 'SIGNED_IN' && session) {
         try {
           const { data: privateData, error: privateError } = await supabase
             .from('user_private')
             .select('approved, role')
             .eq('id', session.user.id)
-            .limit(1)
             .maybeSingle();
 
           if (privateError) {
             console.error("Error fetching user private data:", privateError);
+            toast({
+              title: "Error",
+              description: "Unable to verify account status",
+              variant: "destructive",
+            });
             return;
           }
 
@@ -99,6 +128,11 @@ const Login = () => {
           navigate('/admin');
         } catch (error) {
           console.error("Error in auth state change:", error);
+          toast({
+            title: "Error",
+            description: "An unexpected error occurred",
+            variant: "destructive",
+          });
         }
       }
     });
