@@ -11,7 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { Mail, Shield, Clock, Check } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Users() {
   const { toast } = useToast();
@@ -20,20 +20,14 @@ export default function Users() {
     queryKey: ['users'],
     queryFn: async () => {
       console.log('Fetching users data...');
+      
+      // Fetch user_private data
       const { data: privateData, error: privateError } = await supabase
         .from('user_private')
-        .select(`
-          id,
-          role,
-          approved,
-          created_at,
-          user_public (
-            email
-          )
-        `);
+        .select('*');
 
       if (privateError) {
-        console.error('Error fetching users:', privateError);
+        console.error('Error fetching private user data:', privateError);
         toast({
           title: "Error",
           description: "Could not load users. Please try again later.",
@@ -42,8 +36,29 @@ export default function Users() {
         throw privateError;
       }
 
-      console.log('Users data fetched:', privateData);
-      return privateData;
+      // Fetch corresponding user_public data
+      const { data: publicData, error: publicError } = await supabase
+        .from('user_public')
+        .select('*');
+
+      if (publicError) {
+        console.error('Error fetching public user data:', publicError);
+        toast({
+          title: "Error",
+          description: "Could not load users. Please try again later.",
+          variant: "destructive",
+        });
+        throw publicError;
+      }
+
+      // Combine the data
+      const combinedData = privateData.map(privateUser => ({
+        ...privateUser,
+        user_public: publicData.find(publicUser => publicUser.id === privateUser.id)
+      }));
+
+      console.log('Users data fetched:', combinedData);
+      return combinedData;
     },
   });
 
@@ -105,7 +120,7 @@ export default function Users() {
             {users?.map((user) => (
               <TableRow key={user.id} className="hover:bg-white/10">
                 <TableCell className="text-gray-200">
-                  {user.user_public?.email}
+                  {user.user_public?.username}
                 </TableCell>
                 <TableCell className="text-gray-200">
                   <span className={`px-2 py-1 rounded-full text-xs ${
