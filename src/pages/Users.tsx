@@ -17,9 +17,7 @@ interface User {
   role: 'admin' | 'user';
   approved: boolean;
   created_at: string;
-  user_public: {
-    username: string | null;
-  } | null;
+  username: string | null;
 }
 
 export default function Users() {
@@ -41,22 +39,37 @@ export default function Users() {
         return;
       }
 
-      const { data, error } = await supabase
+      // First fetch user_private data
+      const { data: privateData, error: privateError } = await supabase
         .from('user_private')
-        .select('*, user_public(username)');
+        .select('*');
 
-      if (error) {
-        console.error('Error fetching users:', error);
-        toast({
-          title: "Error",
-          description: "Failed to fetch users",
-          variant: "destructive",
-        });
-        return;
+      if (privateError) {
+        console.error('Error fetching private user data:', privateError);
+        throw privateError;
       }
 
-      console.log('Fetched users:', data);
-      setUsers(data);
+      // Then fetch user_public data
+      const { data: publicData, error: publicError } = await supabase
+        .from('user_public')
+        .select('*');
+
+      if (publicError) {
+        console.error('Error fetching public user data:', publicError);
+        throw publicError;
+      }
+
+      // Combine the data
+      const combinedUsers = privateData.map(privateUser => {
+        const publicUser = publicData.find(pu => pu.id === privateUser.id);
+        return {
+          ...privateUser,
+          username: publicUser?.username || null
+        };
+      });
+
+      console.log('Combined users data:', combinedUsers);
+      setUsers(combinedUsers);
     } catch (error) {
       console.error('Error in fetchUsers:', error);
       toast({
@@ -135,7 +148,7 @@ export default function Users() {
             {users.map((user) => (
               <TableRow key={user.id} className="hover:bg-white/10">
                 <TableCell className="text-gray-200">
-                  {user.user_public?.username || "No username set"}
+                  {user.username || "No username set"}
                 </TableCell>
                 <TableCell className="text-gray-200">{user.role}</TableCell>
                 <TableCell className="text-gray-200">
