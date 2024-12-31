@@ -40,33 +40,36 @@ export default function Users() {
         return;
       }
 
-      const { data: userData, error: userError } = await supabase
+      // First fetch user_private data
+      const { data: userPrivateData, error: userPrivateError } = await supabase
         .from('user_private')
-        .select(`
-          id,
-          role,
-          approved,
-          created_at,
-          auth_users!inner (
-            email,
-            last_sign_in_at
-          )
-        `);
+        .select('*');
 
-      if (userError) {
-        console.error('Error fetching user data:', userError);
-        throw userError;
+      if (userPrivateError) {
+        console.error('Error fetching user private data:', userPrivateError);
+        throw userPrivateError;
       }
 
-      // Transform the data to match our UserData interface
-      const transformedUsers = (userData || []).map(user => ({
-        id: user.id,
-        role: user.role,
-        approved: user.approved,
-        created_at: user.created_at,
-        email: user.auth_users?.email || 'N/A',
-        last_sign_in_at: user.auth_users?.last_sign_in_at || null,
-      }));
+      // Then fetch auth users data
+      const { data: authData, error: authError } = await supabase.auth.admin.listUsers();
+
+      if (authError) {
+        console.error('Error fetching auth data:', authError);
+        throw authError;
+      }
+
+      // Combine the data
+      const transformedUsers = userPrivateData.map(privateUser => {
+        const authUser = authData.users.find(u => u.id === privateUser.id);
+        return {
+          id: privateUser.id,
+          role: privateUser.role,
+          approved: privateUser.approved,
+          created_at: privateUser.created_at,
+          email: authUser?.email || 'N/A',
+          last_sign_in_at: authUser?.last_sign_in_at || null,
+        };
+      });
 
       console.log('Combined users data:', transformedUsers);
       setUsers(transformedUsers);
