@@ -28,17 +28,17 @@ export default function Users() {
         throw error;
       }
 
-      // Fetch auth users data
-      const { data: authUsers, error: authError } = await supabase.auth.admin.listUsers();
-      if (authError) {
-        console.error("Error fetching auth users:", authError);
-        throw authError;
+      // Fetch user data through our secure edge function
+      const { data: userData, error: userError } = await supabase.functions.invoke('get-users-data');
+      if (userError) {
+        console.error("Error fetching user data:", userError);
+        throw userError;
       }
 
-      // Combine profiles with auth data
+      // Combine profiles with user data
       const enrichedProfiles = profiles.map(profile => ({
         ...profile,
-        user: authUsers.users.find(user => user.id === profile.id)
+        user: userData.users.find((user: any) => user.id === profile.id)
       }));
 
       return enrichedProfiles;
