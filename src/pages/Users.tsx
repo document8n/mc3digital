@@ -14,11 +14,12 @@ import { useToast } from "@/hooks/use-toast";
 
 interface User {
   id: string;
-  email?: string;
-  username?: string | null;
   role: 'admin' | 'user';
   approved: boolean;
   created_at: string;
+  user_public: {
+    username: string | null;
+  } | null;
 }
 
 export default function Users() {
@@ -40,13 +41,12 @@ export default function Users() {
         return;
       }
 
-      // First get all user_private records
-      const { data: privateData, error: privateError } = await supabase
+      const { data, error } = await supabase
         .from('user_private')
         .select('*, user_public(username)');
 
-      if (privateError) {
-        console.error('Error fetching users:', privateError);
+      if (error) {
+        console.error('Error fetching users:', error);
         toast({
           title: "Error",
           description: "Failed to fetch users",
@@ -55,18 +55,8 @@ export default function Users() {
         return;
       }
 
-      console.log('Fetched users:', privateData);
-
-      // Transform the data to match our User interface
-      const transformedUsers = privateData.map(user => ({
-        id: user.id,
-        username: user.user_public?.username,
-        role: user.role,
-        approved: user.approved,
-        created_at: user.created_at,
-      }));
-
-      setUsers(transformedUsers);
+      console.log('Fetched users:', data);
+      setUsers(data);
     } catch (error) {
       console.error('Error in fetchUsers:', error);
       toast({
@@ -97,7 +87,6 @@ export default function Users() {
         return;
       }
 
-      // Update local state
       setUsers(users.map(user => 
         user.id === userId 
           ? { ...user, approved: !currentApproval }
@@ -146,7 +135,7 @@ export default function Users() {
             {users.map((user) => (
               <TableRow key={user.id} className="hover:bg-white/10">
                 <TableCell className="text-gray-200">
-                  {user.username || "No username set"}
+                  {user.user_public?.username || "No username set"}
                 </TableCell>
                 <TableCell className="text-gray-200">{user.role}</TableCell>
                 <TableCell className="text-gray-200">
