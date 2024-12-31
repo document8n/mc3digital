@@ -84,11 +84,15 @@ export default function Users() {
         })
         .eq('id', userId)
         .select()
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error('Error updating user approval:', error);
         throw error;
+      }
+
+      if (!data) {
+        throw new Error('User not found');
       }
 
       console.log('Update successful:', data);
@@ -102,9 +106,10 @@ export default function Users() {
       await refetch();
     } catch (error) {
       console.error('Error updating user approval:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to update user approval status';
       toast({
         title: "Error",
-        description: "Failed to update user approval status",
+        description: errorMessage,
         variant: "destructive",
       });
     }
