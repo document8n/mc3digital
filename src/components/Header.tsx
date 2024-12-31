@@ -1,17 +1,47 @@
 import { Menu, X, Code2 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        const { data: privateData } = await supabase
+          .from('user_private')
+          .select('approved')
+          .eq('id', session.user.id)
+          .single();
+        
+        setIsLoggedIn(privateData?.approved || false);
+      }
+    };
+
+    checkAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_OUT') {
+        setIsLoggedIn(false);
+      } else if (session) {
+        checkAuth();
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   const scrollToContact = () => {
     console.log("Attempting to scroll to contact section");
     setIsMenuOpen(false);
     
-    // Add a small delay to ensure the DOM is ready
     setTimeout(() => {
       const contactSection = document.querySelector('#contact');
       console.log("Contact section found:", contactSection);
@@ -26,7 +56,11 @@ export const Header = () => {
 
   const handlePortalClick = () => {
     setIsMenuOpen(false);
-    navigate('/login');
+    if (isLoggedIn) {
+      navigate('/admin');
+    } else {
+      navigate('/login');
+    }
   };
 
   return (
@@ -74,7 +108,7 @@ export const Header = () => {
                   onClick={handlePortalClick}
                   className="block w-full text-left text-white hover:text-gray-300 transition-colors"
                 >
-                  Customer Portal
+                  {isLoggedIn ? 'Dashboard' : 'Customer Portal'}
                 </button>
               </nav>
             </motion.div>

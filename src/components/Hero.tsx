@@ -1,7 +1,8 @@
 import { motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 declare global {
   interface Window {
@@ -11,8 +12,32 @@ declare global {
 
 export const Hero = () => {
   const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        const { data: privateData } = await supabase
+          .from('user_private')
+          .select('approved')
+          .eq('id', session.user.id)
+          .single();
+        
+        setIsLoggedIn(privateData?.approved || false);
+      }
+    };
+
+    checkAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_OUT') {
+        setIsLoggedIn(false);
+      } else if (session) {
+        checkAuth();
+      }
+    });
+
     // Dynamically load particles.js
     const loadParticles = async () => {
       const script = document.createElement('script');
@@ -84,13 +109,11 @@ export const Hero = () => {
 
       document.body.appendChild(script);
 
-      // Cleanup function
       return () => {
         const existingScript = document.querySelector(`script[src="${script.src}"]`);
         if (existingScript) {
           document.body.removeChild(existingScript);
         }
-        // Clean up particles container
         const particlesContainer = document.getElementById('particles-js');
         if (particlesContainer) {
           particlesContainer.innerHTML = '';
@@ -99,6 +122,10 @@ export const Hero = () => {
     };
 
     loadParticles();
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   const container = {
@@ -120,6 +147,14 @@ export const Hero = () => {
       transition: {
         duration: 0.8
       }
+    }
+  };
+
+  const handlePortalClick = () => {
+    if (isLoggedIn) {
+      navigate('/admin');
+    } else {
+      navigate('/login');
     }
   };
 
@@ -164,12 +199,12 @@ export const Hero = () => {
             Get Started
           </motion.a>
           <motion.button
-            onClick={() => navigate('/login')}
+            onClick={handlePortalClick}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="inline-block px-8 py-3 bg-white/10 backdrop-blur-sm text-white rounded-lg font-medium hover-lift border border-white/20"
           >
-            Client Portal
+            {isLoggedIn ? 'Dashboard' : 'Client Portal'}
           </motion.button>
         </motion.div>
       </motion.div>
