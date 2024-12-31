@@ -35,9 +35,12 @@ const Login = () => {
         .from('user_private')
         .select('approved, role')
         .eq('id', authData.user.id)
-        .maybeSingle();
+        .single();
 
-      if (privateError) throw privateError;
+      if (privateError) {
+        console.error('Private data fetch error:', privateError);
+        throw new Error('Error fetching user data');
+      }
 
       if (!privateData) {
         throw new Error('User private data not found');
