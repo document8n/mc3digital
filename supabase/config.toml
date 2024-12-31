@@ -1,1 +1,4 @@
 project_id = "ulvmmeaqkkilanvgyuwr"
+
+[functions.get-users-data]
+verify_jwt = true

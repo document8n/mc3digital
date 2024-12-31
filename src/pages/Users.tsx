@@ -28,20 +28,34 @@ export default function Users() {
         throw error;
       }
 
-      // Fetch user data through our secure edge function
-      const { data: userData, error: userError } = await supabase.functions.invoke('get-users-data');
-      if (userError) {
-        console.error("Error fetching user data:", userError);
-        throw userError;
+      try {
+        console.log("Calling get-users-data function...");
+        const { data: userData, error: userError } = await supabase.functions.invoke(
+          'get-users-data',
+          {
+            method: 'POST',
+            body: {},
+          }
+        );
+        
+        if (userError) {
+          console.error("Error fetching user data:", userError);
+          throw userError;
+        }
+
+        console.log("User data received:", userData);
+
+        // Combine profiles with user data
+        const enrichedProfiles = profiles.map(profile => ({
+          ...profile,
+          user: userData.users.find((user: any) => user.id === profile.id)
+        }));
+
+        return enrichedProfiles;
+      } catch (error) {
+        console.error("Error in get-users-data function:", error);
+        throw error;
       }
-
-      // Combine profiles with user data
-      const enrichedProfiles = profiles.map(profile => ({
-        ...profile,
-        user: userData.users.find((user: any) => user.id === profile.id)
-      }));
-
-      return enrichedProfiles;
     },
   });
 
