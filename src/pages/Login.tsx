@@ -46,10 +46,6 @@ const Login = () => {
         throw new Error('User private data not found');
       }
 
-      if (!privateData.approved) {
-        throw new Error('Account pending approval');
-      }
-
       // Show success toast
       toast({
         title: "Login successful",
@@ -89,7 +85,7 @@ const Login = () => {
 
       toast({
         title: "Sign up successful",
-        description: "Your account is pending approval. You will be notified when your account is approved.",
+        description: "Your account has been created. You can now sign in.",
       });
 
     } catch (error: any) {
