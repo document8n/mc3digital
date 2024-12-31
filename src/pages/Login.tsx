@@ -16,6 +16,8 @@ const Login = () => {
     setIsLoading(true);
 
     try {
+      console.log("Starting login process...");
+      
       // Sign in with Supabase auth
       const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
         email,
@@ -102,7 +104,7 @@ const Login = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
       <Header />
-      <div className="container mx-auto px-4 py-32">
+      <div className="container mx-auto px-4 pt-32">
         <div className="max-w-md mx-auto bg-white/5 backdrop-blur-sm p-8 rounded-lg shadow-lg">
           <h1 className="text-2xl font-bold mb-6 text-center text-white">
             Welcome to MC3digital
