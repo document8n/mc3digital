@@ -76,19 +76,27 @@ const Login = () => {
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    console.log("Starting signup process...");
 
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/login`,
+        },
       });
 
       if (error) throw error;
 
       toast({
         title: "Sign up successful",
-        description: "Your account has been created. Please check your email for verification.",
+        description: "Please check your email to verify your account. Note: An administrator will need to approve your account before you can log in.",
       });
+
+      // Clear the form
+      setEmail('');
+      setPassword('');
 
     } catch (error: any) {
       console.error('Signup error:', error);
