@@ -17,7 +17,8 @@ interface User {
   role: 'admin' | 'user';
   approved: boolean;
   created_at: string;
-  username: string | null;
+  email: string;
+  last_sign_in_at: string | null;
 }
 
 export default function Users() {
@@ -39,7 +40,15 @@ export default function Users() {
         return;
       }
 
-      // First fetch user_private data
+      // Fetch all users from auth.users (requires admin rights)
+      const { data: authUsers, error: authError } = await supabase.auth.admin.listUsers();
+      
+      if (authError) {
+        console.error('Error fetching auth users:', authError);
+        throw authError;
+      }
+
+      // Fetch user_private data
       const { data: privateData, error: privateError } = await supabase
         .from('user_private')
         .select('*');
@@ -49,22 +58,13 @@ export default function Users() {
         throw privateError;
       }
 
-      // Then fetch user_public data
-      const { data: publicData, error: publicError } = await supabase
-        .from('user_public')
-        .select('*');
-
-      if (publicError) {
-        console.error('Error fetching public user data:', publicError);
-        throw publicError;
-      }
-
       // Combine the data
       const combinedUsers = privateData.map(privateUser => {
-        const publicUser = publicData.find(pu => pu.id === privateUser.id);
+        const authUser = authUsers.users.find(au => au.id === privateUser.id);
         return {
           ...privateUser,
-          username: publicUser?.username || null
+          email: authUser?.email || 'N/A',
+          last_sign_in_at: authUser?.last_sign_in_at || null,
         };
       });
 
@@ -138,17 +138,17 @@ export default function Users() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="text-gray-300">Username</TableHead>
+              <TableHead className="text-gray-300">Email</TableHead>
               <TableHead className="text-gray-300">Role</TableHead>
               <TableHead className="text-gray-300">Approved</TableHead>
-              <TableHead className="text-gray-300">Created</TableHead>
+              <TableHead className="text-gray-300">Last Active</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {users.map((user) => (
               <TableRow key={user.id} className="hover:bg-white/10">
                 <TableCell className="text-gray-200">
-                  {user.username || "No username set"}
+                  {user.email}
                 </TableCell>
                 <TableCell className="text-gray-200">{user.role}</TableCell>
                 <TableCell className="text-gray-200">
@@ -158,7 +158,9 @@ export default function Users() {
                   />
                 </TableCell>
                 <TableCell className="text-gray-200">
-                  {new Date(user.created_at).toLocaleDateString()}
+                  {user.last_sign_in_at 
+                    ? new Date(user.last_sign_in_at).toLocaleDateString()
+                    : 'Never'}
                 </TableCell>
               </TableRow>
             ))}
