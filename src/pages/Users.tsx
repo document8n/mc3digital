@@ -76,6 +76,38 @@ export default function Users() {
     try {
       console.log(`Updating approval status for user ${userId} to ${!currentApproval}`);
       
+      // First, check if user_private record exists
+      const { data: existingPrivate, error: checkError } = await supabase
+        .from('user_private')
+        .select()
+        .eq('id', userId)
+        .maybeSingle();
+
+      if (checkError) {
+        console.error('Error checking user_private record:', checkError);
+        throw checkError;
+      }
+
+      // If no private record exists, create one
+      if (!existingPrivate) {
+        console.log('Creating missing user_private record');
+        const { error: insertError } = await supabase
+          .from('user_private')
+          .insert([
+            { 
+              id: userId,
+              role: 'user',
+              approved: false
+            }
+          ]);
+
+        if (insertError) {
+          console.error('Error creating user_private record:', insertError);
+          throw insertError;
+        }
+      }
+
+      // Now update the approval status
       const { data, error } = await supabase
         .from('user_private')
         .update({ 
