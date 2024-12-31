@@ -12,44 +12,99 @@ const Login = () => {
   const { toast } = useToast();
 
   useEffect(() => {
+    let mounted = true;
+
     const checkUser = async () => {
-      console.log("Checking for existing session...");
-      const { data: { session }, error } = await supabase.auth.getSession();
-      
-      if (error) {
-        console.error("Error checking session:", error);
-        return;
-      }
-      
-      if (session) {
-        console.log("Active session found, redirecting to admin...");
-        navigate('/admin');
+      try {
+        console.log("Checking for existing session...");
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          console.error("Session error:", sessionError);
+          return;
+        }
+        
+        if (session) {
+          console.log("Active session found, checking user status...");
+          const { data: privateData, error: privateError } = await supabase
+            .from('user_private')
+            .select('approved, role')
+            .eq('id', session.user.id)
+            .limit(1)
+            .maybeSingle();
+
+          if (privateError) {
+            console.error("Error fetching user private data:", privateError);
+            return;
+          }
+
+          if (!privateData || !privateData.approved) {
+            console.log("User not approved");
+            if (mounted) {
+              toast({
+                title: "Access Denied",
+                description: "Your account is pending approval",
+                variant: "destructive",
+              });
+              await supabase.auth.signOut();
+            }
+            return;
+          }
+
+          console.log("User approved, redirecting to admin...");
+          if (mounted) {
+            navigate('/admin');
+          }
+        }
+      } catch (error) {
+        console.error("Auth check failed:", error);
       }
     };
 
     checkUser();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, session) => {
       console.log("Auth state changed:", event, session ? "Session exists" : "No session");
       
       if (event === 'SIGNED_IN' && session) {
-        console.log("User signed in successfully, redirecting to admin...");
-        toast({
-          title: "Welcome!",
-          description: "Successfully signed in",
-        });
-        navigate('/admin');
-      } else if (event === 'USER_UPDATED' && session) {
-        console.log("New user signed up successfully, redirecting to admin...");
-        toast({
-          title: "Welcome to MC3digital!",
-          description: "Your account has been created successfully",
-        });
-        navigate('/admin');
+        try {
+          const { data: privateData, error: privateError } = await supabase
+            .from('user_private')
+            .select('approved, role')
+            .eq('id', session.user.id)
+            .limit(1)
+            .maybeSingle();
+
+          if (privateError) {
+            console.error("Error fetching user private data:", privateError);
+            return;
+          }
+
+          if (!privateData || !privateData.approved) {
+            console.log("New user not approved");
+            toast({
+              title: "Access Denied",
+              description: "Your account is pending approval",
+              variant: "destructive",
+            });
+            await supabase.auth.signOut();
+            return;
+          }
+
+          console.log("User signed in successfully, redirecting to admin...");
+          toast({
+            title: "Welcome!",
+            description: "Successfully signed in",
+          });
+          navigate('/admin');
+        } catch (error) {
+          console.error("Error in auth state change:", error);
+        }
       }
     });
 
     return () => {
+      mounted = false;
       subscription.unsubscribe();
     };
   }, [navigate, toast]);
