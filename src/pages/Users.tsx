@@ -67,25 +67,39 @@ export default function Users() {
         email: authUsers.find((auth: any) => auth.id === pub.id)?.email
       }));
 
+      console.log("Enriched users data:", enrichedUsers);
       return enrichedUsers;
     },
   });
 
   const handleApprovalToggle = async (userId: string, currentApproval: boolean) => {
     try {
-      const { error } = await supabase
+      console.log(`Updating approval status for user ${userId} to ${!currentApproval}`);
+      
+      const { data, error } = await supabase
         .from('user_private')
-        .update({ approved: !currentApproval })
-        .eq('id', userId);
+        .update({ 
+          approved: !currentApproval,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', userId)
+        .select()
+        .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error updating user approval:', error);
+        throw error;
+      }
+
+      console.log('Update successful:', data);
 
       toast({
         title: "Success",
         description: `User ${!currentApproval ? 'approved' : 'unapproved'} successfully`,
       });
 
-      refetch();
+      // Refetch the data to update the UI
+      await refetch();
     } catch (error) {
       console.error('Error updating user approval:', error);
       toast({
