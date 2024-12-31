@@ -20,7 +20,7 @@ export default function Users() {
       console.log("Fetching profiles...");
       const { data: profiles, error } = await supabase
         .from("profiles")
-        .select("*, user:id(email, phone)")
+        .select("*")
         .order("created_at", { ascending: false });
 
       if (error) {
@@ -28,7 +28,20 @@ export default function Users() {
         throw error;
       }
 
-      return profiles;
+      // Fetch auth users data
+      const { data: authUsers, error: authError } = await supabase.auth.admin.listUsers();
+      if (authError) {
+        console.error("Error fetching auth users:", authError);
+        throw authError;
+      }
+
+      // Combine profiles with auth data
+      const enrichedProfiles = profiles.map(profile => ({
+        ...profile,
+        user: authUsers.users.find(user => user.id === profile.id)
+      }));
+
+      return enrichedProfiles;
     },
   });
 
