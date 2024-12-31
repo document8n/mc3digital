@@ -14,17 +14,19 @@ const Login = () => {
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    console.log("Starting login process...");
 
     try {
-      console.log("Starting login process...");
-      
       // Sign in with Supabase auth
       const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
         email,
         password
       });
 
-      if (authError) throw authError;
+      if (authError) {
+        console.error("Auth error:", authError);
+        throw authError;
+      }
 
       if (!authData.user) {
         throw new Error('No user data returned');
@@ -85,7 +87,7 @@ const Login = () => {
 
       toast({
         title: "Sign up successful",
-        description: "Your account has been created. You can now sign in.",
+        description: "Your account has been created. Please check your email for verification.",
       });
 
     } catch (error: any) {

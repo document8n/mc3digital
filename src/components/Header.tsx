@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -15,11 +16,15 @@ export const Header = () => {
       if (session) {
         const { data: privateData } = await supabase
           .from('user_private')
-          .select('approved')
+          .select('approved, role')
           .eq('id', session.user.id)
           .single();
         
         setIsLoggedIn(privateData?.approved || false);
+        setIsAdmin(privateData?.role === 'admin');
+      } else {
+        setIsLoggedIn(false);
+        setIsAdmin(false);
       }
     };
 
@@ -28,6 +33,7 @@ export const Header = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_OUT') {
         setIsLoggedIn(false);
+        setIsAdmin(false);
       } else if (session) {
         checkAuth();
       }
@@ -57,7 +63,7 @@ export const Header = () => {
   const handlePortalClick = () => {
     setIsMenuOpen(false);
     if (isLoggedIn) {
-      navigate('/admin');
+      navigate(isAdmin ? '/admin' : '/');
     } else {
       navigate('/login');
     }
@@ -67,13 +73,11 @@ export const Header = () => {
     <header className="fixed w-full top-0 z-50 bg-[#1A1F2C]/95 backdrop-blur-sm border-b border-gray-800">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          {/* Logo and Site Name */}
           <Link to="/" className="flex items-center space-x-2 text-white">
             <Code2 className="h-6 w-6" />
             <span className="text-xl font-bold">mc3digital</span>
           </Link>
 
-          {/* Menu Toggle Button */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className="text-white hover:text-gray-300 transition-colors"
@@ -87,7 +91,6 @@ export const Header = () => {
           </button>
         </div>
 
-        {/* Collapsible Menu */}
         <AnimatePresence>
           {isMenuOpen && (
             <motion.div
@@ -108,7 +111,7 @@ export const Header = () => {
                   onClick={handlePortalClick}
                   className="block w-full text-left text-white hover:text-gray-300 transition-colors"
                 >
-                  {isLoggedIn ? 'Dashboard' : 'Customer Portal'}
+                  {isLoggedIn ? (isAdmin ? 'Dashboard' : 'Portal') : 'Customer Portal'}
                 </button>
               </nav>
             </motion.div>
