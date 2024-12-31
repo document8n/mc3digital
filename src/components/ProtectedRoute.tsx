@@ -31,7 +31,32 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
           return;
         }
 
-        console.log("Valid session found, allowing access");
+        // Check if user is approved
+        const { data: privateData, error: privateError } = await supabase
+          .from('user_private')
+          .select('approved, role')
+          .eq('id', session.user.id)
+          .single();
+
+        if (privateError) {
+          console.error("Error fetching user private data:", privateError);
+          navigate('/login');
+          return;
+        }
+
+        if (!privateData.approved) {
+          console.log("User not approved, redirecting to login");
+          toast({
+            title: "Account Pending Approval",
+            description: "Your account is pending approval by an administrator.",
+            variant: "destructive",
+          });
+          await supabase.auth.signOut();
+          navigate('/login');
+          return;
+        }
+
+        console.log("Valid session found and user approved, allowing access");
         setIsLoading(false);
       } catch (error) {
         console.error("Session check failed:", error);
@@ -51,8 +76,8 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
       }
       
       if (event === 'SIGNED_IN') {
-        console.log("User signed in, allowing access");
-        setIsLoading(false);
+        console.log("User signed in, checking approval status");
+        checkAuth();
       }
     });
 
