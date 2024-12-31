@@ -26,7 +26,7 @@ export const router = createBrowserRouter([
   {
     path: "/admin",
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute requireAdmin>
         <AdminHome />
       </ProtectedRoute>
     ),
@@ -34,7 +34,7 @@ export const router = createBrowserRouter([
   {
     path: "/admin/settings",
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute requireAdmin>
         <Admin />
       </ProtectedRoute>
     ),
@@ -42,7 +42,7 @@ export const router = createBrowserRouter([
   {
     path: "/projects",
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute requireAdmin>
         <Projects />
       </ProtectedRoute>
     ),
@@ -50,7 +50,7 @@ export const router = createBrowserRouter([
   {
     path: "/projects/:id",
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute requireAdmin>
         <ProjectDetails />
       </ProtectedRoute>
     ),
@@ -58,7 +58,7 @@ export const router = createBrowserRouter([
   {
     path: "/clients",
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute requireAdmin>
         <Clients />
       </ProtectedRoute>
     ),
@@ -66,7 +66,7 @@ export const router = createBrowserRouter([
   {
     path: "/clients/:id",
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute requireAdmin>
         <ClientDetails />
       </ProtectedRoute>
     ),
@@ -74,7 +74,7 @@ export const router = createBrowserRouter([
   {
     path: "/services",
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute requireAdmin>
         <Services />
       </ProtectedRoute>
     ),
@@ -82,7 +82,7 @@ export const router = createBrowserRouter([
   {
     path: "/invoice",
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute requireAdmin>
         <Invoices />
       </ProtectedRoute>
     ),
@@ -90,7 +90,7 @@ export const router = createBrowserRouter([
   {
     path: "/invoice/:id",
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute requireAdmin>
         <InvoiceDetails />
       </ProtectedRoute>
     ),
@@ -98,7 +98,7 @@ export const router = createBrowserRouter([
   {
     path: "/tasks",
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute requireAdmin>
         <Tasks />
       </ProtectedRoute>
     ),
@@ -106,7 +106,7 @@ export const router = createBrowserRouter([
   {
     path: "/users",
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute requireAdmin>
         <Users />
       </ProtectedRoute>
     ),
