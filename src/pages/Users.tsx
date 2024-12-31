@@ -32,22 +32,14 @@ export default function Users() {
 
   const fetchUsers = async () => {
     try {
-      console.log('Fetching users...');
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        console.error('No session found');
-        return;
-      }
-
-      // Fetch user_private data with emails from auth.users using a view
-      const { data: userData, error: userError } = await supabase
+      console.log('Fetching users from admin_users_view...');
+      const { data: userData, error } = await supabase
         .from('admin_users_view')
         .select('*');
 
-      if (userError) {
-        console.error('Error fetching user data:', userError);
-        throw userError;
+      if (error) {
+        console.error('Error fetching user data:', error);
+        throw error;
       }
 
       console.log('User data:', userData);
@@ -56,7 +48,7 @@ export default function Users() {
       console.error('Error in fetchUsers:', error);
       toast({
         title: "Error",
-        description: "Failed to fetch users",
+        description: "Failed to fetch users. Make sure you have admin privileges.",
         variant: "destructive",
       });
     } finally {

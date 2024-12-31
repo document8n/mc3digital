@@ -314,7 +314,17 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      admin_users_view: {
+        Row: {
+          approved: boolean | null
+          created_at: string | null
+          email: string | null
+          id: string | null
+          last_sign_in_at: string | null
+          role: Database["public"]["Enums"]["user_role"] | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never
