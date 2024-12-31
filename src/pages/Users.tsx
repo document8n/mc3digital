@@ -11,9 +11,8 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { User } from "@supabase/supabase-js";
 
-interface User {
+interface UserData {
   id: string;
   role: 'admin' | 'user';
   approved: boolean;
@@ -23,7 +22,7 @@ interface User {
 }
 
 export default function Users() {
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<UserData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
@@ -41,38 +40,34 @@ export default function Users() {
         return;
       }
 
-      // Fetch all users from auth.users (requires admin rights)
-      const { data: authData, error: authError } = await supabase.auth.admin.listUsers();
-      
-      if (authError) {
-        console.error('Error fetching auth users:', authError);
-        throw authError;
-      }
-
-      const authUsers = authData?.users || [];
-
-      // Fetch user_private data
-      const { data: privateData, error: privateError } = await supabase
+      // Fetch user_private data with emails from auth.users using a join
+      const { data: userData, error: userError } = await supabase
         .from('user_private')
-        .select('*');
+        .select(`
+          *,
+          auth_users:id (
+            email,
+            last_sign_in_at
+          )
+        `);
 
-      if (privateError) {
-        console.error('Error fetching private user data:', privateError);
-        throw privateError;
+      if (userError) {
+        console.error('Error fetching user data:', userError);
+        throw userError;
       }
 
-      // Combine the data
-      const combinedUsers = privateData.map(privateUser => {
-        const authUser = authUsers.find(au => au.id === privateUser.id);
-        return {
-          ...privateUser,
-          email: authUser?.email || 'N/A',
-          last_sign_in_at: authUser?.last_sign_in_at || null,
-        };
-      });
+      // Transform the data to match our UserData interface
+      const transformedUsers = userData.map(user => ({
+        id: user.id,
+        role: user.role,
+        approved: user.approved,
+        created_at: user.created_at,
+        email: user.auth_users?.email || 'N/A',
+        last_sign_in_at: user.auth_users?.last_sign_in_at || null,
+      }));
 
-      console.log('Combined users data:', combinedUsers);
-      setUsers(combinedUsers);
+      console.log('Combined users data:', transformedUsers);
+      setUsers(transformedUsers);
     } catch (error) {
       console.error('Error in fetchUsers:', error);
       toast({
