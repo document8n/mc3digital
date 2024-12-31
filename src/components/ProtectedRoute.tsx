@@ -28,39 +28,30 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
           }
           return;
         }
-        
+
         if (!session) {
-          console.log("No active session found, redirecting to login");
+          console.log("No active session found");
           if (mounted) {
-            toast({
-              title: "Access Denied",
-              description: "Please log in to access this area",
-              variant: "destructive",
-            });
             navigate('/login');
           }
           return;
         }
 
         try {
-          // Check if user is approved
+          console.log("Checking user approval status...");
           const { data: privateData, error: privateError } = await supabase
             .from('user_private')
             .select('approved, role')
             .eq('id', session.user.id)
+            .limit(1)
             .maybeSingle();
 
           if (privateError) {
             console.error("Error fetching user private data:", privateError);
-            throw privateError;
-          }
-
-          if (!privateData || !privateData.approved) {
-            console.log("User not approved or data not found, redirecting to login");
             if (mounted) {
               toast({
-                title: "Account Pending Approval",
-                description: "Your account is pending approval by an administrator.",
+                title: "Error",
+                description: "Unable to verify account status",
                 variant: "destructive",
               });
               await supabase.auth.signOut();
@@ -69,12 +60,26 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
             return;
           }
 
-          console.log("Valid session found and user approved, allowing access");
+          if (!privateData || !privateData.approved) {
+            console.log("User not approved or data not found");
+            if (mounted) {
+              toast({
+                title: "Access Denied",
+                description: "Your account is pending approval",
+                variant: "destructive",
+              });
+              await supabase.auth.signOut();
+              navigate('/login');
+            }
+            return;
+          }
+
+          console.log("User approved, allowing access");
           if (mounted) {
             setIsLoading(false);
           }
         } catch (error) {
-          console.error("Error checking user approval:", error);
+          console.error("Error in approval check:", error);
           if (mounted) {
             toast({
               title: "Error",
@@ -85,7 +90,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
           }
         }
       } catch (error) {
-        console.error("Session check failed:", error);
+        console.error("Auth check failed:", error);
         if (mounted) {
           navigate('/login');
         }
@@ -95,16 +100,12 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     checkAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log("Auth state changed in ProtectedRoute:", event);
-      
+      console.log("Auth state changed:", event);
       if (event === 'SIGNED_OUT' || !session) {
-        console.log("User signed out or session lost, redirecting to login");
         navigate('/login');
         return;
       }
-      
       if (event === 'SIGNED_IN') {
-        console.log("User signed in, checking approval status");
         checkAuth();
       }
     });
