@@ -9,58 +9,86 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    let mounted = true;
+
     const checkAuth = async () => {
       try {
         console.log("Checking authentication status...");
-        const { data: { session }, error } = await supabase.auth.getSession();
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
-        if (error) {
-          console.error("Auth error:", error);
-          navigate('/login');
+        if (sessionError) {
+          console.error("Session error:", sessionError);
+          if (mounted) {
+            toast({
+              title: "Authentication Error",
+              description: "Please try logging in again",
+              variant: "destructive",
+            });
+            navigate('/login');
+          }
           return;
         }
         
         if (!session) {
           console.log("No active session found, redirecting to login");
-          toast({
-            title: "Access Denied",
-            description: "Please log in to access this area",
-            variant: "destructive",
-          });
-          navigate('/login');
+          if (mounted) {
+            toast({
+              title: "Access Denied",
+              description: "Please log in to access this area",
+              variant: "destructive",
+            });
+            navigate('/login');
+          }
           return;
         }
 
-        // Check if user is approved
-        const { data: privateData, error: privateError } = await supabase
-          .from('user_private')
-          .select('approved, role')
-          .eq('id', session.user.id)
-          .single();
+        try {
+          // Check if user is approved
+          const { data: privateData, error: privateError } = await supabase
+            .from('user_private')
+            .select('approved, role')
+            .eq('id', session.user.id)
+            .maybeSingle();
 
-        if (privateError) {
-          console.error("Error fetching user private data:", privateError);
-          navigate('/login');
-          return;
+          if (privateError) {
+            console.error("Error fetching user private data:", privateError);
+            throw privateError;
+          }
+
+          if (!privateData || !privateData.approved) {
+            console.log("User not approved or data not found, redirecting to login");
+            if (mounted) {
+              toast({
+                title: "Account Pending Approval",
+                description: "Your account is pending approval by an administrator.",
+                variant: "destructive",
+              });
+              await supabase.auth.signOut();
+              navigate('/login');
+            }
+            return;
+          }
+
+          console.log("Valid session found and user approved, allowing access");
+          if (mounted) {
+            setIsLoading(false);
+          }
+        } catch (error) {
+          console.error("Error checking user approval:", error);
+          if (mounted) {
+            toast({
+              title: "Error",
+              description: "An error occurred while checking your account status",
+              variant: "destructive",
+            });
+            navigate('/login');
+          }
         }
-
-        if (!privateData.approved) {
-          console.log("User not approved, redirecting to login");
-          toast({
-            title: "Account Pending Approval",
-            description: "Your account is pending approval by an administrator.",
-            variant: "destructive",
-          });
-          await supabase.auth.signOut();
-          navigate('/login');
-          return;
-        }
-
-        console.log("Valid session found and user approved, allowing access");
-        setIsLoading(false);
       } catch (error) {
         console.error("Session check failed:", error);
-        navigate('/login');
+        if (mounted) {
+          navigate('/login');
+        }
       }
     };
 
@@ -82,6 +110,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     });
 
     return () => {
+      mounted = false;
       subscription.unsubscribe();
     };
   }, [navigate, toast]);
