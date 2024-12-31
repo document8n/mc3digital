@@ -20,13 +20,7 @@ export default function Users() {
       console.log("Fetching profiles...");
       const { data: profiles, error } = await supabase
         .from("profiles")
-        .select(`
-          *,
-          auth_user:id (
-            email,
-            phone
-          )
-        `)
+        .select("*, user:id(email, phone)")
         .order("created_at", { ascending: false });
 
       if (error) {
@@ -65,10 +59,10 @@ export default function Users() {
                     {profile.username || "No username set"}
                   </TableCell>
                   <TableCell className="text-gray-200">
-                    {profile.auth_user?.email || "No email set"}
+                    {profile.user?.email || "No email set"}
                   </TableCell>
                   <TableCell className="text-gray-200">
-                    {profile.auth_user?.phone || "No phone set"}
+                    {profile.user?.phone || "No phone set"}
                   </TableCell>
                   <TableCell className="text-gray-200">{profile.role}</TableCell>
                   <TableCell className="text-gray-200">
