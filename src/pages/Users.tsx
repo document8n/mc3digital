@@ -54,21 +54,29 @@ export default function Users() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="text-gray-300 flex items-center gap-2">
-                <Mail className="h-4 w-4" />
-                Email
+              <TableHead className="text-gray-300">
+                <span className="inline-flex items-center gap-2">
+                  <Mail className="h-4 w-4" />
+                  Email
+                </span>
               </TableHead>
-              <TableHead className="text-gray-300 flex items-center gap-2">
-                <Shield className="h-4 w-4" />
-                Role
+              <TableHead className="text-gray-300">
+                <span className="inline-flex items-center gap-2">
+                  <Shield className="h-4 w-4" />
+                  Role
+                </span>
               </TableHead>
-              <TableHead className="text-gray-300 flex items-center gap-2">
-                <Check className="h-4 w-4" />
-                Approved
+              <TableHead className="text-gray-300">
+                <span className="inline-flex items-center gap-2">
+                  <Check className="h-4 w-4" />
+                  Approved
+                </span>
               </TableHead>
-              <TableHead className="text-gray-300 flex items-center gap-2">
-                <Clock className="h-4 w-4" />
-                Last Active
+              <TableHead className="text-gray-300">
+                <span className="inline-flex items-center gap-2">
+                  <Clock className="h-4 w-4" />
+                  Last Active
+                </span>
               </TableHead>
             </TableRow>
           </TableHeader>
