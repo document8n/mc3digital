@@ -40,39 +40,18 @@ export default function Users() {
         return;
       }
 
-      // First fetch user_private data
-      const { data: userPrivateData, error: userPrivateError } = await supabase
-        .from('user_private')
+      // Fetch user_private data with emails from auth.users using a view
+      const { data: userData, error: userError } = await supabase
+        .from('admin_users_view')
         .select('*');
 
-      if (userPrivateError) {
-        console.error('Error fetching user private data:', userPrivateError);
-        throw userPrivateError;
+      if (userError) {
+        console.error('Error fetching user data:', userError);
+        throw userError;
       }
 
-      // Then fetch auth users data
-      const { data: authData, error: authError } = await supabase.auth.admin.listUsers();
-
-      if (authError) {
-        console.error('Error fetching auth data:', authError);
-        throw authError;
-      }
-
-      // Combine the data
-      const transformedUsers = userPrivateData.map(privateUser => {
-        const authUser = authData.users.find(u => u.id === privateUser.id);
-        return {
-          id: privateUser.id,
-          role: privateUser.role,
-          approved: privateUser.approved,
-          created_at: privateUser.created_at,
-          email: authUser?.email || 'N/A',
-          last_sign_in_at: authUser?.last_sign_in_at || null,
-        };
-      });
-
-      console.log('Combined users data:', transformedUsers);
-      setUsers(transformedUsers);
+      console.log('User data:', userData);
+      setUsers(userData || []);
     } catch (error) {
       console.error('Error in fetchUsers:', error);
       toast({
