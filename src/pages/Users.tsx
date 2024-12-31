@@ -40,18 +40,10 @@ export default function Users() {
         return;
       }
 
-      // Get all users from auth.users through user_private
+      // First get all user_private records
       const { data: privateData, error: privateError } = await supabase
         .from('user_private')
-        .select(`
-          id,
-          role,
-          approved,
-          created_at,
-          user_public (
-            username
-          )
-        `);
+        .select('*, user_public(username)');
 
       if (privateError) {
         console.error('Error fetching users:', privateError);
