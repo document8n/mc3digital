@@ -1,178 +1,52 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Auth } from "@supabase/auth-ui-react";
-import { supabase } from "@/integrations/supabase/client";
 import { Header } from '@/components/Header';
-import { useToast } from "@/hooks/use-toast";
-import { ThemeSupa } from '@supabase/auth-ui-shared';
-import { AuthChangeEvent } from "@supabase/supabase-js";
 
 const Login = () => {
-  const navigate = useNavigate();
-  const { toast } = useToast();
-
-  useEffect(() => {
-    let mounted = true;
-
-    const checkUser = async () => {
-      try {
-        console.log("Checking for existing session...");
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        
-        if (sessionError) {
-          console.error("Session error:", sessionError);
-          if (mounted) {
-            toast({
-              title: "Authentication Error",
-              description: sessionError.message,
-              variant: "destructive",
-            });
-          }
-          return;
-        }
-        
-        if (!session) {
-          console.log("No active session found");
-          return;
-        }
-
-        console.log("Active session found, checking user status...");
-        const { data: privateData, error: privateError } = await supabase
-          .from('user_private')
-          .select('approved, role')
-          .eq('id', session.user.id)
-          .maybeSingle();
-
-        if (privateError) {
-          console.error("Error fetching user private data:", privateError);
-          if (mounted) {
-            toast({
-              title: "Error",
-              description: "Unable to verify account status",
-              variant: "destructive",
-            });
-          }
-          return;
-        }
-
-        if (!privateData || !privateData.approved) {
-          console.log("User not approved or data not found");
-          if (mounted) {
-            toast({
-              title: "Access Denied",
-              description: "Your account is pending approval",
-              variant: "destructive",
-            });
-            await supabase.auth.signOut();
-          }
-          return;
-        }
-
-        console.log("User approved, redirecting to admin...");
-        if (mounted) {
-          navigate('/admin');
-        }
-      } catch (error) {
-        console.error("Auth check failed:", error);
-        if (mounted) {
-          toast({
-            title: "Error",
-            description: "An unexpected error occurred",
-            variant: "destructive",
-          });
-        }
-      }
-    };
-
-    checkUser();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, session) => {
-      console.log("Auth state changed:", event, session ? "Session exists" : "No session");
-      
-      if (!mounted) return;
-
-      if (event === 'SIGNED_IN' && session) {
-        try {
-          const { data: privateData, error: privateError } = await supabase
-            .from('user_private')
-            .select('approved, role')
-            .eq('id', session.user.id)
-            .maybeSingle();
-
-          if (privateError) {
-            console.error("Error fetching user private data:", privateError);
-            toast({
-              title: "Error",
-              description: "Unable to verify account status",
-              variant: "destructive",
-            });
-            return;
-          }
-
-          if (!privateData || !privateData.approved) {
-            console.log("New user not approved");
-            toast({
-              title: "Access Denied",
-              description: "Your account is pending approval",
-              variant: "destructive",
-            });
-            await supabase.auth.signOut();
-            return;
-          }
-
-          console.log("User signed in successfully, redirecting to admin...");
-          toast({
-            title: "Welcome!",
-            description: "Successfully signed in",
-          });
-          navigate('/admin');
-        } catch (error) {
-          console.error("Error in auth state change:", error);
-          toast({
-            title: "Error",
-            description: "An unexpected error occurred",
-            variant: "destructive",
-          });
-        }
-      }
-    });
-
-    return () => {
-      mounted = false;
-      subscription.unsubscribe();
-    };
-  }, [navigate, toast]);
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
       <Header />
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 pt-24">
         <div className="max-w-md mx-auto bg-white/5 backdrop-blur-sm p-8 rounded-lg shadow-lg">
           <h1 className="text-2xl font-bold mb-6 text-center text-white">
             Welcome to MC3digital
           </h1>
-          <Auth
-            supabaseClient={supabase}
-            appearance={{
-              theme: ThemeSupa,
-              variables: {
-                default: {
-                  colors: {
-                    brand: '#4F46E5',
-                    brandAccent: '#4338CA',
-                  },
-                },
-              },
-              className: {
-                container: 'auth-container',
-                button: 'auth-button',
-                input: 'auth-input',
-                label: 'auth-label',
-              },
-            }}
-            providers={[]}
-            showLinks={true}
-          />
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-200 mb-1">
+                Email
+              </label>
+              <input
+                type="email"
+                className="w-full px-3 py-2 bg-white/10 border border-gray-600 rounded-md text-white"
+                placeholder="Enter your email"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-200 mb-1">
+                Password
+              </label>
+              <input
+                type="password"
+                className="w-full px-3 py-2 bg-white/10 border border-gray-600 rounded-md text-white"
+                placeholder="Enter your password"
+              />
+            </div>
+            <button
+              className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition-colors"
+            >
+              Sign In
+            </button>
+            <div className="text-center space-y-2">
+              <button className="text-sm text-gray-300 hover:text-white">
+                Forgot Password?
+              </button>
+              <div className="text-sm text-gray-300">
+                Don't have an account?{' '}
+                <button className="text-indigo-400 hover:text-indigo-300">
+                  Sign Up
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
