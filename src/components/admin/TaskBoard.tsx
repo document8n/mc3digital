@@ -46,25 +46,50 @@ export function TaskBoard({ tasks, onUpdate }: TaskBoardProps) {
     setActiveTask(items.find(t => t.id === active.id) || null);
   };
 
-  const handleDragOver = (event: DragOverEvent) => {
+  const handleDragOver = async (event: DragOverEvent) => {
     const { active, over } = event;
     if (!over) return;
 
     const activeTask = items.find(t => t.id === active.id);
+    const overTask = items.find(t => t.id === over.id);
+    
     if (!activeTask) return;
 
+    // Handle dropping into a column
     const statusMap: { [key: string]: string } = {
       todo: "Todo",
       inProgress: "In Progress",
       completed: "Completed"
     };
 
-    const newStatus = statusMap[over.id as string];
-    if (newStatus && activeTask.status !== newStatus) {
+    if (over.id in statusMap) {
+      const newStatus = statusMap[over.id as string];
+      if (activeTask.status !== newStatus) {
+        setItems(prevItems => {
+          return prevItems.map(item => {
+            if (item.id === active.id) {
+              return { ...item, status: newStatus };
+            }
+            return item;
+          });
+        });
+      }
+      return;
+    }
+
+    // Handle reordering within the same column
+    if (overTask && activeTask.status === overTask.status && active.id !== over.id) {
+      const oldIndex = items.findIndex(t => t.id === active.id);
+      const newIndex = items.findIndex(t => t.id === over.id);
+      
       setItems(prevItems => {
-        return prevItems.map(item => {
-          if (item.id === active.id) {
-            return { ...item, status: newStatus };
+        const newItems = arrayMove(prevItems, oldIndex, newIndex);
+        // Update display orders
+        const statusItems = newItems.filter(t => t.status === activeTask.status);
+        return newItems.map(item => {
+          if (item.status === activeTask.status) {
+            const newOrder = statusItems.findIndex(t => t.id === item.id);
+            return { ...item, display_order: newOrder };
           }
           return item;
         });
@@ -83,39 +108,58 @@ export function TaskBoard({ tasks, onUpdate }: TaskBoardProps) {
     const activeTask = items.find(t => t.id === active.id);
     if (!activeTask) return;
 
-    const statusMap: { [key: string]: string } = {
-      todo: "Todo",
-      inProgress: "In Progress",
-      completed: "Completed"
-    };
-
-    const newStatus = statusMap[over.id as string];
-    if (!newStatus) return;
-
     try {
-      // Update the task's status and order in the database
-      const { error } = await supabase
-        .from('tasks')
-        .update({ 
-          status: newStatus,
-          updated_at: new Date().toISOString(),
-          display_order: items.filter(t => t.status === newStatus).length
-        })
-        .eq('id', activeTask.id);
+      const statusMap: { [key: string]: string } = {
+        todo: "Todo",
+        inProgress: "In Progress",
+        completed: "Completed"
+      };
 
-      if (error) throw error;
+      // If dropping into a column, update the status
+      if (over.id in statusMap) {
+        const newStatus = statusMap[over.id as string];
+        const { error } = await supabase
+          .from('tasks')
+          .update({ 
+            status: newStatus,
+            updated_at: new Date().toISOString(),
+            display_order: items.filter(t => t.status === newStatus).length
+          })
+          .eq('id', activeTask.id);
 
-      toast({
-        title: "Success",
-        description: `Task moved to ${newStatus}`,
-      });
+        if (error) throw error;
+
+        toast({
+          title: "Success",
+          description: `Task moved to ${newStatus}`,
+        });
+      } else {
+        // If reordering within the same column, update display orders
+        const tasksInColumn = items.filter(t => t.status === activeTask.status);
+        const updates = tasksInColumn.map(task => ({
+          id: task.id,
+          display_order: task.display_order,
+          updated_at: new Date().toISOString()
+        }));
+
+        const { error } = await supabase
+          .from('tasks')
+          .upsert(updates);
+
+        if (error) throw error;
+
+        toast({
+          title: "Success",
+          description: "Task order updated",
+        });
+      }
 
       onUpdate();
     } catch (error) {
-      console.error('Error updating task status:', error);
+      console.error('Error updating task:', error);
       toast({
         title: "Error",
-        description: "Failed to update task status",
+        description: "Failed to update task",
         variant: "destructive",
       });
     }
