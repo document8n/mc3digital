@@ -25,7 +25,7 @@ export function TaskColumn({ id, title, icon: Icon, tasks, onUpdate }: TaskColum
 
   return (
     <div className="flex flex-col h-[calc(100vh-12rem)]">
-      <div className="rounded-t-lg p-3 bg-gradient-to-r from-gray-800 to-gray-700">
+      <div className="rounded-t-lg p-3 bg-gradient-to-r from-gray-800 to-gray-700 mb-4">
         <div className="flex items-center gap-2 text-white">
           <Icon className={`h-4 w-4 ${iconColor}`} />
           <span className="font-medium">{title}</span>
