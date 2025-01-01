@@ -9,17 +9,27 @@ import { TaskBoard } from "@/components/admin/TaskBoard";
 interface ProjectTasksProps {
   projectId: string;
   tasks: Task[];
-  refetchTasks: () => void;
+  refetchTasks: () => Promise<void>;
 }
 
 export function ProjectTasks({ projectId, tasks, refetchTasks }: ProjectTasksProps) {
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [localTasks, setLocalTasks] = useState<Task[]>(tasks);
+
+  // Update local tasks when props change
+  useState(() => {
+    setLocalTasks(tasks);
+  }, [tasks]);
 
   const handleTaskSuccess = async () => {
-    await refetchTasks(); // Ensure we wait for the refetch to complete
-    setShowTaskForm(false);
-    setEditingTask(null);
+    try {
+      await refetchTasks();
+      setShowTaskForm(false);
+      setEditingTask(null);
+    } catch (error) {
+      console.error('Error refreshing tasks:', error);
+    }
   };
 
   return (
@@ -50,12 +60,12 @@ export function ProjectTasks({ projectId, tasks, refetchTasks }: ProjectTasksPro
         </DialogContent>
       </Dialog>
 
-      {tasks?.length === 0 ? (
+      {localTasks?.length === 0 ? (
         <div className="text-center py-8 text-muted-foreground">
           No tasks found for this project.
         </div>
       ) : (
-        <TaskBoard tasks={tasks} onUpdate={refetchTasks} />
+        <TaskBoard tasks={localTasks} onUpdate={refetchTasks} />
       )}
     </div>
   );
