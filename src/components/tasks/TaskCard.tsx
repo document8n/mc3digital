@@ -4,39 +4,16 @@ import { format } from "date-fns";
 import { Calendar } from "lucide-react";
 import { Task } from "@/types/task";
 import { TaskEditModal } from "./TaskEditModal";
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
 import { cn } from "@/lib/utils";
 
 interface TaskCardProps {
   task: Task;
   onUpdate: () => void;
   showProject?: boolean;
-  isDragging?: boolean;
 }
 
-export function TaskCard({ task, onUpdate, showProject = false, isDragging }: TaskCardProps) {
+export function TaskCard({ task, onUpdate, showProject = false }: TaskCardProps) {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging: isSortableDragging,
-  } = useSortable({
-    id: task.id,
-    data: {
-      type: "Task",
-      task,
-    },
-  });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
 
   const isTaskOverdue = (dueDate: string | null) => {
     if (!dueDate) return false;
@@ -46,14 +23,8 @@ export function TaskCard({ task, onUpdate, showProject = false, isDragging }: Ta
   return (
     <>
       <Card 
-        ref={setNodeRef}
-        style={style}
-        {...attributes}
-        {...listeners}
         className={cn(
-          "hover:bg-accent/50 transition-colors cursor-move",
-          isDragging ? "opacity-50" : "",
-          isSortableDragging && "z-50 scale-105",
+          "hover:bg-accent/50 transition-colors cursor-pointer",
           isTaskOverdue(task.due_date) && task.status !== "Completed" && "border-red-500/50"
         )}
         onClick={() => setIsEditModalOpen(true)}
