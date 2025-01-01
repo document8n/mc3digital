@@ -94,7 +94,7 @@ export function TaskBoard({ tasks, onUpdate }: TaskBoardProps) {
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
-      <TaskColumns items={items} />
+      <TaskColumns items={items} onUpdate={onUpdate} />
       {createPortal(
         <DragOverlay activeTask={activeTask} />,
         document.body
