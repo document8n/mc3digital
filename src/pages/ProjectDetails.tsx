@@ -72,7 +72,7 @@ export default function ProjectDetails() {
         .from('tasks')
         .select('*')
         .eq('project_id', id)
-        .order('created_at', { ascending: false });
+        .order('display_order', { ascending: true });
 
       if (error) throw error;
       console.log("Tasks fetched successfully:", data);
@@ -87,6 +87,7 @@ export default function ProjectDetails() {
     }
   };
 
+  // Initial data fetch
   useEffect(() => {
     if (id) {
       fetchProject();
