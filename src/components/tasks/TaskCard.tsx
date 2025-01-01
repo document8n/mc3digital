@@ -12,9 +12,10 @@ interface TaskCardProps {
   task: Task;
   onUpdate: () => void;
   showProject?: boolean;
+  isDragging?: boolean;
 }
 
-export function TaskCard({ task, onUpdate, showProject = false }: TaskCardProps) {
+export function TaskCard({ task, onUpdate, showProject = false, isDragging }: TaskCardProps) {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const {
@@ -23,7 +24,7 @@ export function TaskCard({ task, onUpdate, showProject = false }: TaskCardProps)
     setNodeRef,
     transform,
     transition,
-    isDragging,
+    isDragging: isSortableDragging,
   } = useSortable({
     id: task.id,
     data: {
@@ -52,6 +53,7 @@ export function TaskCard({ task, onUpdate, showProject = false }: TaskCardProps)
         className={cn(
           "hover:bg-accent/50 transition-colors cursor-move",
           isDragging ? "opacity-50" : "",
+          isSortableDragging && "z-50 scale-105",
           isTaskOverdue(task.due_date) && task.status !== "Completed" && "border-red-500/50"
         )}
         onClick={() => setIsEditModalOpen(true)}

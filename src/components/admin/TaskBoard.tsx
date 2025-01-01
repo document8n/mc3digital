@@ -1,19 +1,22 @@
 import { XSquare, PlusSquare, CheckSquare } from "lucide-react";
 import { 
   DndContext, 
-  DragEndEvent, 
+  DragEndEvent,
+  DragStartEvent,
   MouseSensor,
   TouchSensor,
   useSensor,
   useSensors,
-  closestCenter 
+  closestCenter,
+  DragOverlay,
 } from "@dnd-kit/core";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Task } from "@/types/task";
 import { TaskColumn } from "./TaskColumn";
-import { TaskDragOverlay } from "./TaskDragOverlay";
+import { TaskCard } from "../tasks/TaskCard";
+import { createPortal } from "react-dom";
 
 interface TaskBoardProps {
   tasks: Task[];
@@ -25,7 +28,6 @@ export function TaskBoard({ tasks, onUpdate }: TaskBoardProps) {
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   const { toast } = useToast();
 
-  // Add proper touch/mouse sensors like in Projects page
   const sensors = useSensors(
     useSensor(MouseSensor, {
       activationConstraint: {
@@ -46,10 +48,10 @@ export function TaskBoard({ tasks, onUpdate }: TaskBoardProps) {
     completed: tasks?.filter((task) => task.status === "Completed").sort((a, b) => a.display_order - b.display_order) || [],
   };
 
-  const handleDragStart = (event: any) => {
+  const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
     const activeTask = tasks.find(task => task.id === active.id);
-    setActiveId(active.id);
+    setActiveId(active.id as string);
     setActiveTask(activeTask || null);
   };
 
@@ -162,7 +164,19 @@ export function TaskBoard({ tasks, onUpdate }: TaskBoardProps) {
           />
         ))}
       </div>
-      <TaskDragOverlay activeTask={activeTask} onUpdate={onUpdate} />
+      {createPortal(
+        <DragOverlay>
+          {activeTask ? (
+            <TaskCard
+              task={activeTask}
+              onUpdate={onUpdate}
+              showProject={true}
+              isDragging={true}
+            />
+          ) : null}
+        </DragOverlay>,
+        document.body
+      )}
     </DndContext>
   );
 }
