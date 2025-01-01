@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TaskForm } from "@/components/TaskForm";
@@ -18,7 +18,7 @@ export function ProjectTasks({ projectId, tasks, refetchTasks }: ProjectTasksPro
   const [localTasks, setLocalTasks] = useState<Task[]>(tasks);
 
   // Update local tasks when props change
-  useState(() => {
+  useEffect(() => {
     setLocalTasks(tasks);
   }, [tasks]);
 
