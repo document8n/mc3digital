@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Form, FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -30,6 +31,7 @@ interface TaskFormValues {
 
 export function TaskForm({ projectId, initialData, onSuccess, onCancel }: TaskFormProps) {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [projectName, setProjectName] = useState<string>("");
 
@@ -113,7 +115,10 @@ export function TaskForm({ projectId, initialData, onSuccess, onCancel }: TaskFo
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <div className="mb-4">
-          <h3 className="text-sm font-medium text-muted-foreground">
+          <h3 
+            onClick={() => navigate(`/projects/${projectId}`)}
+            className="text-sm font-medium text-muted-foreground hover:text-primary cursor-pointer transition-colors"
+          >
             Project: {projectName}
           </h3>
         </div>
