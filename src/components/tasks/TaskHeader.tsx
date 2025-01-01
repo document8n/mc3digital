@@ -27,9 +27,9 @@ export function TaskHeader({
       <h1 className="text-xl md:text-2xl font-bold text-white">{title}</h1>
       <Dialog open={isFormOpen} onOpenChange={onFormOpenChange}>
         <DialogTrigger asChild>
-          <Button className="flex items-center gap-2">
+          <button className="admin-action-button">
             <Plus className="h-4 w-4" /> Add Task
-          </Button>
+          </button>
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>

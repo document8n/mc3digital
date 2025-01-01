@@ -230,7 +230,7 @@ export type Database = {
           display_order: number
           due_date: string | null
           id: string
-          project_id: string
+          project_id: string | null
           status: string
           title: string
           updated_at: string | null
@@ -241,7 +241,7 @@ export type Database = {
           display_order?: number
           due_date?: string | null
           id?: string
-          project_id: string
+          project_id?: string | null
           status: string
           title: string
           updated_at?: string | null
@@ -252,7 +252,7 @@ export type Database = {
           display_order?: number
           due_date?: string | null
           id?: string
-          project_id?: string
+          project_id?: string | null
           status?: string
           title?: string
           updated_at?: string | null
