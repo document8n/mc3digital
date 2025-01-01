@@ -15,7 +15,7 @@ interface TaskColumnProps {
 }
 
 export function TaskColumn({ id, title, icon: Icon, tasks, onUpdate }: TaskColumnProps) {
-  const { setNodeRef } = useDroppable({ id });
+  const { setNodeRef, isOver } = useDroppable({ id });
 
   const iconColor = {
     todo: "text-yellow-500",
@@ -24,7 +24,13 @@ export function TaskColumn({ id, title, icon: Icon, tasks, onUpdate }: TaskColum
   }[id];
 
   return (
-    <div className="flex flex-col h-[calc(100vh-12rem)]">
+    <div 
+      ref={setNodeRef}
+      className={cn(
+        "flex flex-col h-[calc(100vh-12rem)]",
+        isOver && "bg-primary/5 rounded-lg"
+      )}
+    >
       <div className="rounded-t-lg p-3 bg-gradient-to-r from-gray-800 to-gray-700 mb-4">
         <div className="flex items-center gap-2 text-white">
           <Icon className={`h-4 w-4 ${iconColor}`} />
@@ -33,10 +39,10 @@ export function TaskColumn({ id, title, icon: Icon, tasks, onUpdate }: TaskColum
         </div>
       </div>
       <div 
-        ref={setNodeRef}
         className={cn(
           "flex-1 space-y-4 px-2 relative min-h-[100px] overflow-y-auto",
-          "before:absolute before:inset-0 before:rounded-md before:border-2 before:border-dashed before:border-primary/50 before:opacity-0 before:pointer-events-none"
+          "before:absolute before:inset-0 before:rounded-md before:border-2 before:border-dashed before:border-primary/50 before:opacity-0 before:pointer-events-none",
+          isOver && "before:opacity-100"
         )}
       >
         <SortableContext items={tasks.map(t => t.id)} strategy={verticalListSortingStrategy}>
