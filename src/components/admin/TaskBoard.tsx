@@ -138,6 +138,11 @@ export function TaskBoard({ tasks, onUpdate }: TaskBoardProps) {
         const tasksInColumn = items.filter(t => t.status === activeTask.status);
         const updates = tasksInColumn.map(task => ({
           id: task.id,
+          project_id: task.project_id, // Preserve project_id
+          status: task.status, // Preserve status
+          title: task.title, // Preserve title
+          description: task.description, // Preserve description
+          due_date: task.due_date, // Preserve due_date
           display_order: task.display_order,
           updated_at: new Date().toISOString()
         }));
