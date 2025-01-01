@@ -6,7 +6,7 @@ import { ProjectTasks } from "@/components/project-details/ProjectTasks";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, PencilIcon } from "lucide-react";
 import { ProjectFormModal } from "@/components/project/ProjectFormModal";
 
 export default function ProjectDetails() {
@@ -118,8 +118,9 @@ export default function ProjectDetails() {
             </button>
             <button 
               onClick={() => setIsEditModalOpen(true)}
-              className="bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md"
+              className="admin-action-button"
             >
+              <PencilIcon className="h-4 w-4" />
               Edit Project
             </button>
           </div>
