@@ -4,9 +4,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Task } from "@/types/task";
 import { TaskColumn } from "./TaskColumn";
-import { DndContext, DragEndEvent, DragStartEvent, MouseSensor, TouchSensor, useSensor, useSensors } from "@dnd-kit/core";
+import { DndContext, DragEndEvent, DragStartEvent, DragOverEvent, MouseSensor, TouchSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { DragOverlay } from "../tasks/DragOverlay";
 import { createPortal } from "react-dom";
+import { arrayMove } from "@dnd-kit/sortable";
 
 interface TaskBoardProps {
   tasks: Task[];
@@ -17,6 +18,7 @@ export function TaskBoard({ tasks, onUpdate }: TaskBoardProps) {
   const { toast } = useToast();
   const [activeId, setActiveId] = useState<string | null>(null);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
+  const [items, setItems] = useState(tasks);
 
   const sensors = useSensors(
     useSensor(MouseSensor, {
@@ -33,15 +35,41 @@ export function TaskBoard({ tasks, onUpdate }: TaskBoardProps) {
   );
 
   const tasksByStatus = {
-    todo: tasks?.filter((task) => task.status === "Todo").sort((a, b) => a.display_order - b.display_order) || [],
-    inProgress: tasks?.filter((task) => task.status === "In Progress").sort((a, b) => a.display_order - b.display_order) || [],
-    completed: tasks?.filter((task) => task.status === "Completed").sort((a, b) => a.display_order - b.display_order) || [],
+    todo: items?.filter((task) => task.status === "Todo").sort((a, b) => a.display_order - b.display_order) || [],
+    inProgress: items?.filter((task) => task.status === "In Progress").sort((a, b) => a.display_order - b.display_order) || [],
+    completed: items?.filter((task) => task.status === "Completed").sort((a, b) => a.display_order - b.display_order) || [],
   };
 
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
     setActiveId(active.id as string);
-    setActiveTask(tasks.find(t => t.id === active.id) || null);
+    setActiveTask(items.find(t => t.id === active.id) || null);
+  };
+
+  const handleDragOver = (event: DragOverEvent) => {
+    const { active, over } = event;
+    if (!over) return;
+
+    const activeTask = items.find(t => t.id === active.id);
+    if (!activeTask) return;
+
+    const statusMap: { [key: string]: string } = {
+      todo: "Todo",
+      inProgress: "In Progress",
+      completed: "Completed"
+    };
+
+    const newStatus = statusMap[over.id as string];
+    if (newStatus && activeTask.status !== newStatus) {
+      setItems(prevItems => {
+        return prevItems.map(item => {
+          if (item.id === active.id) {
+            return { ...item, status: newStatus };
+          }
+          return item;
+        });
+      });
+    }
   };
 
   const handleDragEnd = async (event: DragEndEvent) => {
@@ -52,7 +80,7 @@ export function TaskBoard({ tasks, onUpdate }: TaskBoardProps) {
     
     if (!over) return;
 
-    const activeTask = tasks.find(t => t.id === active.id);
+    const activeTask = items.find(t => t.id === active.id);
     if (!activeTask) return;
 
     const statusMap: { [key: string]: string } = {
@@ -62,14 +90,16 @@ export function TaskBoard({ tasks, onUpdate }: TaskBoardProps) {
     };
 
     const newStatus = statusMap[over.id as string];
-    if (!newStatus || activeTask.status === newStatus) return;
+    if (!newStatus) return;
 
     try {
+      // Update the task's status and order in the database
       const { error } = await supabase
         .from('tasks')
         .update({ 
           status: newStatus,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
+          display_order: items.filter(t => t.status === newStatus).length
         })
         .eq('id', activeTask.id);
 
@@ -116,6 +146,7 @@ export function TaskBoard({ tasks, onUpdate }: TaskBoardProps) {
     <DndContext 
       sensors={sensors}
       onDragStart={handleDragStart}
+      onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
