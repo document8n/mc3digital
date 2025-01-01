@@ -1,5 +1,4 @@
-import { Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { PlusCircle } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -28,7 +27,7 @@ export function TaskHeader({
       <Dialog open={isFormOpen} onOpenChange={onFormOpenChange}>
         <DialogTrigger asChild>
           <button className="admin-action-button">
-            <Plus className="h-4 w-4" /> Add Task
+            <PlusCircle className="mr-2 h-4 w-4" /> Add Task
           </button>
         </DialogTrigger>
         <DialogContent>
