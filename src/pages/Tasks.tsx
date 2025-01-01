@@ -15,7 +15,6 @@ const Tasks = () => {
   const { data: tasks, isLoading, refetch: refetchTasks } = useQuery({
     queryKey: ["tasks"],
     queryFn: async () => {
-      console.log("Fetching tasks...");
       const { data, error } = await supabase
         .from("tasks")
         .select(`
@@ -26,12 +25,7 @@ const Tasks = () => {
         `)
         .order("due_date", { ascending: true });
 
-      if (error) {
-        console.error("Error fetching tasks:", error);
-        throw error;
-      }
-
-      console.log("Tasks fetched:", data);
+      if (error) throw error;
       return data as Task[];
     },
   });
