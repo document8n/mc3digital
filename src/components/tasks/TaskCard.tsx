@@ -32,11 +32,6 @@ export function TaskCard({ task, onUpdate, showProject = false, isDragging = fal
     transition,
   };
 
-  const isTaskOverdue = (dueDate: string | null) => {
-    if (!dueDate) return false;
-    return new Date(dueDate) < new Date();
-  };
-
   return (
     <>
       <div 
@@ -53,7 +48,6 @@ export function TaskCard({ task, onUpdate, showProject = false, isDragging = fal
         <Card 
           className={cn(
             "cursor-move border border-border/40",
-            isTaskOverdue(task.due_date) && task.status !== "Completed" && "border-red-500/50",
             isDragging && "ring-2 ring-primary ring-offset-2 ring-offset-background",
             "animate-in fade-in-50 duration-200"
           )}
