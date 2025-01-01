@@ -1,11 +1,10 @@
 import { useState } from "react";
-import { Plus } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TaskForm } from "@/components/TaskForm";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { TaskCard } from "@/components/tasks/TaskCard";
 import { Task } from "@/types/task";
+import { TaskBoard } from "@/components/admin/TaskBoard";
 
 interface ProjectTasksProps {
   projectId: string;
@@ -27,8 +26,13 @@ export function ProjectTasks({ projectId, tasks, refetchTasks }: ProjectTasksPro
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold text-white">Project Tasks</h2>
-        <Button onClick={() => setShowTaskForm(true)} className="flex items-center gap-2">
-          <Plus className="h-4 w-4" /> Add Task
+        <Button 
+          onClick={() => setShowTaskForm(true)} 
+          className="admin-action-button"
+          size="sm"
+        >
+          <PlusCircle className="h-4 w-4 mr-2" />
+          Add Task
         </Button>
       </div>
 
@@ -47,21 +51,11 @@ export function ProjectTasks({ projectId, tasks, refetchTasks }: ProjectTasksPro
       </Dialog>
 
       {tasks?.length === 0 ? (
-        <Card>
-          <CardContent className="p-6">
-            <p className="text-muted-foreground">No tasks found for this project.</p>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="space-y-4">
-          {tasks?.map((task) => (
-            <TaskCard
-              key={task.id}
-              task={task}
-              onUpdate={refetchTasks}
-            />
-          ))}
+        <div className="text-center py-8 text-muted-foreground">
+          No tasks found for this project.
         </div>
+      ) : (
+        <TaskBoard tasks={tasks} onUpdate={refetchTasks} />
       )}
     </div>
   );
