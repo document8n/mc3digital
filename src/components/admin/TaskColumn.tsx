@@ -35,7 +35,11 @@ export function TaskColumn({ id, title, icon: Icon, tasks, onUpdate }: TaskColum
       <div 
         ref={setNodeRef}
         className={cn(
-          "space-y-4 px-2 relative min-h-[100px]",
+          "space-y-4 px-2 relative min-h-[100px] transition-colors",
+          "group/droppable",
+          "before:absolute before:inset-0 before:rounded-md before:border-2 before:border-dashed before:border-primary/50 before:opacity-0 before:pointer-events-none",
+          "group-hover/droppable:before:opacity-100 group-focus/droppable:before:opacity-100",
+          "hover:bg-accent/50"
         )}
       >
         <SortableContext items={tasks.map(t => t.id)} strategy={verticalListSortingStrategy}>
