@@ -16,10 +16,10 @@ export function ProjectTasks({ projectId, tasks, refetchTasks }: ProjectTasksPro
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
 
-  const handleTaskSuccess = () => {
+  const handleTaskSuccess = async () => {
+    await refetchTasks(); // Ensure we wait for the refetch to complete
     setShowTaskForm(false);
     setEditingTask(null);
-    refetchTasks();
   };
 
   return (
