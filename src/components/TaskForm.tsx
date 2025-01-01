@@ -10,7 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 
 interface TaskFormProps {
-  projectId: string;
+  projectId?: string;
   initialData?: {
     id: string;
     title: string;
@@ -27,32 +27,32 @@ interface TaskFormValues {
   description: string;
   status: string;
   due_date: string;
+  project_id?: string;
 }
 
 export function TaskForm({ projectId, initialData, onSuccess, onCancel }: TaskFormProps) {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const [projectName, setProjectName] = useState<string>("");
+  const [projects, setProjects] = useState<Array<{ id: string; name: string }>>([]);
 
   useEffect(() => {
-    const fetchProjectName = async () => {
+    const fetchProjects = async () => {
       try {
         const { data, error } = await supabase
           .from('projects')
-          .select('name')
-          .eq('id', projectId)
-          .single();
+          .select('id, name')
+          .order('name');
 
         if (error) throw error;
-        setProjectName(data.name || 'Unnamed Project');
+        setProjects(data || []);
       } catch (error) {
-        console.error('Error fetching project name:', error);
+        console.error('Error fetching projects:', error);
       }
     };
 
-    fetchProjectName();
-  }, [projectId]);
+    fetchProjects();
+  }, []);
 
   const form = useForm<TaskFormValues>({
     defaultValues: {
@@ -60,6 +60,7 @@ export function TaskForm({ projectId, initialData, onSuccess, onCancel }: TaskFo
       description: initialData?.description || "",
       status: initialData?.status || "Todo",
       due_date: initialData?.due_date || format(new Date(), 'yyyy-MM-dd'),
+      project_id: projectId || "",
     },
   });
 
@@ -72,7 +73,7 @@ export function TaskForm({ projectId, initialData, onSuccess, onCancel }: TaskFo
         description: values.description,
         status: values.status,
         due_date: values.due_date,
-        project_id: projectId,
+        project_id: values.project_id || null,
       };
 
       if (initialData) {
@@ -114,14 +115,34 @@ export function TaskForm({ projectId, initialData, onSuccess, onCancel }: TaskFo
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <div className="mb-4">
-          <h3 
-            onClick={() => navigate(`/projects/${projectId}`)}
-            className="text-sm font-medium text-muted-foreground hover:text-primary cursor-pointer transition-colors"
-          >
-            Project: {projectName}
-          </h3>
-        </div>
+        <FormField
+          control={form.control}
+          name="project_id"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Project (Optional)</FormLabel>
+              <FormControl>
+                <select
+                  {...field}
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  onChange={(e) => {
+                    field.onChange(e);
+                    if (e.target.value) {
+                      navigate(`/projects/${e.target.value}`);
+                    }
+                  }}
+                >
+                  <option value="">No Project</option>
+                  {projects.map((project) => (
+                    <option key={project.id} value={project.id}>
+                      {project.name || 'Unnamed Project'}
+                    </option>
+                  ))}
+                </select>
+              </FormControl>
+            </FormItem>
+          )}
+        />
 
         <FormField
           control={form.control}
