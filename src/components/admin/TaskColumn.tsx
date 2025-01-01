@@ -24,7 +24,7 @@ export function TaskColumn({ id, title, icon: Icon, tasks, onUpdate }: TaskColum
   }[id];
 
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col h-[calc(100vh-12rem)]">
       <div className="rounded-t-lg p-3 bg-gradient-to-r from-gray-800 to-gray-700">
         <div className="flex items-center gap-2 text-white">
           <Icon className={`h-4 w-4 ${iconColor}`} />
@@ -35,7 +35,7 @@ export function TaskColumn({ id, title, icon: Icon, tasks, onUpdate }: TaskColum
       <div 
         ref={setNodeRef}
         className={cn(
-          "space-y-4 px-2 relative min-h-[100px]",
+          "flex-1 space-y-4 px-2 relative min-h-[100px] overflow-y-auto",
           "before:absolute before:inset-0 before:rounded-md before:border-2 before:border-dashed before:border-primary/50 before:opacity-0 before:pointer-events-none"
         )}
       >
