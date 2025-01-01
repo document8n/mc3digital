@@ -23,10 +23,12 @@ export function ProjectTasks({ projectId, tasks, refetchTasks }: ProjectTasksPro
   }, [tasks]);
 
   const handleTaskSuccess = async () => {
+    console.log("Task operation successful, refreshing tasks...");
     try {
       await refetchTasks();
       setShowTaskForm(false);
       setEditingTask(null);
+      console.log("Tasks refreshed successfully");
     } catch (error) {
       console.error('Error refreshing tasks:', error);
     }

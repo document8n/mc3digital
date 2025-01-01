@@ -20,7 +20,6 @@ export default function ProjectDetails() {
 
   const fetchProject = async () => {
     try {
-      // Validate that we have a valid UUID before making the request
       if (!id || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
         console.error('Invalid project ID:', id);
         toast({
@@ -63,8 +62,8 @@ export default function ProjectDetails() {
   };
 
   const fetchTasks = async () => {
+    console.log("Fetching tasks for project:", id);
     try {
-      // Only fetch tasks if we have a valid project ID
       if (!id || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
         return;
       }
@@ -76,6 +75,7 @@ export default function ProjectDetails() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
+      console.log("Tasks fetched successfully:", data);
       setTasks(data || []);
     } catch (error: any) {
       console.error('Error fetching tasks:', error);
