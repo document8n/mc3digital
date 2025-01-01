@@ -52,10 +52,9 @@ export function TaskCard({ task, onUpdate, showProject = false, isDragging = fal
       >
         <Card 
           className={cn(
-            "hover:bg-accent/50 transition-colors cursor-move",
+            "cursor-move border border-border/40",
             isTaskOverdue(task.due_date) && task.status !== "Completed" && "border-red-500/50",
             isDragging && "ring-2 ring-primary ring-offset-2 ring-offset-background",
-            !isDragging && "hover:ring-1 hover:ring-primary/50",
             "animate-in fade-in-50 duration-200"
           )}
           onClick={() => setIsEditModalOpen(true)}
