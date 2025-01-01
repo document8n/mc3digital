@@ -2,6 +2,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TaskCard } from "@/components/tasks/TaskCard";
 import { Task } from "@/types/task";
 import { LucideIcon } from "lucide-react";
+import { useDroppable } from "@dnd-kit/core";
+import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { cn } from "@/lib/utils";
 
 interface TaskColumnProps {
   id: string;
@@ -12,6 +15,8 @@ interface TaskColumnProps {
 }
 
 export function TaskColumn({ id, title, icon: Icon, tasks, onUpdate }: TaskColumnProps) {
+  const { setNodeRef } = useDroppable({ id });
+
   const iconColor = {
     todo: "text-yellow-500",
     inProgress: "text-blue-500",
@@ -27,15 +32,22 @@ export function TaskColumn({ id, title, icon: Icon, tasks, onUpdate }: TaskColum
           <span className="text-white/70 text-sm">({tasks.length})</span>
         </div>
       </div>
-      <div className="space-y-4 px-2 relative min-h-[100px]">
-        {tasks.map((task) => (
-          <TaskCard
-            key={task.id}
-            task={task}
-            onUpdate={onUpdate}
-            showProject={true}
-          />
-        ))}
+      <div 
+        ref={setNodeRef}
+        className={cn(
+          "space-y-4 px-2 relative min-h-[100px]",
+        )}
+      >
+        <SortableContext items={tasks.map(t => t.id)} strategy={verticalListSortingStrategy}>
+          {tasks.map((task) => (
+            <TaskCard
+              key={task.id}
+              task={task}
+              onUpdate={onUpdate}
+              showProject={true}
+            />
+          ))}
+        </SortableContext>
         {tasks.length === 0 && (
           <p className="text-sm text-muted-foreground text-center py-8">
             No {title.toLowerCase()} tasks
