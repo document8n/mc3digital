@@ -4,10 +4,10 @@ import { Grid, FileText, User, Settings, Home, ListTodo, Users } from "lucide-re
 
 const menuItems = [
   { icon: Home, label: "Dashboard", path: "/admin" },
+  { icon: User, label: "Clients", path: "/clients" },
   { icon: Grid, label: "Projects", path: "/projects" },
   { icon: ListTodo, label: "Tasks", path: "/tasks" },
   { icon: FileText, label: "Invoices", path: "/invoice" },
-  { icon: User, label: "Clients", path: "/clients" },
   { icon: Settings, label: "Services", path: "/services" },
   { icon: Users, label: "Users", path: "/users" },
 ];
