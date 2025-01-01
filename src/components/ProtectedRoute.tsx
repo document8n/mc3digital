@@ -15,20 +15,38 @@ const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRouteProps)
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        console.log("Protected Route: Checking authentication...");
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
-        if (!session) {
+        if (sessionError) {
+          console.error("Session error:", sessionError);
           setIsAuthenticated(false);
           setIsLoading(false);
           return;
         }
 
-        const { data: privateData } = await supabase
+        if (!session) {
+          console.log("No active session");
+          setIsAuthenticated(false);
+          setIsLoading(false);
+          return;
+        }
+
+        console.log("Session found, checking user role...");
+        const { data: privateData, error: privateError } = await supabase
           .from('user_private')
           .select('approved, role')
           .eq('id', session.user.id)
-          .maybeSingle();
+          .single();
 
+        if (privateError) {
+          console.error("Error fetching user role:", privateError);
+          setIsAuthenticated(false);
+          setIsLoading(false);
+          return;
+        }
+
+        console.log("User data:", privateData);
         if (privateData?.approved) {
           setIsAuthenticated(true);
           setIsAdmin(privateData.role === 'admin');
@@ -46,6 +64,7 @@ const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRouteProps)
     checkAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Protected Route: Auth state changed:', event);
       if (event === 'SIGNED_OUT') {
         setIsAuthenticated(false);
         setIsAdmin(false);

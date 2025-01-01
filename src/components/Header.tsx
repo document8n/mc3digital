@@ -13,20 +13,40 @@ export const Header = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session?.user) {
-          const { data: privateData } = await supabase
-            .from('user_private')
-            .select('approved, role')
-            .eq('id', session.user.id)
-            .single();
-          
-          setIsLoggedIn(privateData?.approved || false);
-          setIsAdmin(privateData?.role === 'admin');
-        } else {
+        console.log("Checking authentication status...");
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          console.error("Session error:", sessionError);
           setIsLoggedIn(false);
           setIsAdmin(false);
+          return;
         }
+
+        if (!session) {
+          console.log("No active session found");
+          setIsLoggedIn(false);
+          setIsAdmin(false);
+          return;
+        }
+
+        console.log("Session found, checking user role...");
+        const { data: privateData, error: privateError } = await supabase
+          .from('user_private')
+          .select('approved, role')
+          .eq('id', session.user.id)
+          .single();
+        
+        if (privateError) {
+          console.error("Error fetching user role:", privateError);
+          setIsLoggedIn(false);
+          setIsAdmin(false);
+          return;
+        }
+
+        console.log("User data:", privateData);
+        setIsLoggedIn(privateData?.approved || false);
+        setIsAdmin(privateData?.role === 'admin');
       } catch (error) {
         console.error('Auth check error:', error);
         setIsLoggedIn(false);
@@ -41,7 +61,8 @@ export const Header = () => {
       if (event === 'SIGNED_OUT') {
         setIsLoggedIn(false);
         setIsAdmin(false);
-      } else if (session?.user) {
+        navigate('/login');
+      } else if (event === 'SIGNED_IN') {
         checkAuth();
       }
     });
@@ -49,7 +70,7 @@ export const Header = () => {
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
+  }, [navigate]);
 
   const scrollToContact = () => {
     console.log("Attempting to scroll to contact section");
