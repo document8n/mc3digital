@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TaskForm } from "@/components/TaskForm";
@@ -15,12 +15,6 @@ interface ProjectTasksProps {
 export function ProjectTasks({ projectId, tasks, refetchTasks }: ProjectTasksProps) {
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
-  const [localTasks, setLocalTasks] = useState<Task[]>(tasks);
-
-  // Update local tasks when props change
-  useEffect(() => {
-    setLocalTasks(tasks);
-  }, [tasks]);
 
   const handleTaskSuccess = async () => {
     console.log("Task operation successful, refreshing tasks...");
@@ -62,12 +56,12 @@ export function ProjectTasks({ projectId, tasks, refetchTasks }: ProjectTasksPro
         </DialogContent>
       </Dialog>
 
-      {localTasks?.length === 0 ? (
+      {tasks?.length === 0 ? (
         <div className="text-center py-8 text-muted-foreground">
           No tasks found for this project.
         </div>
       ) : (
-        <TaskBoard tasks={localTasks} onUpdate={refetchTasks} />
+        <TaskBoard tasks={tasks} onUpdate={refetchTasks} />
       )}
     </div>
   );
