@@ -81,6 +81,11 @@
          focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50;
 }
 
+/* Add global dashboard layout styles */
+.dashboard-container {
+  @apply p-6 max-w-7xl mx-auto;
+}
+
 spline-viewer {
   width: 100%;
   height: 100%;

@@ -25,7 +25,7 @@ export default function ProjectDetails() {
           navigate('/projects');
         }
       });
-      fetchTasks();
+      fetchTasks().catch(console.error); // Handle the Promise return type properly
     } else {
       navigate('/projects');
     }
@@ -42,7 +42,7 @@ export default function ProjectDetails() {
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
       <AdminMenu />
       <div className={`${isMobile ? 'pt-20' : 'pl-64'}`}>
-        <div className="max-w-7xl mx-auto">
+        <div className="dashboard-container">
           <div className="flex justify-end items-center mb-6 gap-4">
             <button 
               onClick={() => navigate('/projects')}
