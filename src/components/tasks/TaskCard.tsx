@@ -32,6 +32,13 @@ export function TaskCard({ task, onUpdate, showProject = false, isDragging = fal
     transition,
   };
 
+  const handleClick = (e: React.MouseEvent) => {
+    // Prevent click when dragging
+    if (!isSortableDragging) {
+      setIsEditModalOpen(true);
+    }
+  };
+
   return (
     <>
       <div 
@@ -51,7 +58,7 @@ export function TaskCard({ task, onUpdate, showProject = false, isDragging = fal
             isDragging && "ring-2 ring-primary ring-offset-2 ring-offset-background",
             "animate-in fade-in-50 duration-200"
           )}
-          onClick={() => setIsEditModalOpen(true)}
+          onClick={handleClick}
         >
           <CardContent className="p-4 space-y-2">
             <div>

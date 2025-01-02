@@ -28,7 +28,7 @@ export function TaskColumn({ id, title, icon: Icon, tasks, onUpdate }: TaskColum
       ref={setNodeRef}
       className={cn(
         "flex flex-col h-[calc(100vh-12rem)]",
-        isOver && "bg-primary/5 rounded-lg"
+        isOver && "bg-primary/5 rounded-lg transition-colors duration-200"
       )}
     >
       <div className="rounded-t-lg p-3 bg-gradient-to-r from-gray-800 to-gray-700 mb-4">
