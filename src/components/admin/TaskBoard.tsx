@@ -6,18 +6,27 @@ import { arrayMove } from "@dnd-kit/sortable";
 import { useTaskBoardOperations } from "@/hooks/use-task-board";
 import { TaskColumns } from "./TaskColumns";
 import { DragOverlay } from "../tasks/DragOverlay";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface TaskBoardProps {
   tasks: Task[];
-  onUpdate: () => void;
+  onUpdate?: () => void;
 }
 
 export function TaskBoard({ tasks, onUpdate }: TaskBoardProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   const [items, setItems] = useState(tasks);
+  const queryClient = useQueryClient();
 
-  const { handleDragEnd } = useTaskBoardOperations({ items, onUpdate });
+  const { handleDragEnd: handleDragEndOp } = useTaskBoardOperations({ 
+    items, 
+    onUpdate: () => {
+      console.log("Task board operation completed, invalidating queries...");
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      onUpdate?.();
+    }
+  });
 
   const sensors = useSensors(
     useSensor(MouseSensor, {
@@ -92,7 +101,7 @@ export function TaskBoard({ tasks, onUpdate }: TaskBoardProps) {
       sensors={sensors}
       onDragStart={handleDragStart}
       onDragOver={handleDragOver}
-      onDragEnd={handleDragEnd}
+      onDragEnd={handleDragEndOp}
     >
       <TaskColumns items={items} onUpdate={onUpdate} />
       {createPortal(

@@ -18,6 +18,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface TaskFormProps {
   projectId?: string;
@@ -46,6 +47,7 @@ export function TaskForm({ projectId, initialData, onSuccess, onCancel }: TaskFo
   const [isLoading, setIsLoading] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [projects, setProjects] = useState<Array<{ id: string; name: string }>>([]);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -110,6 +112,8 @@ export function TaskForm({ projectId, initialData, onSuccess, onCancel }: TaskFo
         });
       }
 
+      console.log("Task operation successful, invalidating queries...");
+      await queryClient.invalidateQueries({ queryKey: ['tasks'] });
       onSuccess();
     } catch (error: any) {
       console.error('Error:', error);
@@ -139,6 +143,9 @@ export function TaskForm({ projectId, initialData, onSuccess, onCancel }: TaskFo
         title: "Success",
         description: "Task deleted successfully",
       });
+      
+      console.log("Task deleted, invalidating queries...");
+      await queryClient.invalidateQueries({ queryKey: ['tasks'] });
       onSuccess();
     } catch (error: any) {
       console.error('Error deleting task:', error);
