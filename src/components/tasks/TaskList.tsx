@@ -8,24 +8,19 @@ interface TaskListProps {
 }
 
 export function TaskList({ onUpdate }: TaskListProps) {
-  const { data: tasks, isLoading, error, refetch } = useQuery({
+  const { data: tasks, isLoading, error } = useQuery({
     queryKey: ['tasks'],
     queryFn: async () => {
       console.log("Fetching tasks...");
       const { data, error } = await supabase
         .from('tasks')
-        .select('*, project:projects(name)')
+        .select('*')
         .order('display_order', { ascending: true });
 
-      if (error) {
-        console.error("Error fetching tasks:", error);
-        throw error;
-      }
+      if (error) throw error;
       console.log("Tasks fetched:", data);
-      return data as Task[];
-    },
-    staleTime: 0, // Always consider data stale to ensure fresh fetches
-    refetchOnWindowFocus: true, // Refetch when window regains focus
+      return data || [];
+    }
   });
 
   if (isLoading) {
@@ -33,7 +28,6 @@ export function TaskList({ onUpdate }: TaskListProps) {
   }
 
   if (error) {
-    console.error("Error in TaskList:", error);
     return <div className="text-center py-4 text-red-500">Error loading tasks</div>;
   }
 
@@ -41,11 +35,5 @@ export function TaskList({ onUpdate }: TaskListProps) {
     return <div className="text-center py-4 text-muted-foreground">No tasks found</div>;
   }
 
-  const handleUpdate = async () => {
-    console.log("TaskList: Handling update...");
-    await refetch();
-    onUpdate?.();
-  };
-
-  return <TaskBoard tasks={tasks} onUpdate={handleUpdate} />;
+  return <TaskBoard tasks={tasks} onUpdate={onUpdate} />;
 }
