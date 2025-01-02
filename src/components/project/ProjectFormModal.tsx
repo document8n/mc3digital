@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ProjectForm } from "@/components/ProjectForm";
 import { Button } from "@/components/ui/button";
@@ -27,6 +28,8 @@ export function ProjectFormModal({ isOpen, onClose, project, onSuccess }: Projec
   const [loading, setLoading] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const handleSuccess = () => {
     if (onSuccess) {
@@ -53,7 +56,10 @@ export function ProjectFormModal({ isOpen, onClose, project, onSuccess }: Projec
         description: "Project deleted successfully",
       });
       
-      if (onSuccess) {
+      // Check if we're on the project details page and redirect if needed
+      if (location.pathname.includes(`/projects/${project.id}`)) {
+        navigate('/projects');
+      } else if (onSuccess) {
         onSuccess();
       }
       onClose();
