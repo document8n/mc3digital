@@ -1,38 +1,16 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import AdminMenu from "@/components/AdminMenu";
-import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { TaskHeader } from "@/components/tasks/TaskHeader";
 import { TaskList } from "@/components/tasks/TaskList";
-import { Task } from "@/types/task";
 
 const Tasks = () => {
   const isMobile = useIsMobile();
   const [isTaskFormOpen, setIsTaskFormOpen] = useState(false);
-  
-  const { data: tasks, isLoading, refetch: refetchTasks } = useQuery({
-    queryKey: ["tasks"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("tasks")
-        .select(`
-          *,
-          project:project_id (
-            name
-          )
-        `)
-        .order("due_date", { ascending: true });
-
-      if (error) throw error;
-      return data as Task[];
-    },
-  });
 
   const handleTaskSuccess = () => {
     setIsTaskFormOpen(false);
-    refetchTasks();
   };
 
   return (
@@ -49,11 +27,7 @@ const Tasks = () => {
             onFormOpenChange={setIsTaskFormOpen}
             onTaskSuccess={handleTaskSuccess}
           />
-          <TaskList
-            tasks={tasks}
-            onUpdate={refetchTasks}
-            isLoading={isLoading}
-          />
+          <TaskList onUpdate={handleTaskSuccess} />
         </div>
       </div>
     </div>
