@@ -1,96 +1,30 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import AdminMenu from "@/components/AdminMenu";
 import { ProjectHeader } from "@/components/project-details/ProjectHeader";
 import { ProjectTasks } from "@/components/project-details/ProjectTasks";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ArrowLeft, PencilIcon } from "lucide-react";
 import { ProjectFormModal } from "@/components/project/ProjectFormModal";
+import { useProject } from "@/hooks/use-project";
+import { useProjectTasks } from "@/hooks/use-project-tasks";
 
 export default function ProjectDetails() {
-  const [project, setProject] = useState<any>(null);
-  const [tasks, setTasks] = useState<any[]>([]);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const { id } = useParams();
-  const { toast } = useToast();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  
+  const { project, fetchProject } = useProject(id);
+  const { tasks, fetchTasks } = useProjectTasks(id);
 
-  const fetchProject = async () => {
-    try {
-      if (!id || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
-        console.error('Invalid project ID:', id);
-        toast({
-          title: "Error",
-          description: "Invalid project ID",
-          variant: "destructive",
-        });
-        navigate('/projects');
-        return;
-      }
-
-      const { data, error } = await supabase
-        .from('projects')
-        .select('*')
-        .eq('id', id)
-        .maybeSingle();
-
-      if (error) throw error;
-      
-      if (!data) {
-        toast({
-          title: "Error",
-          description: "Project not found",
-          variant: "destructive",
-        });
-        navigate('/projects');
-        return;
-      }
-
-      setProject(data);
-    } catch (error: any) {
-      console.error('Error fetching project:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load project details",
-        variant: "destructive",
-      });
-      navigate('/projects');
-    }
-  };
-
-  const fetchTasks = async () => {
-    console.log("Fetching tasks for project:", id);
-    try {
-      if (!id || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
-        return;
-      }
-
-      const { data, error } = await supabase
-        .from('tasks')
-        .select('*')
-        .eq('project_id', id)
-        .order('display_order', { ascending: true });
-
-      if (error) throw error;
-      console.log("Tasks fetched successfully:", data);
-      setTasks(data || []);
-    } catch (error: any) {
-      console.error('Error fetching tasks:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load tasks",
-        variant: "destructive",
-      });
-    }
-  };
-
-  // Initial data fetch
   useEffect(() => {
     if (id) {
-      fetchProject();
+      fetchProject().then(result => {
+        if (!result) {
+          navigate('/projects');
+        }
+      });
       fetchTasks();
     } else {
       navigate('/projects');
@@ -108,7 +42,7 @@ export default function ProjectDetails() {
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
       <AdminMenu />
       <div className={`${isMobile ? 'pt-20' : 'pl-64'}`}>
-        <div className="p-4 md:p-6 max-w-7xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <div className="flex justify-end items-center mb-6 gap-4">
             <button 
               onClick={() => navigate('/projects')}
