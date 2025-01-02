@@ -18,9 +18,7 @@ export const AdminLayout = ({ children, className }: AdminLayoutProps) => {
         isMobile ? "pt-20" : "pl-64",
         className
       )}>
-        <div className="p-4 md:p-6 max-w-7xl mx-auto">
-          {children}
-        </div>
+        {children}
       </div>
     </div>
   );

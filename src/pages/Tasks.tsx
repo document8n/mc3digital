@@ -20,7 +20,7 @@ const Tasks = () => {
         "transition-all duration-300",
         isMobile ? "pl-0" : "pl-64"
       )}>
-        <div className="p-4 md:p-6 max-w-7xl mx-auto space-y-6">
+        <div className="dashboard-container space-y-6">
           <TaskHeader
             title="Task Management"
             isFormOpen={isTaskFormOpen}

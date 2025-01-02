@@ -121,7 +121,7 @@ const Services = () => {
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
       <AdminMenu />
       <div className="pl-64">
-        <div className="p-6 max-w-7xl mx-auto">
+        <div className="dashboard-container">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-white mb-4">Our Services</h1>
             <p className="text-gray-300">

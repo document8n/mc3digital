@@ -106,40 +106,42 @@ export default function Users() {
 
   return (
     <AdminLayout>
-      <h1 className="text-2xl font-bold mb-6 text-white">Users</h1>
-      
-      <div className="bg-white/5 backdrop-blur-sm rounded-lg shadow overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="text-gray-300">Email</TableHead>
-              <TableHead className="text-gray-300">Role</TableHead>
-              <TableHead className="text-gray-300">Approved</TableHead>
-              <TableHead className="text-gray-300">Last Active</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {users.map((user) => (
-              <TableRow key={user.id} className="hover:bg-white/10">
-                <TableCell className="text-gray-200">
-                  {user.email}
-                </TableCell>
-                <TableCell className="text-gray-200">{user.role}</TableCell>
-                <TableCell className="text-gray-200">
-                  <Switch
-                    checked={user.approved}
-                    onCheckedChange={() => handleApprovalToggle(user.id, user.approved)}
-                  />
-                </TableCell>
-                <TableCell className="text-gray-200">
-                  {user.last_sign_in_at 
-                    ? new Date(user.last_sign_in_at).toLocaleDateString()
-                    : 'Never'}
-                </TableCell>
+      <div className="dashboard-container">
+        <h1 className="text-2xl font-bold mb-6 text-white">Users</h1>
+        
+        <div className="bg-white/5 backdrop-blur-sm rounded-lg shadow overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="text-gray-300">Email</TableHead>
+                <TableHead className="text-gray-300">Role</TableHead>
+                <TableHead className="text-gray-300">Approved</TableHead>
+                <TableHead className="text-gray-300">Last Active</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {users.map((user) => (
+                <TableRow key={user.id} className="hover:bg-white/10">
+                  <TableCell className="text-gray-200">
+                    {user.email}
+                  </TableCell>
+                  <TableCell className="text-gray-200">{user.role}</TableCell>
+                  <TableCell className="text-gray-200">
+                    <Switch
+                      checked={user.approved}
+                      onCheckedChange={() => handleApprovalToggle(user.id, user.approved)}
+                    />
+                  </TableCell>
+                  <TableCell className="text-gray-200">
+                    {user.last_sign_in_at 
+                      ? new Date(user.last_sign_in_at).toLocaleDateString()
+                      : 'Never'}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </div>
     </AdminLayout>
   );

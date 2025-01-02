@@ -85,7 +85,7 @@ export default function SiteSettings() {
   return (
     <div className="min-h-screen">
       <AdminMenu />
-      <div className="container mx-auto py-10">
+      <div className="dashboard-container">
         <h1 className="text-2xl font-bold mb-6">Site Settings</h1>
 
         <div className="grid gap-6">
@@ -155,4 +155,4 @@ export default function SiteSettings() {
       </div>
     </div>
   );
-}
+};

@@ -69,7 +69,7 @@ const InvoiceDetails = () => {
         "transition-all duration-300 print:m-0 print:p-0",
         isMobile ? "pt-16" : "ml-64"
       )}>
-        <div className="p-6 max-w-4xl mx-auto print:p-0 print:max-w-none">
+        <div className="dashboard-container print:p-0 print:max-w-none">
           <InvoiceActions 
             invoice={invoice} 
             onUpdate={refetch} 
