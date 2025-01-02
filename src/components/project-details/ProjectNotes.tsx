@@ -3,7 +3,9 @@ import StarterKit from '@tiptap/starter-kit';
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
+import { Check } from "lucide-react";
 import debounce from 'lodash/debounce';
+import { useState } from 'react';
 
 interface ProjectNotesProps {
   projectId: string;
@@ -13,6 +15,7 @@ interface ProjectNotesProps {
 export function ProjectNotes({ projectId, initialContent }: ProjectNotesProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [isSynced, setIsSynced] = useState(true);
 
   const editor = useEditor({
     extensions: [StarterKit],
@@ -24,6 +27,7 @@ export function ProjectNotes({ projectId, initialContent }: ProjectNotesProps) {
     },
     onUpdate: debounce(async ({ editor }) => {
       try {
+        setIsSynced(false);
         console.log('Saving notes to database...');
         const { error } = await supabase
           .from('projects')
@@ -33,6 +37,7 @@ export function ProjectNotes({ projectId, initialContent }: ProjectNotesProps) {
         if (error) throw error;
 
         console.log('Notes saved successfully');
+        setIsSynced(true);
         queryClient.invalidateQueries({ queryKey: ['project', projectId] });
       } catch (error: any) {
         console.error('Error updating notes:', error);
@@ -47,7 +52,10 @@ export function ProjectNotes({ projectId, initialContent }: ProjectNotesProps) {
 
   return (
     <div className="w-full mt-4">
-      <p className="text-sm text-gray-600 mb-2">Notes</p>
+      <div className="flex items-center gap-2 mb-2">
+        <p className="text-sm text-gray-600">Notes</p>
+        {isSynced && <Check className="w-4 h-4 text-black" />}
+      </div>
       <div className="border rounded-lg p-4 bg-white">
         <EditorContent editor={editor} />
       </div>
