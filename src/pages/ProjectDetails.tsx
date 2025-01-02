@@ -109,10 +109,10 @@ export default function ProjectDetails() {
       <AdminMenu />
       <div className={`${isMobile ? 'pt-20' : 'pl-64'}`}>
         <div className="p-4 md:p-6 max-w-7xl mx-auto">
-          <div className="flex justify-between items-center mb-6">
+          <div className="flex justify-end items-center mb-6 gap-4">
             <button 
               onClick={() => navigate('/projects')}
-              className="flex items-center text-white hover:text-gray-300"
+              className="mr-auto flex items-center text-white hover:text-gray-300"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Projects
@@ -126,7 +126,7 @@ export default function ProjectDetails() {
             </button>
           </div>
           
-          <div className="space-y-6 rounded-lg p-6">
+          <div className="space-y-6">
             <ProjectHeader project={project} hideEditButton />
             <ProjectTasks 
               projectId={project.id} 
