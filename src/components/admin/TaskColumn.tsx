@@ -47,18 +47,19 @@ export function TaskColumn({ id, title, icon: Icon, tasks, onUpdate }: TaskColum
       >
         <SortableContext items={tasks.map(t => t.id)} strategy={verticalListSortingStrategy}>
           {tasks.map((task) => (
-            <div key={task.id} className="relative">
+            <div key={task.id} className="relative group">
               <TaskCard
                 task={task}
                 onUpdate={onUpdate}
                 showProject={true}
               />
-              {isOver && (
-                <div 
-                  className="absolute inset-0 border-2 border-dashed border-gray-300/50 rounded-lg pointer-events-none"
-                  style={{ height: 'calc(100% - 1rem)' }}
-                />
-              )}
+              <div 
+                className={cn(
+                  "absolute inset-0 border-2 border-dashed border-gray-300/50 rounded-lg pointer-events-none opacity-0 transition-opacity",
+                  isOver && "opacity-100"
+                )}
+                style={{ height: 'calc(100% - 1rem)' }}
+              />
             </div>
           ))}
         </SortableContext>
