@@ -126,7 +126,7 @@ export default function ProjectDetails() {
             </button>
           </div>
           
-          <div className="space-y-6 bg-white/5 backdrop-blur-sm rounded-lg p-6">
+          <div className="space-y-6 rounded-lg p-6">
             <ProjectHeader project={project} hideEditButton />
             <ProjectTasks 
               projectId={project.id} 
