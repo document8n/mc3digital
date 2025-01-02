@@ -112,6 +112,7 @@ export function TaskForm({ projectId, initialData, onSuccess, onCancel }: TaskFo
         });
       }
 
+      // Invalidate and refetch tasks
       console.log("Task operation successful, invalidating queries...");
       await queryClient.invalidateQueries({ queryKey: ['tasks'] });
       onSuccess();
@@ -144,6 +145,7 @@ export function TaskForm({ projectId, initialData, onSuccess, onCancel }: TaskFo
         description: "Task deleted successfully",
       });
       
+      // Invalidate and refetch tasks after deletion
       console.log("Task deleted, invalidating queries...");
       await queryClient.invalidateQueries({ queryKey: ['tasks'] });
       onSuccess();

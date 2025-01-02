@@ -225,36 +225,36 @@ export type Database = {
       }
       tasks: {
         Row: {
-          created_at: string
+          created_at: string | null
           description: string | null
-          display_order: number
+          display_order: number | null
           due_date: string | null
           id: string
           project_id: string | null
-          status: string
-          title: string
+          status: string | null
+          title: string | null
           updated_at: string | null
         }
         Insert: {
-          created_at?: string
+          created_at?: string | null
           description?: string | null
-          display_order?: number
+          display_order?: number | null
           due_date?: string | null
           id?: string
           project_id?: string | null
-          status: string
-          title: string
+          status?: string | null
+          title?: string | null
           updated_at?: string | null
         }
         Update: {
-          created_at?: string
+          created_at?: string | null
           description?: string | null
-          display_order?: number
+          display_order?: number | null
           due_date?: string | null
           id?: string
           project_id?: string | null
-          status?: string
-          title?: string
+          status?: string | null
+          title?: string | null
           updated_at?: string | null
         }
         Relationships: [
