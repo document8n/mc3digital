@@ -1,9 +1,10 @@
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
+import Link from '@tiptap/extension-link';
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
-import { Check, Bold, Italic, Heading1, List, Link, Code, Strikethrough } from "lucide-react";
+import { Check, Bold, Italic, Heading1, List, Link as LinkIcon, Code, Strikethrough } from "lucide-react";
 import debounce from 'lodash/debounce';
 import { useState } from 'react';
 
@@ -18,7 +19,13 @@ export function ProjectNotes({ projectId, initialContent }: ProjectNotesProps) {
   const [isSynced, setIsSynced] = useState(true);
 
   const editor = useEditor({
-    extensions: [StarterKit],
+    extensions: [
+      StarterKit,
+      Link.configure({
+        openOnClick: true,
+        linkOnPaste: true,
+      })
+    ],
     content: initialContent || '',
     editorProps: {
       attributes: {
@@ -53,6 +60,22 @@ export function ProjectNotes({ projectId, initialContent }: ProjectNotesProps) {
   if (!editor) {
     return null;
   }
+
+  const setLink = () => {
+    const previousUrl = editor.getAttributes('link').href;
+    const url = window.prompt('URL', previousUrl);
+
+    if (url === null) {
+      return;
+    }
+
+    if (url === '') {
+      editor.chain().focus().extendMarkRange('link').unsetLink().run();
+      return;
+    }
+
+    editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
+  };
 
   return (
     <div className="w-full mt-4">
@@ -101,6 +124,14 @@ export function ProjectNotes({ projectId, initialContent }: ProjectNotesProps) {
             }`}
           >
             <List className="w-4 h-4" />
+          </button>
+          <button
+            onClick={setLink}
+            className={`p-1 rounded hover:bg-gray-200 ${
+              editor.isActive('link') ? 'bg-gray-200' : ''
+            }`}
+          >
+            <LinkIcon className="w-4 h-4" />
           </button>
           <button
             onClick={() => editor.chain().focus().toggleCode().run()}
