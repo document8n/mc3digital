@@ -8,6 +8,8 @@ interface TaskColumnsProps {
 }
 
 export function TaskColumns({ items, onUpdate }: TaskColumnsProps) {
+  console.log("TaskColumns: Rendering with items:", items);
+  
   const tasksByStatus = {
     todo: items?.filter((task) => task.status === "Todo").sort((a, b) => a.display_order - b.display_order) || [],
     inProgress: items?.filter((task) => task.status === "In Progress").sort((a, b) => a.display_order - b.display_order) || [],
