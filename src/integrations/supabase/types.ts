@@ -144,6 +144,7 @@ export type Database = {
           is_portfolio: boolean
           name: string | null
           notes: string | null
+          resource_links: Json | null
           start_date: string
           status: string
           team_members: string | null
@@ -163,6 +164,7 @@ export type Database = {
           is_portfolio?: boolean
           name?: string | null
           notes?: string | null
+          resource_links?: Json | null
           start_date: string
           status: string
           team_members?: string | null
@@ -182,6 +184,7 @@ export type Database = {
           is_portfolio?: boolean
           name?: string | null
           notes?: string | null
+          resource_links?: Json | null
           start_date?: string
           status?: string
           team_members?: string | null

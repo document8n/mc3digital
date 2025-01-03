@@ -1,3 +1,10 @@
+export interface ResourceLink {
+  [key: string]: string | number | boolean | null;
+  url: string;
+  title: string;
+  tags?: string[];
+}
+
 export interface Project {
   id: string;
   name: string;
@@ -7,4 +14,14 @@ export interface Project {
   is_portfolio: boolean;
   display_order: number;
   user_id: string;
+  resource_links: ResourceLink[];
+  client_id?: string | null;
+  created_at?: string;
+  due_date?: string | null;
+  image?: string | null;
+  industry?: string | null;
+  notes?: string | null;
+  team_members?: string | null;
+  updated_at?: string | null;
+  url?: string | null;
 }

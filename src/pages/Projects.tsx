@@ -18,7 +18,7 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
-import { Project } from "@/types/project";
+import { Project, ResourceLink } from "@/types/project";
 
 const Projects = () => {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -68,7 +68,13 @@ const Projects = () => {
         return;
       }
 
-      setProjects(data || []);
+      // Ensure resource_links is always an array
+      const projectsWithResourceLinks = data?.map(project => ({
+        ...project,
+        resource_links: Array.isArray(project.resource_links) ? project.resource_links : []
+      })) || [];
+
+      setProjects(projectsWithResourceLinks as Project[]);
     } catch (error: any) {
       console.error('Error:', error);
       toast({
