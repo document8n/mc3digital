@@ -4,8 +4,10 @@ import { supabase } from "@/integrations/supabase/client";
 import AdminMenu from "@/components/AdminMenu";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
+import { ClientInfo } from "@/components/client-details/ClientInfo";
+import { ProjectsList } from "@/components/client-details/ProjectsList";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Mail, Phone, MapPin, Building, Calendar, DollarSign } from "lucide-react";
+import { Calendar, DollarSign } from "lucide-react";
 import { format } from "date-fns";
 
 const ClientDetails = () => {
@@ -84,86 +86,8 @@ const ClientDetails = () => {
         isMobile ? "pt-16" : "ml-64"
       )}>
         <div className="p-6 max-w-7xl mx-auto">
-          {/* Client Information */}
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Building className="h-6 w-6 text-indigo-500" />
-                {client.business_name}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <h3 className="font-semibold">Contact Information</h3>
-                  <p className="text-lg font-medium">{client.contact_name}</p>
-                  {client.email && (
-                    <div className="flex items-center gap-2">
-                      <Mail className="h-4 w-4 text-indigo-400" />
-                      <span>{client.email}</span>
-                    </div>
-                  )}
-                  {client.phone && (
-                    <div className="flex items-center gap-2">
-                      <Phone className="h-4 w-4 text-green-400" />
-                      <span>{client.phone}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <h3 className="font-semibold">Address</h3>
-                  {client.address_line1 && (
-                    <p>{client.address_line1}</p>
-                  )}
-                  {client.address_line2 && (
-                    <p>{client.address_line2}</p>
-                  )}
-                  {(client.city || client.state || client.postal_code) && (
-                    <div className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4 text-amber-400" />
-                      <span>
-                        {[
-                          client.city,
-                          client.state,
-                          client.postal_code
-                        ].filter(Boolean).join(', ')}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Projects Section */}
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle>Projects</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {isLoadingProjects ? (
-                <p>Loading projects...</p>
-              ) : projects && projects.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {projects.map((project) => (
-                    <Card key={project.id}>
-                      <CardContent className="pt-6">
-                        <h3 className="font-medium mb-2">{project.name}</h3>
-                        <div className="text-sm text-muted-foreground">
-                          <p>Status: {project.status}</p>
-                          <p>Start Date: {format(new Date(project.start_date), 'MMM dd, yyyy')}</p>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              ) : (
-                <p>No projects found</p>
-              )}
-            </CardContent>
-          </Card>
+          <ClientInfo client={client} />
+          <ProjectsList projects={projects || []} isLoading={isLoadingProjects} />
 
           {/* Invoices Section */}
           <Card className="mb-8">
