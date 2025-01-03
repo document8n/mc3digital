@@ -1,8 +1,8 @@
 export interface ResourceLink {
-  [key: string]: string | number | boolean | null;
   url: string;
   title: string;
   tags?: string[];
+  [key: string]: string | number | boolean | null | string[] | undefined;
 }
 
 export interface Project {
