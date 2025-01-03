@@ -56,20 +56,6 @@ const ClientDetails = () => {
     },
   });
 
-  const { data: tasks, isLoading: isLoadingTasks } = useQuery({
-    queryKey: ['client-tasks', id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('tasks')
-        .select('*, projects!inner(*)')
-        .eq('projects.client_id', id)
-        .order('due_date', { ascending: false });
-
-      if (error) throw error;
-      return data;
-    },
-  });
-
   if (isLoadingClient) {
     return <div>Loading...</div>;
   }
@@ -129,37 +115,6 @@ const ClientDetails = () => {
                 </div>
               ) : (
                 <p>No invoices found</p>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Tasks Section */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Tasks</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {isLoadingTasks ? (
-                <p>Loading tasks...</p>
-              ) : tasks && tasks.length > 0 ? (
-                <div className="space-y-4">
-                  {tasks.map((task) => (
-                    <Card key={task.id}>
-                      <CardContent className="pt-6">
-                        <h3 className="font-medium mb-2">{task.title}</h3>
-                        <div className="text-sm text-muted-foreground">
-                          <p>Project: {task.projects?.name}</p>
-                          <p>Status: {task.status}</p>
-                          {task.due_date && (
-                            <p>Due: {format(new Date(task.due_date), 'MMM dd, yyyy')}</p>
-                          )}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              ) : (
-                <p>No tasks found</p>
               )}
             </CardContent>
           </Card>
