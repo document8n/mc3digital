@@ -32,7 +32,7 @@ export const ProjectCard = ({ project }: ProjectCardProps) => {
         .eq('project_id', project.id)
         .order('created_at', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error('Error fetching recent task:', error);
