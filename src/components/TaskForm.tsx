@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Form, FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -8,42 +7,20 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { useQueryClient } from "@tanstack/react-query";
+import { ProjectField } from "./task-form/ProjectField";
+import { DeleteTaskDialog } from "./task-form/DeleteTaskDialog";
+import { TaskFormValues, TaskData } from "./task-form/types";
 
 interface TaskFormProps {
   projectId?: string;
-  initialData?: {
-    id: string;
-    title: string;
-    description: string | null;
-    status: string;
-    due_date: string | null;
-  };
+  initialData?: TaskData;
   onSuccess: () => void;
   onCancel: () => void;
 }
 
-interface TaskFormValues {
-  title: string;
-  description: string;
-  status: string;
-  due_date: string;
-  project_id?: string;
-}
-
 export function TaskForm({ projectId, initialData, onSuccess, onCancel }: TaskFormProps) {
   const { toast } = useToast();
-  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [projects, setProjects] = useState<Array<{ id: string; name: string }>>([]);
@@ -86,7 +63,7 @@ export function TaskForm({ projectId, initialData, onSuccess, onCancel }: TaskFo
         description: values.description,
         status: values.status,
         due_date: values.due_date,
-        project_id: values.project_id || null,
+        project_id: projectId || values.project_id || null,
       };
 
       if (initialData) {
@@ -112,7 +89,6 @@ export function TaskForm({ projectId, initialData, onSuccess, onCancel }: TaskFo
         });
       }
 
-      // Invalidate and refetch tasks
       console.log("Task operation successful, invalidating queries...");
       await queryClient.invalidateQueries({ queryKey: ['tasks'] });
       onSuccess();
@@ -145,7 +121,6 @@ export function TaskForm({ projectId, initialData, onSuccess, onCancel }: TaskFo
         description: "Task deleted successfully",
       });
       
-      // Invalidate and refetch tasks after deletion
       console.log("Task deleted, invalidating queries...");
       await queryClient.invalidateQueries({ queryKey: ['tasks'] });
       onSuccess();
@@ -166,33 +141,10 @@ export function TaskForm({ projectId, initialData, onSuccess, onCancel }: TaskFo
     <>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <FormField
-            control={form.control}
-            name="project_id"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Project (Optional)</FormLabel>
-                <FormControl>
-                  <select
-                    {...field}
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                    onChange={(e) => {
-                      field.onChange(e);
-                      if (e.target.value) {
-                        navigate(`/projects/${e.target.value}`);
-                      }
-                    }}
-                  >
-                    <option value="">No Project</option>
-                    {projects.map((project) => (
-                      <option key={project.id} value={project.id}>
-                        {project.name || 'Unnamed Project'}
-                      </option>
-                    ))}
-                  </select>
-                </FormControl>
-              </FormItem>
-            )}
+          <ProjectField 
+            form={form} 
+            projects={projects} 
+            hideField={!!projectId} 
           />
 
           <FormField
@@ -275,22 +227,11 @@ export function TaskForm({ projectId, initialData, onSuccess, onCancel }: TaskFo
         </form>
       </Form>
 
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the task.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground">
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <DeleteTaskDialog
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        onConfirm={handleDelete}
+      />
     </>
   );
 }
