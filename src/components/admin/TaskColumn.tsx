@@ -76,12 +76,10 @@ export function TaskColumn({ id, title, icon: Icon, tasks, onUpdate, projectId }
             No {title.toLowerCase()} tasks
           </p>
         )}
-      </div>
-      <div className="p-2 mt-2">
         <Button 
           onClick={() => setShowTaskForm(true)}
           variant="ghost" 
-          className="w-full border-2 border-dashed border-gray-700 hover:border-primary hover:bg-primary/5"
+          className="w-full border-2 border-dashed border-gray-700 hover:border-primary hover:bg-primary/5 mt-4"
         >
           <PlusCircle className="h-4 w-4 mr-2" />
           Add Task
@@ -95,7 +93,8 @@ export function TaskColumn({ id, title, icon: Icon, tasks, onUpdate, projectId }
             initialData={{
               status: title,
               project_id: projectId,
-            } as Partial<Task>}
+              id: '', // Adding required id field
+            }}
             onSuccess={handleTaskSuccess}
             onCancel={() => setShowTaskForm(false)}
           />
