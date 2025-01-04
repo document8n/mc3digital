@@ -57,6 +57,7 @@ export function TaskForm({ projectId, initialData, onSuccess, onCancel }: TaskFo
   const onSubmit = async (values: TaskFormValues) => {
     try {
       setIsLoading(true);
+      console.log('Submitting task with values:', values);
       
       const taskData = {
         title: values.title,
@@ -67,6 +68,7 @@ export function TaskForm({ projectId, initialData, onSuccess, onCancel }: TaskFo
       };
 
       if (initialData) {
+        console.log('Updating existing task:', initialData.id);
         const { error } = await supabase
           .from('tasks')
           .update(taskData)
@@ -78,6 +80,7 @@ export function TaskForm({ projectId, initialData, onSuccess, onCancel }: TaskFo
           description: "Task updated successfully",
         });
       } else {
+        console.log('Creating new task');
         const { error } = await supabase
           .from('tasks')
           .insert([taskData]);
@@ -89,13 +92,14 @@ export function TaskForm({ projectId, initialData, onSuccess, onCancel }: TaskFo
         });
       }
 
-      // Invalidate both tasks and project queries to ensure all views are updated
-      console.log("Task operation successful, invalidating queries...");
+      // Invalidate queries immediately after successful operation
+      console.log('Task operation successful, invalidating queries...');
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['tasks'] }),
-        queryClient.invalidateQueries({ queryKey: ['project', projectId] }),
-        queryClient.invalidateQueries({ queryKey: ['projectTasks', projectId] })
+        queryClient.invalidateQueries({ queryKey: ['projectTasks', projectId] }),
+        queryClient.invalidateQueries({ queryKey: ['project', projectId] })
       ]);
+
       onSuccess();
     } catch (error: any) {
       console.error('Error:', error);
@@ -114,6 +118,7 @@ export function TaskForm({ projectId, initialData, onSuccess, onCancel }: TaskFo
 
     try {
       setIsLoading(true);
+      console.log('Deleting task:', initialData.id);
       const { error } = await supabase
         .from('tasks')
         .delete()
@@ -126,13 +131,14 @@ export function TaskForm({ projectId, initialData, onSuccess, onCancel }: TaskFo
         description: "Task deleted successfully",
       });
       
-      // Invalidate both tasks and project queries
-      console.log("Task deleted, invalidating queries...");
+      // Invalidate queries immediately after successful deletion
+      console.log('Task deleted, invalidating queries...');
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['tasks'] }),
-        queryClient.invalidateQueries({ queryKey: ['project', projectId] }),
-        queryClient.invalidateQueries({ queryKey: ['projectTasks', projectId] })
+        queryClient.invalidateQueries({ queryKey: ['projectTasks', projectId] }),
+        queryClient.invalidateQueries({ queryKey: ['project', projectId] })
       ]);
+
       onSuccess();
     } catch (error: any) {
       console.error('Error deleting task:', error);
