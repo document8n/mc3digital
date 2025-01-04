@@ -1,10 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import type { Task } from '@/types/task';
 
 export function useProjectTasks(projectId: string | undefined) {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const { data: tasks = [], refetch } = useQuery({
     queryKey: ['projectTasks', projectId],
@@ -31,7 +33,8 @@ export function useProjectTasks(projectId: string | undefined) {
       console.log('Tasks fetched:', data);
       return data || [];
     },
-    enabled: !!projectId
+    enabled: !!projectId,
+    staleTime: 1000, // Add a small stale time to prevent immediate refetches
   });
 
   // Set up real-time subscription for tasks
@@ -51,7 +54,7 @@ export function useProjectTasks(projectId: string | undefined) {
         },
         (payload) => {
           console.log('Received real-time update:', payload);
-          refetch();
+          queryClient.invalidateQueries({ queryKey: ['projectTasks', projectId] });
         }
       )
       .subscribe();
@@ -60,7 +63,15 @@ export function useProjectTasks(projectId: string | undefined) {
       console.log('Cleaning up real-time subscription...');
       supabase.removeChannel(channel);
     };
-  }, [projectId, refetch]);
+  }, [projectId, queryClient]);
 
-  return { tasks, fetchTasks: refetch };
+  const fetchTasks = async () => {
+    try {
+      await refetch();
+    } catch (error) {
+      console.error('Error refetching tasks:', error);
+    }
+  };
+
+  return { tasks, fetchTasks };
 }

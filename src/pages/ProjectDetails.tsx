@@ -19,16 +19,24 @@ export default function ProjectDetails() {
   const { tasks, fetchTasks } = useProjectTasks(id);
 
   useEffect(() => {
-    if (id) {
-      fetchProject().then(result => {
+    const initializeData = async () => {
+      if (id) {
+        const result = await fetchProject();
         if (!result) {
           navigate('/projects');
+          return;
         }
-      });
-      fetchTasks().catch(console.error); // Handle the Promise return type properly
-    } else {
-      navigate('/projects');
-    }
+        try {
+          await fetchTasks();
+        } catch (error) {
+          console.error('Error fetching tasks:', error);
+        }
+      } else {
+        navigate('/projects');
+      }
+    };
+
+    initializeData();
   }, [id]);
 
   const handleEditSuccess = () => {
