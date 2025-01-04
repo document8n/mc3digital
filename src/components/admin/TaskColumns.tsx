@@ -5,9 +5,10 @@ import { TaskColumn } from "./TaskColumn";
 interface TaskColumnsProps {
   items: Task[];
   onUpdate: () => void;
+  projectId: string;
 }
 
-export function TaskColumns({ items, onUpdate }: TaskColumnsProps) {
+export function TaskColumns({ items, onUpdate, projectId }: TaskColumnsProps) {
   const tasksByStatus = {
     todo: items?.filter((task) => task.status === "Todo").sort((a, b) => a.display_order - b.display_order) || [],
     inProgress: items?.filter((task) => task.status === "In Progress").sort((a, b) => a.display_order - b.display_order) || [],
@@ -45,6 +46,7 @@ export function TaskColumns({ items, onUpdate }: TaskColumnsProps) {
           icon={column.icon}
           tasks={column.tasks}
           onUpdate={onUpdate}
+          projectId={projectId}
         />
       ))}
     </div>

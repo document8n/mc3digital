@@ -1,10 +1,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TaskCard } from "@/components/tasks/TaskCard";
 import { Task } from "@/types/task";
-import { LucideIcon } from "lucide-react";
+import { LucideIcon, PlusCircle } from "lucide-react";
 import { useDroppable } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { TaskForm } from "@/components/TaskForm";
 
 interface TaskColumnProps {
   id: string;
@@ -12,16 +16,28 @@ interface TaskColumnProps {
   icon: LucideIcon;
   tasks: Task[];
   onUpdate: () => void;
+  projectId: string;
 }
 
-export function TaskColumn({ id, title, icon: Icon, tasks, onUpdate }: TaskColumnProps) {
+export function TaskColumn({ id, title, icon: Icon, tasks, onUpdate, projectId }: TaskColumnProps) {
   const { setNodeRef, isOver } = useDroppable({ id });
+  const [showTaskForm, setShowTaskForm] = useState(false);
 
   const iconColor = {
     todo: "text-yellow-500",
     inProgress: "text-blue-500",
     completed: "text-green-500",
   }[id];
+
+  const handleTaskSuccess = async () => {
+    console.log("Task operation successful, refreshing tasks...");
+    try {
+      await onUpdate();
+      setShowTaskForm(false);
+    } catch (error) {
+      console.error('Error refreshing tasks:', error);
+    }
+  };
 
   return (
     <div 
@@ -61,6 +77,30 @@ export function TaskColumn({ id, title, icon: Icon, tasks, onUpdate }: TaskColum
           </p>
         )}
       </div>
+      <div className="p-2 mt-2">
+        <Button 
+          onClick={() => setShowTaskForm(true)}
+          variant="ghost" 
+          className="w-full border-2 border-dashed border-gray-700 hover:border-primary hover:bg-primary/5"
+        >
+          <PlusCircle className="h-4 w-4 mr-2" />
+          Add Task
+        </Button>
+      </div>
+
+      <Dialog open={showTaskForm} onOpenChange={setShowTaskForm}>
+        <DialogContent>
+          <TaskForm
+            projectId={projectId}
+            initialData={{
+              status: title,
+              project_id: projectId,
+            } as Partial<Task>}
+            onSuccess={handleTaskSuccess}
+            onCancel={() => setShowTaskForm(false)}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

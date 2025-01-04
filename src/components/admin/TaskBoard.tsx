@@ -11,9 +11,10 @@ import { useQueryClient } from "@tanstack/react-query";
 interface TaskBoardProps {
   tasks: Task[];
   onUpdate?: () => void;
+  projectId: string;
 }
 
-export function TaskBoard({ tasks, onUpdate }: TaskBoardProps) {
+export function TaskBoard({ tasks, onUpdate, projectId }: TaskBoardProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   const [items, setItems] = useState(tasks);
@@ -24,6 +25,7 @@ export function TaskBoard({ tasks, onUpdate }: TaskBoardProps) {
     onUpdate: () => {
       console.log("Task board operation completed, invalidating queries...");
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['projectTasks', projectId] });
       onUpdate?.();
     }
   });
@@ -103,7 +105,7 @@ export function TaskBoard({ tasks, onUpdate }: TaskBoardProps) {
       onDragOver={handleDragOver}
       onDragEnd={handleDragEndOp}
     >
-      <TaskColumns items={items} onUpdate={onUpdate} />
+      <TaskColumns items={items} onUpdate={onUpdate} projectId={projectId} />
       {createPortal(
         <DragOverlay activeTask={activeTask} />,
         document.body
