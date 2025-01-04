@@ -46,7 +46,15 @@ export function ProjectTasks({ projectId, tasks, refetchTasks }: ProjectTasksPro
         <DialogContent>
           <TaskForm
             projectId={projectId}
-            initialData={editingTask || undefined}
+            initialData={editingTask || {
+              id: '',
+              title: '',
+              description: '',
+              status: 'todo',
+              due_date: null,
+              project_id: projectId,
+              display_order: 0
+            }}
             onSuccess={handleTaskSuccess}
             onCancel={() => {
               setShowTaskForm(false);
@@ -61,7 +69,7 @@ export function ProjectTasks({ projectId, tasks, refetchTasks }: ProjectTasksPro
           No tasks found for this project.
         </div>
       ) : (
-        <TaskBoard tasks={tasks} onUpdate={refetchTasks} />
+        <TaskBoard tasks={tasks} onUpdate={refetchTasks} projectId={projectId} />
       )}
     </div>
   );

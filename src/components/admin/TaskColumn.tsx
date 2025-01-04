@@ -79,9 +79,9 @@ export function TaskColumn({ id, title, icon: Icon, tasks, onUpdate, projectId }
         <Button 
           onClick={() => setShowTaskForm(true)}
           variant="ghost" 
-          className="w-full border-2 border-dashed border-gray-700 hover:border-primary hover:bg-primary/5 mt-4"
+          className="w-full border-2 border-dashed border-gray-700 hover:border-primary hover:bg-primary/5 mt-4 text-white"
         >
-          <PlusCircle className="h-4 w-4 mr-2" />
+          <PlusCircle className="h-4 w-4 mr-2 text-white" />
           Add Task
         </Button>
       </div>
@@ -93,7 +93,11 @@ export function TaskColumn({ id, title, icon: Icon, tasks, onUpdate, projectId }
             initialData={{
               status: title,
               project_id: projectId,
-              id: '', // Adding required id field
+              id: '',
+              title: '',
+              description: '',
+              due_date: null,
+              display_order: 0
             }}
             onSuccess={handleTaskSuccess}
             onCancel={() => setShowTaskForm(false)}
