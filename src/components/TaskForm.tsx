@@ -89,8 +89,13 @@ export function TaskForm({ projectId, initialData, onSuccess, onCancel }: TaskFo
         });
       }
 
+      // Invalidate both tasks and project queries to ensure all views are updated
       console.log("Task operation successful, invalidating queries...");
-      await queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['tasks'] }),
+        queryClient.invalidateQueries({ queryKey: ['project', projectId] }),
+        queryClient.invalidateQueries({ queryKey: ['projectTasks', projectId] })
+      ]);
       onSuccess();
     } catch (error: any) {
       console.error('Error:', error);
@@ -121,8 +126,13 @@ export function TaskForm({ projectId, initialData, onSuccess, onCancel }: TaskFo
         description: "Task deleted successfully",
       });
       
+      // Invalidate both tasks and project queries
       console.log("Task deleted, invalidating queries...");
-      await queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['tasks'] }),
+        queryClient.invalidateQueries({ queryKey: ['project', projectId] }),
+        queryClient.invalidateQueries({ queryKey: ['projectTasks', projectId] })
+      ]);
       onSuccess();
     } catch (error: any) {
       console.error('Error deleting task:', error);
